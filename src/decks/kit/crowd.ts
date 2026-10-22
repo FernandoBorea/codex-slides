@@ -54,3 +54,75 @@ export const coverMarks: CrowdMark[] = [
   { x: 78.4, y: 22.9, size: 2.2, kind: "asterisk", color: green },
   { x: 81.3, y: 23, size: 2.2, kind: "asterisk", color: green },
 ];
+
+type Point = { x: number; y: number };
+
+/** Points the eyes from `from` toward `to`, so a crowd can look at a title or a speaker. */
+export function lookAt(face: FaceConfig, from: Point, to: Point, strength = 0.55): FaceConfig {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const length = Math.hypot(dx, dy) || 1;
+  return { ...face, gaze: { x: Number(((dx / length) * strength).toFixed(3)), y: Number(((dy / length) * strength).toFixed(3)) } };
+}
+
+/** Companions for a speaker's face: every palette color but the speaker's own. */
+function companions(speaker: FaceConfig) {
+  const pool: { expression: FaceExpression; color: string }[] = [
+    { expression: "curious", color: purple },
+    { expression: "plus", color: green },
+    { expression: "sleepy", color: orange },
+    { expression: "spark", color: gray },
+    { expression: "squeeze", color: blue },
+    { expression: "happy", color: charcoal },
+    { expression: "wink", color: orange },
+  ];
+  return pool.filter((item) => item.color.toLowerCase() !== speaker.color.toLowerCase());
+}
+
+/**
+ * Talk cover: the speaker's face, large, with a few smaller faces around it
+ * looking at it, and a couple of marks. Lives on the right half of the slide.
+ */
+export function speakerCluster(speaker: FaceConfig): { faces: CrowdFace[]; marks: CrowdMark[] } {
+  const center = { x: 79, y: 25 };
+  const others = companions(speaker);
+  const spots = [
+    { x: 61.5, y: 10.5, size: 7 },
+    { x: 95.5, y: 6.5, size: 10 },
+    { x: 62.5, y: 37, size: 9.5 },
+    { x: 98, y: 40, size: 13 },
+    { x: 74, y: 46.5, size: 5.5 },
+  ];
+  const faces = spots.map((spot, index) => {
+    const pick = others[index % others.length];
+    const base = { ...FACE_PRESETS[pick.expression], color: pick.color };
+    return { ...spot, face: lookAt(base, spot, center, 0.6) };
+  });
+  return {
+    faces: [...faces, { ...center, size: 24, face: { ...speaker, gaze: { x: 0, y: 0.08 } } }],
+    marks: [
+      { x: 67.5, y: 6.5, size: 3.2, kind: "heart", color: blue },
+      { x: 91.5, y: 15, size: 2.6, kind: "exclaim", color: green },
+      { x: 57, y: 24, size: 2.2, kind: "asterisk", color: green },
+    ],
+  };
+}
+
+/** Closing: a row of faces along the bottom edge, all looking at `target`. */
+export function closingCrowd(target: Point): CrowdFace[] {
+  const row: { x: number; size: number; expression: FaceExpression; color: string }[] = [
+    { x: 4, size: 12, expression: "plus", color: green },
+    { x: 15, size: 9, expression: "curious", color: purple },
+    { x: 26, size: 13, expression: "sleepy", color: orange },
+    { x: 38, size: 8, expression: "spark", color: gray },
+    { x: 49, size: 14, expression: "squeeze", color: blue },
+    { x: 61, size: 9, expression: "happy", color: charcoal },
+    { x: 72, size: 12, expression: "wink", color: green },
+    { x: 84, size: 9.5, expression: "curious", color: orange },
+    { x: 95, size: 13, expression: "spark", color: gray },
+  ];
+  return row.map(({ x, size, expression, color }, index) => {
+    const spot = { x, y: 56.25 - size * 0.18 + (index % 2) * 1.2 };
+    return { ...spot, size, face: lookAt({ ...FACE_PRESETS[expression], color }, spot, target, 0.7) };
+  });
+}

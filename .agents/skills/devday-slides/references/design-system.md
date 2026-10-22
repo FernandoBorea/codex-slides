@@ -41,8 +41,9 @@ Tracking negativo en títulos (`-0.045em` a `-0.055em`), `line-height` ≤ 1.05,
 | `Pill color` | Tag redondo con punto de color: el anuncio de DevDay, un estado. |
 | `SlideFace face size` | Una cara en `cqw`. Decorativa (`aria-hidden`). |
 | `Cards items columns` | 2–4 tarjetas por fila (hasta 6 en grilla). `color` las rellena con un color del evento; charcoal pasa el texto a blanco. `face` agrega una cara asomando en la esquina. |
-| `Steps items` | Secuencia numerada con línea superior: flujos, demos, recetas (3–4 pasos). |
+| `Steps items columns` | Secuencia numerada con línea superior: flujos, demos, recetas (3–4 pasos). `columns={1}` la apila en vertical. |
 | `Crowd faces marks` | Multitud de caras posicionadas en `cqw` (ver `crowd.ts`). Se mueve solo con `ambientMotion`. |
+| `lookAt`, `speakerCluster`, `closingCrowd` (`crowd.ts`) | Hacen que las caras miren algo: un título, la cara del speaker. Úsalos en vez de calcular `gaze` a mano. |
 | `DevDayCoverSlide`, `TalkCover`, `SpeakerIntro`, `DraftSlide`, `ClosingSlide` | Slides completas que usa `defineTalk`. |
 
 `useSlideInfo()` devuelve `{ deckTitle, speaker, number, total }` dentro de una charla si necesitás el número o la cara en otro lugar.
@@ -64,7 +65,11 @@ Motor portado de devday (`src/devday/faces.ts`): un círculo y dos ojos geométr
 
 ## Composición
 
-- Portada de charla: pill del anuncio + OpenAI arriba, título abajo a la izquierda (máx. ~58cqw), speaker con cara chica, cara grande del speaker cortada a la derecha.
+- Portada de charla: OpenAI + nombre del evento arriba, pill del anuncio y título abajo a la izquierda (máx. ~50cqw), speaker con cara chica; a la derecha la cara grande del speaker rodeada de otras que la miran (`speakerCluster`).
+- Speaker: nombre grande a la izquierda y un badge DevDay a la derecha (tarjeta inclinada con la cara o el retrato, marcas <3 y !!! y la franja «SPEAKER · fecha»).
+- Borrador: un recuadro punteado con grilla de puntos, el texto pendiente y un esqueleto de layout; la cara del speaker se asoma por arriba.
+- Cierre: «¿Preguntas?» grande y una fila de caras en el borde inferior mirándolo (`closingCrowd`).
+- Interfaz recreada (como el teléfono de «Participá»): dibujala en HTML/CSS con colores fijos de la app y marcala con una pill «Ejemplo».
 - Contenido: eyebrow + heading arriba, la explicación visual (Cards, Steps, diagrama, interfaz recreada) anclada abajo con `margin-top: auto`.
 - Frase grande: solo `dd-display` + `dd-lead`, centrado verticalmente (ver `.dd-closing`).
 - Espacio en blanco generoso; una sola cosa protagonista por slide.

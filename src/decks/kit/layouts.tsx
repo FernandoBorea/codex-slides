@@ -1,11 +1,11 @@
 import type { CSSProperties, ReactNode } from "react";
-import { Face } from "../../devday/Face";
+import { Face, Mark } from "../../devday/Face";
 import { AiLabsLogo, CodexWordmark, OpenAIWordmark } from "../../devday/Brand";
 import { DEVDAY_EVENT } from "../../devday/event";
 import { firstName, type Speaker } from "../../devday/speakers";
 import { FACE_PALETTE, type FaceConfig } from "../../devday/faces";
 import { Crowd } from "./Crowd";
-import { coverCrowd, coverMarks } from "./crowd";
+import { closingCrowd, coverCrowd, coverMarks, speakerCluster } from "./crowd";
 import { useSlideInfo } from "./SlideInfo";
 import "./kit.css";
 
@@ -118,9 +118,9 @@ export function Cards({ items, columns = items.length }: { items: CardItem[]; co
 }
 
 /** A numbered sequence: a flow, a demo, a recipe. */
-export function Steps({ items }: { items: { title: string; body?: string }[] }) {
+export function Steps({ items, columns = items.length }: { items: { title: string; body?: string }[]; columns?: number }) {
   return (
-    <ol className="dd-steps" style={{ "--columns": items.length } as CSSProperties}>
+    <ol className="dd-steps" style={{ "--columns": columns } as CSSProperties}>
       {items.map((item, index) => (
         <li key={item.title}>
           <span className="dd-step-number">{String(index + 1).padStart(2, "0")}</span>
@@ -166,26 +166,31 @@ export function DevDayCoverSlide() {
 
 /** Slide 01 of a talk: title, speaker and the announcement it builds on. */
 export function TalkCover({ title, topic, speaker, accent }: { title: string; topic: string; speaker: Speaker; accent: string }) {
+  const cluster = speakerCluster(speaker.face);
   return (
     <SlideFrame className="dd-talk-cover">
+      <Crowd faces={cluster.faces} marks={cluster.marks} className="dd-talk-cover-crowd" />
       <div className="dd-talk-cover-top">
-        <Pill color={accent}>{topic}</Pill>
         <OpenAIWordmark className="dd-talk-cover-openai" />
+        <span className="dd-talk-cover-rule" aria-hidden="true" />
+        <span className="dd-talk-cover-event">
+          {DEVDAY_EVENT.name} {DEVDAY_EVENT.city}
+        </span>
       </div>
+      <Pill color={accent}>{topic}</Pill>
       <h1 className="dd-display">{title}</h1>
       <div className="dd-talk-cover-speaker">
-        <SlideFace face={speaker.face} size={5.2} />
+        <SlideFace face={speaker.face} size={4.6} />
         <div>
           <strong>{speaker.name}</strong>
-          {speaker.role && <span>{speaker.role}</span>}
+          <span>{speaker.role ?? "Speaker"}</span>
         </div>
       </div>
-      <SlideFace face={speaker.face} size={30} className="dd-talk-cover-face" />
     </SlideFrame>
   );
 }
 
-/** "Un gusto, soy…": portrait when there is one, the speaker's face otherwise. */
+/** "Un gusto, soy…": a speaker badge with the portrait when there is one, the face otherwise. */
 export function SpeakerIntro({ speaker, about }: { speaker: Speaker; about: string }) {
   const [first, ...rest] = speaker.name.split(" ");
   return (
@@ -200,9 +205,25 @@ export function SpeakerIntro({ speaker, about }: { speaker: Speaker; about: stri
         <p className="dd-lead">{speaker.role ?? "Speaker · DevDay Exchange San Salvador"}</p>
         <p className="dd-speaker-about">{about}</p>
       </div>
-      <div className="dd-speaker-visual">
-        <SlideFace face={speaker.face} size={speaker.photo ? 12 : 26} className="dd-speaker-face" />
-        {speaker.photo && <img className="dd-speaker-photo" src={speaker.photo} alt={`Retrato de ${speaker.name}`} draggable={false} />}
+      <div className={`dd-badge ${speaker.photo ? "dd-badge--photo" : ""}`}>
+        <span className="dd-badge-mark dd-badge-mark--heart" aria-hidden="true">
+          <Mark kind="heart" color={FACE_PALETTE.blue} />
+        </span>
+        <span className="dd-badge-mark dd-badge-mark--exclaim" aria-hidden="true">
+          <Mark kind="exclaim" color={FACE_PALETTE.green} />
+        </span>
+        {speaker.photo ? (
+          <>
+            <img className="dd-badge-photo" src={speaker.photo} alt={`Retrato de ${speaker.name}`} draggable={false} />
+            <SlideFace face={speaker.face} size={9} className="dd-badge-face" />
+          </>
+        ) : (
+          <SlideFace face={speaker.face} size={23} className="dd-badge-face" />
+        )}
+        <span className="dd-badge-tag">
+          <span>Speaker</span>
+          {DEVDAY_EVENT.date}
+        </span>
       </div>
     </SlideFrame>
   );
@@ -214,24 +235,37 @@ export function DraftSlide({ kicker, title, intro, speaker }: { kicker: string; 
     <SlideFrame className="dd-draft">
       <Eyebrow>{kicker}</Eyebrow>
       <h2 className="dd-heading">{title}</h2>
-      <div className="dd-draft-area">
-        <SlideFace face={{ ...speaker.face, expression: "sleepy", gaze: { x: 0, y: 0.5 } }} size={6} />
-        <div>
-          <strong>Contenido pendiente · {firstName(speaker)}</strong>
-          <p>{intro}</p>
+      <div className="dd-draft-wrap">
+        <SlideFace
+          face={{ ...speaker.face, expression: "curious", rotation: 0, eyeScale: 0.95, gaze: { x: -0.2, y: 0.45 } }}
+          size={8}
+          className="dd-draft-peek"
+        />
+        <div className="dd-draft-area">
+          <div className="dd-draft-text">
+            <span className="dd-draft-tag">Contenido pendiente · {firstName(speaker)}</span>
+            <p>{intro}</p>
+          </div>
+          <div className="dd-draft-ghost" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
         </div>
       </div>
     </SlideFrame>
   );
 }
 
-/** Last slide of a talk: questions and the event hashtag. */
+/** Last slide of a talk: the crowd looks up at the question. */
 export function ClosingSlide({ speaker, title }: { speaker: Speaker; title: string }) {
   return (
-    <SlideFrame className="dd-closing">
+    <SlideFrame className="dd-closing" footer={false}>
+      <Crowd faces={closingCrowd({ x: 40, y: 18 })} className="dd-closing-crowd" />
       <Eyebrow>{title}</Eyebrow>
       <h1 className="dd-display">
-        ¿Preguntas?<SlideFace face={speaker.face} size={9} className="dd-closing-face" />
+        ¿Preguntas?
+        <SlideFace face={{ ...speaker.face, gaze: { x: -0.3, y: 0.35 } }} size={9} className="dd-closing-face" />
       </h1>
       <p className="dd-lead">
         Gracias. Seguimos la conversación en la terraza con <strong>{DEVDAY_EVENT.hashtag}</strong>.

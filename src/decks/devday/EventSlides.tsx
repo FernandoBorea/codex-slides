@@ -91,17 +91,60 @@ export function AgendaSlide() {
 }
 
 export function JoinSlide() {
+  const results = [
+    { label: "Todos los días", value: 46 },
+    { label: "Algunas veces por semana", value: 31 },
+    { label: "Estoy empezando", value: 23 },
+  ];
   return (
     <SlideFrame className="ev-join">
-      <Eyebrow>Participá desde tu teléfono</Eyebrow>
-      <h2 className="dd-heading">Cada charla tiene su guía y sus preguntas.</h2>
-      <Steps
-        items={[
-          { title: "Escaneá el QR", body: "Aparece en pantalla al empezar cada charla. No hace falta registrarte." },
-          { title: "Seguí la guía", body: "Cambia con cada slide. Podés leer a tu ritmo y volver al vivo cuando quieras." },
-          { title: "Respondé", body: "Cuando el speaker abre una encuesta, te llega un aviso y ves los resultados en vivo." },
-        ]}
-      />
+      <div className="ev-join-text">
+        <Eyebrow>Participá desde tu teléfono</Eyebrow>
+        <h2 className="dd-heading">Cada charla tiene su guía y sus preguntas.</h2>
+        <Steps
+          columns={1}
+          items={[
+            { title: "Escaneá el QR", body: "Aparece en pantalla al empezar cada charla. Sin registro." },
+            { title: "Seguí la guía", body: "Cambia con cada slide; podés leer a tu ritmo y volver al vivo." },
+            { title: "Respondé", body: "Te llega un aviso cuando se abre una encuesta y ves los resultados." },
+          ]}
+        />
+      </div>
+      <div className="ev-phone" aria-hidden="true">
+        <div className="ev-phone-screen">
+          <div className="ev-phone-bar">
+            <span className="ev-phone-brand">
+              <Face config={{ ...FACE_PRESETS.squeeze, color: blue }} />
+              DevDay Slides
+            </span>
+            <span className="ev-phone-live">En vivo</span>
+          </div>
+          <div className="ev-phone-who">
+            <Face config={{ ...FACE_PRESETS.curious, color: purple }} />
+            <span>
+              <small>Tu lugar</small>
+              Lobo Valiente
+            </span>
+          </div>
+          <p className="ev-phone-kicker">Bienvenida · 1:00</p>
+          <p className="ev-phone-title">Una tarde para construir con IA</p>
+          <p className="ev-phone-intro">
+            Bienvenido a DevDay Exchange San Salvador, un evento de comunidad organizado por Ai Labs.
+          </p>
+          <div className="ev-phone-poll">
+            <p>¿Cuánto usás IA para construir hoy?</p>
+            {results.map((row) => (
+              <div key={row.label} className="ev-phone-row">
+                <span style={{ width: `${row.value}%` }} />
+                <em>{row.label}</em>
+                <strong>{row.value}%</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+        <span className="ev-phone-note">Ejemplo</span>
+      </div>
+      <SlideFace face={{ ...FACE_PRESETS.happy, color: orange, rotation: -14, gaze: { x: -0.4, y: -0.1 } }} size={7.5} className="ev-join-face" />
     </SlideFrame>
   );
 }
