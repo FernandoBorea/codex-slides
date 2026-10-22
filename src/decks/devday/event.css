@@ -1,0 +1,159 @@
+/* Event opening deck. Prefix: ev- */
+
+/* 01 · Welcome */
+.ev-welcome {
+  justify-content: center;
+  padding-bottom: 7cqw;
+}
+.ev-welcome-openai {
+  position: relative;
+  z-index: 2;
+  width: 10cqw;
+}
+.ev-welcome .dd-display {
+  font-size: 7cqw;
+}
+.ev-welcome .dd-lead {
+  position: relative;
+  z-index: 2;
+  max-width: 46cqw;
+}
+.ev-facts {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8cqw;
+  margin-top: 2.8cqw !important;
+  padding: 0;
+  list-style: none;
+}
+.ev-facts li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8cqw;
+  padding: 0.6cqw 1.3cqw;
+  border: 0.08cqw solid var(--slide-border);
+  border-radius: 999px;
+  color: var(--slide-soft-fg);
+  font-size: 1.15cqw;
+  font-weight: 500;
+}
+.ev-facts-ailabs {
+  width: 6.4cqw;
+}
+
+/* 02 · Announcements */
+.ev-announcements .dd-cards {
+  margin-top: 3cqw;
+}
+.ev-announcements .dd-card {
+  min-height: 12.8cqw;
+}
+
+/* 03 · Agenda */
+.ev-agenda-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-template-rows: repeat(3, auto);
+  column-gap: 3.2cqw;
+  margin-top: auto !important;
+  margin-bottom: 2.8cqw !important;
+  padding: 0;
+  list-style: none;
+}
+.ev-agenda-list li {
+  display: grid;
+  grid-template-columns: 2.6cqw 4.6cqw minmax(0, 1fr);
+  align-items: center;
+  gap: 1.4cqw;
+  padding: 1.5cqw 0;
+  border-top: 0.08cqw solid var(--slide-border);
+}
+.ev-agenda-number {
+  color: var(--slide-muted);
+  font-size: 1.1cqw;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ev-agenda-face {
+  width: 4.6cqw;
+  height: 4.6cqw;
+}
+.ev-agenda-face svg {
+  width: 100%;
+  height: 100%;
+}
+.ev-agenda-list div {
+  display: grid;
+  gap: 0.4cqw;
+}
+.ev-agenda-list strong {
+  font-size: 1.55cqw;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+.ev-agenda-list span:not(.ev-agenda-number, .ev-agenda-face) {
+  color: var(--slide-muted);
+  font-size: 1.1cqw;
+}
+
+/* 05 · After */
+.ev-after {
+  justify-content: center;
+  padding-bottom: 8cqw;
+}
+.ev-hashtag {
+  position: relative;
+  z-index: 2;
+  margin-top: 1.6cqw !important;
+  font-size: 8.4cqw;
+  font-weight: 660;
+  line-height: 0.95;
+  letter-spacing: -0.062em;
+  white-space: nowrap;
+}
+.ev-hash {
+  margin-right: 0.02em;
+  color: var(--slide-green);
+}
+.ev-hashtag-o {
+  display: inline-block;
+  width: 0.62em;
+  height: 0.62em;
+  margin: 0 0.025em 0 0.02em;
+  vertical-align: -0.02em;
+}
+.ev-hashtag-o svg {
+  width: 100%;
+  height: 100%;
+}
+.ev-after .dd-lead {
+  position: relative;
+  z-index: 2;
+}
+.ev-after-brands {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1.8cqw;
+  margin-top: 3cqw;
+}
+.ev-after-brands .dd-pill {
+  align-self: center;
+}
+.ev-after-codex {
+  width: 6cqw;
+}
+.ev-after-ailabs {
+  width: 8.4cqw;
+}
+.ev-after-face {
+  position: absolute;
+  right: 6cqw;
+  bottom: 7cqw;
+  transform: rotate(10deg);
+}

@@ -1,23 +1,12 @@
 import type { Deck } from "./types";
-import { introDeck } from "./intro/deck";
-import { engineeringDeck } from "./engineering/deck";
-import { foundersDeck } from "./founders/deck";
-import { gtmDeck } from "./gtm/deck";
-import { opsDeck } from "./ops/deck";
-import { researchDeck } from "./research/deck";
+import { eventDeck } from "./devday/deck";
+import { talkDecks } from "./talks";
 
 export type { Deck, SlideDefinition } from "./types";
 
-// Each deck contains ordinary, hand-authored React components and its own metadata.
+// The event opening first, then the talks in agenda order (src/decks/talks.ts).
 // Keep slugs and question IDs stable so a fork can use the same live backend.
-export const decks: Deck[] = [
-  introDeck,
-  foundersDeck,
-  engineeringDeck,
-  gtmDeck,
-  opsDeck,
-  researchDeck,
-];
+export const decks: Deck[] = [eventDeck, ...talkDecks];
 
 export function findDeck(slug: string): Deck | undefined {
   return decks.find((deck) => deck.slug === slug);

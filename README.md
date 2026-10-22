@@ -1,8 +1,10 @@
-# Grok bot Slides
+# DevDay Slides · San Salvador
 
-Presentaciones en React con una guía móvil que sigue al presentador, permite explorar a tu ritmo y ofrece preguntas en vivo. Cada slide es su propio componente: puedes cambiar su diseño directamente, copiar un deck o compartir tu variante del proyecto.
+Las slides de **DevDay Exchange San Salvador** (sábado 24 de octubre de 2026, BINAES, organiza Ai Labs): la apertura del evento y seis charlas alrededor de lo que anunció OpenAI en DevDay 2026. Cada slide es un componente React; el público sigue una guía en su teléfono y responde encuestas en vivo.
 
-El frontend usa **React 19, TypeScript, TanStack Router y Vite**. Es una SPA; no usa TanStack Start ni SSR. Convex conserva las sesiones y sincroniza a los participantes cuando está configurado. La biblioteca y el recorrido de demostración funcionan también sin Convex.
+Esta rama rehace la UI de Grok bot Slides con la identidad de DevDay: las caras del evento en lugar de los bots, Geist, lienzo blanco, OpenAI y Codex como referencia y Ai Labs como organizador. La lógica de sesiones, encuestas y Convex es la misma.
+
+El frontend usa **React 19, TypeScript, TanStack Router y Vite**. Es una SPA. Convex conserva las sesiones y sincroniza a los participantes cuando está configurado; la biblioteca y las presentaciones funcionan también sin Convex.
 
 ## Empezar
 
@@ -13,55 +15,42 @@ npm install
 npm run dev
 ```
 
-Abre la dirección que imprime Vite, normalmente `http://localhost:5173`. No hace falta crear un proyecto de Convex para explorar la biblioteca, presentar, abrir el QR o probar las preguntas.
+Abrí la dirección que imprime Vite, normalmente `http://localhost:5173`. No hace falta un proyecto de Convex para explorar la biblioteca, presentar, abrir el QR o probar las preguntas.
 
-El repositorio incluye los archivos generados de Convex en `convex/_generated/`, incluidas las referencias de API y los builders del servidor. Puedes clonar, instalar y compilar el proyecto sin configurar variables de entorno; en ese caso se utiliza el modo local. `npm run convex:dev` actualiza esos archivos al conectar o modificar el backend.
-
-Sin `VITE_CONVEX_URL`, aparece **«No ha sido configurado Convex»**. El modo local guarda la sesión en el navegador y sincroniza pestañas del **mismo origen y perfil de navegador**. No conecta otros móviles, otros navegadores, perfiles privados ni direcciones distintas. Para probar, usa **Abrir vista del público** desde el modal del QR; verás una identidad de participante de prueba compartida por las pestañas de ese navegador.
+Sin `VITE_CONVEX_URL` aparece **«No ha sido configurado Convex»**: el modo local guarda la sesión en el navegador y sincroniza pestañas del **mismo origen y perfil de navegador**. No conecta otros teléfonos. Para probar, usá **Abrir vista del público** desde el modal del QR.
 
 ## Qué incluye
 
-| Deck                                | Slug                                    | Slides |
-| ----------------------------------- | --------------------------------------- | -----: |
-| Grok bot Meetup                     | `grok-bot-101`                          |      6 |
-| Grok Bot for Founders               | `grok-bot-for-founders`                 |     12 |
-| Grok Bot for Engineering            | `grok-bot-for-engineering`              |     21 |
-| Grok bot for GTM                    | `grok-bot-for-gtm`                      |     12 |
-| Grok Bot for Ops                    | `grok-bot-for-ops`                      |      9 |
-| Grok Bot for Research & Experiments | `grok-bot-for-research-and-experiments` |      4 |
+| Deck | Slug | Speaker | Slides |
+| --- | --- | --- | ---: |
+| DevDay Exchange San Salvador (apertura) | `devday-exchange-san-salvador` | Ai Labs | 6 |
+| Sol o Astra: elegir modelo cuando vos pagás la cuenta | `sol-o-astra` | Fernando Borea | 10 |
+| Dots: agentes que siguen trabajando cuando cerrás la laptop | `dots` | Daniela Huezo | 10 |
+| Agents API: automatizar lo que solo existe en una pantalla | `agents-api` | Saul Calderon | 10 |
+| Decisions API: muchas decisiones pequeñas, bien tomadas | `decisions-api` | Frank Calderon | 10 |
+| Codex en la nube: el backlog avanza sin tu laptop | `codex-en-la-nube` | Rodrigo Garciaguirre | 10 |
+| Notion × Codex: del spec al pull request | `notion-codex` | Walter Morales | 11 |
 
-Los seis decks incluyen 64 slides con componentes React y guías. Todos agregan la misma portada animada 00 de SpaceXAI y AI Labs, sin encuesta y fuera del tiempo de exposición. Las portadas originales siguen como slide 01. Meetup reutiliza su espera existente sin duplicarla. **Grok bot Meetup** abre el evento con un fondo animado y cinco slides habladas que suman 2 minutos y 30 segundos: bienvenida, organización de AI Labs junto con SpaceXAI, contexto, agenda y primeros pasos. Funciona sin sesiones, preguntas ni Convex. Su [guion](docs/meetup-talk.md) incluye tiempos, fuentes e instrucciones locales. Engineering contiene 21 slides (portada 00 y veinte slides de charla): 25 minutos de presentación con interacción y 5 de preguntas. Dedica cinco slides y 7:30 a explicar Grok Bot desde cero: computadora cloud, rol y memoria, encargos revisables, rutinas y colaboración. Después presenta la plantilla de Walter para usarlo como punto de entrada de un producto, con PO, Research, Builder y QE colaborando durante el ciclo de desarrollo. La introducción se apoya en la página de xAI y la documentación oficial enlazadas en el guion. Cada slide de la charla tiene una pregunta de apertura manual y notas del ponente separadas de la guía móvil. Los ejemplos de definición, seguimiento y corrección son ilustrativos; pstack aparece brevemente como apoyo para procedimientos reutilizables. GTM contiene la portada 00 y once slides en español centradas en investigación comercial, seguimiento de cambios y preparación del siguiente paso con Grok Bot; el [guion de GTM](docs/gtm-talk.md) recoge tiempos y fuentes. Founders contiene la portada 00 y once slides sobre operación, procesos, contexto compartido y prototipos; el [guion de Founders](docs/founders-talk.md) acompaña su recorrido. Ops contiene la portada 00 y ocho slides para una charla de 15 minutos sobre planificación semanal y ejecución, con Google Calendar, fuentes conectadas mediante plugins o MCP y capturas reales de Saul; el [guion de Ops](docs/ops-talk.md) recoge tiempos y fuentes. Ops tiene preguntas solo en la apertura y el cierre. Research contiene la portada 00, su bienvenida original, un concepto y un ejercicio. Los metadatos viven en el `deck.ts` de cada carpeta; `src/decks/index.ts` establece el orden de la biblioteca. El [guion de Engineering](docs/engineering-talk.md) recoge los tiempos y las fuentes.
+Todos los decks empiezan con la misma portada de espera **00** (la multitud de caras del holding screen de DevDay, OpenAI DevDay Exchange, Codex y Ai Labs), sin encuesta y fuera del tiempo de charla.
 
-La vista del moderador muestra la slide actual, miniaturas, navegación por teclado, notas del ponente y resultados en tiempo real. **Abrir proyección** abre una ventana independiente en `/screen/<deck>/<sessionId>`; podés llevarla a otra pantalla y activar pantalla completa allí. Convex sincroniza la slide, el tema, el QR y las respuestas. La proyección sigue la sesión en modo de lectura, incluso si se abre desde el mismo navegador del moderador.
+La **apertura** está completa y sirve de ejemplo del sistema visual: bienvenida, los seis anuncios de DevDay en tarjetas, la agenda (leída de las charlas), cómo participar desde el teléfono y el cierre con `#DevDayCommunity`.
 
-La proyección mantiene 16:9. Al abrir una encuesta, sus resultados se actualizan automáticamente en la proyección y los teléfonos. Cerrar la encuesta conserva el conteo, que también aparece al volver a una pregunta con respuestas.
+Cada **charla** dura 15 minutos y tiene la misma estructura: 01 portada con encuesta de apertura, 02 speaker, seis o siete slides de contenido con **título, kicker, tiempo y guía ya definidos**, y una slide final de preguntas. Las slides de contenido son borradores: muestran su título y un recuadro «Contenido pendiente» hasta que el speaker pasa su propio componente. La biblioteca muestra cuántas slides faltan en cada charla. La asignación de speakers es una propuesta que se cambia en el `deck.ts` de cada charla.
 
-La vista móvil entra **En vivo** y cambia de guía junto con el presentador. Usar las flechas pausa ese seguimiento para leer a tu ritmo; **Volver al vivo** lo reanuda. Una bienvenida al entrar por primera vez en cada sesión explica la navegación y las encuestas; **Cómo funciona** permite consultarla de nuevo.
+Para armar una charla, usá la skill [`devday-slides`](.agents/skills/devday-slides/SKILL.md) o seguí [cómo personalizar los decks](docs/customize.md).
 
-Al abrirse una encuesta aparece un aviso dentro de la guía, incluso si estás leyendo otra slide. **Responder** vuelve al vivo y lleva el foco a la pregunta; el aviso permanece hasta pulsar ese botón, descartarlo o cerrar la encuesta. Las notas del ponente se excluyen del manifiesto que recibe el público; son material del frontend, no un almacén de información confidencial.
+## Presentar
 
-## Probar una presentación
-
-Para compartir las slides después del evento, usá **Ver slides** en la biblioteca o `/slides/<deck>`, por ejemplo `/slides/grok-bot-for-engineering`. Esa vista muestra las diapositivas completas y permite avanzar, elegir una slide, cambiar el tema y usar pantalla completa, sin sesión, encuestas, notas privadas ni conexión a Convex. El botón **Copiar enlace** conserva la slide actual con `?slide=<slug>`. El panel **Compartir** de una sesión también incluye el enlace permanente del deck. Refleja la versión publicada más reciente.
-
-La portada compartida es la **00**. Las slides de la charla empiezan en **01** y conservan sus preguntas; la portada de espera no tiene encuesta ni consume tiempo de exposición.
-
-Para el meetup, abrí `/deck/grok-bot-101`: se presenta directamente, sin crear una sesión. La primera slide tiene pausa/reanudación del loop y una versión estática al activar movimiento reducido en el sistema. Para probar exclusivamente en esta Mac, arrancá con:
-
-```bash
-VITE_CONVEX_URL= VITE_PUBLIC_URL= npm run dev -- --host 127.0.0.1 --port 4173
-```
-
-Abrí [el meetup local](http://127.0.0.1:4173/deck/grok-bot-101?slide=espera). La guía queda disponible en el panel del presentador. Los siguientes pasos de participación corresponden a los otros decks:
+La vista del moderador (`/deck/<slug>`) muestra la slide actual, miniaturas, navegación por teclado, notas y resultados en tiempo real. **Abrir proyección** abre `/screen/<deck>/<sessionId>` en otra ventana. Las slides se proyectan en tema claro (blanco DevDay) y el selector sol/luna cambia al tema oscuro del evento.
 
 1. Abrí un deck y pulsá **Iniciar presentación**.
-2. Pulsá **Abrir proyección**, mové la nueva ventana a la pantalla de la audiencia y activá pantalla completa allí. Conservá el moderador en tu pantalla.
-3. Usá **Mostrar QR en proyección** para invitar al público. **Compartir** abre el enlace y el QR en el moderador; copiar y abrir usan la misma URL que el código. Con Convex y una dirección accesible, las personas ingresan desde sus teléfonos sin registro.
-4. Abrí una encuesta. El público recibe un aviso en su guía y los resultados se actualizan automáticamente en el moderador, la proyección y los móviles. **Cerrar encuesta** conserva los votos y el conteo. Las personas pueden actualizar su voto mientras esté abierta.
-5. Avanzá con miniaturas, botones o teclado. El cambio cierra la encuesta y oculta el QR. Los votos se conservan por slide y sus resultados vuelven a mostrarse al regresar a esa pregunta. El público sigue los cambios de slide por defecto; puede pausar con las flechas y reanudar con **Volver al vivo**.
-6. Pulsá **Finalizar** para cerrar la sesión. La proyección muestra el cierre; el público conserva las guías, pero ya no puede votar. Recargar una ventana recupera el estado de la misma sesión.
+2. Pulsá **Abrir proyección**, llevá la ventana a la pantalla de la audiencia y activá pantalla completa.
+3. Usá **Mostrar QR en proyección** para invitar al público. Con Convex y una dirección accesible, las personas entran desde sus teléfonos sin registro.
+4. Abrí la encuesta de la portada. Los resultados se actualizan en el moderador, la proyección y los teléfonos.
+5. Avanzá con miniaturas, botones o teclado (Espacio, flechas, Home/End). El público sigue al presentador y puede leer a su ritmo con **Volver al vivo**.
+6. Pulsá **Finalizar** para cerrar la sesión.
 
-También funcionan Espacio para avanzar y Home/End para ir al principio/final, cuando el foco no está en un control interactivo.
+Para compartir después del evento, usá **Ver slides** o `/slides/<deck>`, por ejemplo `/slides/notion-codex`: muestra las slides completas sin sesión, encuestas ni notas.
 
 ## Conectar Convex
 
@@ -139,7 +128,7 @@ Conecta el repositorio desde `vercel git connect` si quieres publicar automátic
 
 Despliega el backend con `npm run convex:deploy`. Configura `VITE_CONVEX_URL` con su URL de **producción**, junto con el workspace y el origen público, antes de ejecutar `npm run build`.
 
-El frontend estático está en `dist/client`. El hosting debe servir `index.html` para las rutas de la aplicación, como `/deck/grok-bot-for-engineering`, `/present/...`, `/screen/...` y `/join/...`, incluso al abrirlas directamente o recargar. Conserva los 404 para assets que no existen. La configuración incluida para Sites añade `dist/server/index.js` con ese fallback; otro hosting debe configurar una reescritura SPA equivalente. La aplicación espera publicarse en la raíz de su dominio.
+El frontend estático está en `dist/client`. El hosting debe servir `index.html` para las rutas de la aplicación, como `/deck/notion-codex`, `/present/...`, `/screen/...` y `/join/...`, incluso al abrirlas directamente o recargar. Conserva los 404 para assets que no existen. La configuración incluida para Sites añade `dist/server/index.js` con ese fallback; otro hosting debe configurar una reescritura SPA equivalente. La aplicación espera publicarse en la raíz de su dominio.
 
 También puedes compilar con la URL de producción inyectada por la CLI:
 
@@ -151,14 +140,11 @@ Después publica el frontend generado en tu hosting. Desplegar Convex no publica
 
 ## Estructura y procedencia
 
-- `src/decks/`: componentes de slides, registro de decks, guías y preguntas.
-- `src/pages/`: biblioteca, presentador y público.
-- `src/router.tsx`: rutas de TanStack Router, definidas en código.
-- `src/live/`: contrato de sesión, reglas y transportes local/Convex.
-- `convex/`: esquema y funciones de sesiones, participantes y votos.
-- `convex/_generated/`: referencias de API, tipos y builders generados por la CLI; están incluidos para que la demo local compile sin configuración adicional.
-- `src/bot/` y `src/components/Bot.tsx`: geometría de bots y componente SVG estático.
+- `src/decks/devday/`: apertura del evento.
+- `src/decks/<charla>/deck.ts`: cada charla, armada con `defineTalk`; `src/decks/talks.ts` fija el orden de la agenda.
+- `src/decks/kit/`: kit visual compartido (portadas, speaker, borrador, cierre, `SlideFrame`, `Cards`, `Steps`, `Crowd`).
+- `src/devday/`: motor de caras, speakers, datos del evento y logos.
+- `src/pages/` y `src/components/`: biblioteca, presentador, proyección y público.
+- `src/live/` y `convex/`: contrato de sesión, reglas y transportes local/Convex (sin cambios respecto de Grok bot Slides).
 
-Los bots se extrajeron del proyecto local **bloub**, referido como Flow en el pedido original. Se conservó su geometría y licencia MIT, sin importar el editor ni su motor de animación/renderizado. La extracción está documentada en [Procedencia de los bots](docs/bot-origin.md).
-
-Las rutas usan las APIs `createRootRoute`, `createRoute` y `createRouter` de [TanStack Router con rutas definidas en código](https://tanstack.com/router/latest/docs/routing/code-based-routing).
+El motor de caras (`src/devday/faces.ts` y `Face.tsx`) se copió del repositorio `devday` (`src/lib/faces.ts`, `src/components/Face.tsx`), que también provee la paleta, el wordmark de Codex y los logos de OpenAI y Ai Labs. Ver [public/brand/README.md](public/brand/README.md).

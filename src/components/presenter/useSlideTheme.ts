@@ -4,12 +4,12 @@ export type SlideTheme = "dark" | "light";
 
 /** The deck's projection preference never changes the application theme. */
 export function useSlideTheme(deckSlug: string) {
-  const key = `grok-slides:theme:${deckSlug}`;
+  const key = `devday-slides:theme:${deckSlug}`;
   const [theme, setTheme] = useState<SlideTheme>(() => {
     try {
-      return localStorage.getItem(key) === "light" ? "light" : "dark";
+      return localStorage.getItem(key) === "dark" ? "dark" : "light";
     } catch {
-      return "dark";
+      return "light";
     }
   });
 

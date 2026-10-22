@@ -1,0 +1,440 @@
+/*
+ * DevDay slide kit. Everything is sized in cqw (1cqw = 1% of the slide width)
+ * so slides scale the same on stage, projection and thumbnails.
+ * Shape rule from the DevDay site: pills for tags, ~1.2cqw radius for cards.
+ */
+
+/* ---------- Type ---------- */
+.dd-slide {
+  --dd-radius: 1.2cqw;
+  letter-spacing: -0.01em;
+}
+.dd-eyebrow {
+  color: var(--slide-muted);
+  font-size: 1.15cqw;
+  font-weight: 550;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.dd-display {
+  position: relative;
+  z-index: 2;
+  margin-top: 2.4cqw !important;
+  max-width: 72cqw;
+  font-size: 6.6cqw;
+  font-weight: 640 !important;
+  line-height: 0.96;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+.dd-heading {
+  position: relative;
+  z-index: 2;
+  margin-top: 1.6cqw !important;
+  max-width: 76cqw;
+  font-size: 4.3cqw;
+  font-weight: 620 !important;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+.dd-lead {
+  margin-top: 2.2cqw !important;
+  max-width: 52cqw;
+  color: var(--slide-muted);
+  font-size: 1.75cqw;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+.dd-lead strong {
+  color: var(--slide-fg);
+  font-weight: 600;
+}
+
+/* ---------- Pills, faces ---------- */
+.dd-pill {
+  --pill: var(--slide-fg);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6cqw;
+  align-self: flex-start;
+  padding: 0.55cqw 1.2cqw;
+  border: 0.08cqw solid var(--slide-border);
+  border-radius: 999px;
+  color: var(--slide-soft-fg);
+  font-size: 1.05cqw;
+  font-weight: 550;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.dd-pill::before {
+  content: "";
+  width: 0.7cqw;
+  height: 0.7cqw;
+  border-radius: 50%;
+  background: var(--pill);
+}
+.dd-face {
+  display: block;
+  flex: none;
+  width: var(--size);
+  height: var(--size);
+}
+
+/* ---------- Footer ---------- */
+.dd-footer {
+  position: absolute;
+  right: 6cqw;
+  bottom: 2.6cqw;
+  left: 6cqw;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2cqw;
+  color: var(--slide-muted);
+  font-size: 0.95cqw;
+  line-height: 1.4;
+}
+.dd-footer-who,
+.dd-footer-event {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8cqw;
+  min-width: 0;
+}
+.dd-footer-face {
+  width: 1.6cqw;
+  height: 1.6cqw;
+  flex: none;
+}
+.dd-footer-number {
+  margin-left: 1cqw;
+  color: var(--slide-fg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.dd-footer-number span {
+  color: var(--slide-muted);
+  font-weight: 400;
+}
+
+/* ---------- Cards and steps ---------- */
+.dd-cards {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  gap: 1.2cqw;
+  margin-top: auto;
+  margin-bottom: 2.6cqw;
+}
+.dd-card {
+  --card: var(--slide-surface);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8cqw;
+  min-height: 15cqw;
+  padding: 1.9cqw 2cqw;
+  border-radius: var(--dd-radius);
+  background: var(--slide-surface);
+}
+.dd-card--filled {
+  background: var(--card);
+  color: #0b0b0a;
+}
+.dd-card h3 {
+  font-size: 1.9cqw;
+  font-weight: 620;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+.dd-card p {
+  max-width: 24cqw;
+  color: var(--slide-muted);
+  font-size: 1.25cqw;
+  line-height: 1.5;
+}
+.dd-card--filled p {
+  color: rgb(11 11 10 / 0.72);
+}
+.dd-card-tag {
+  font-size: 0.95cqw;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.dd-card-face {
+  position: absolute;
+  right: -1.3cqw;
+  bottom: -1.5cqw;
+}
+
+.dd-steps {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  gap: 2.4cqw;
+  margin-top: auto !important;
+  margin-bottom: 3cqw !important;
+  padding: 0;
+  list-style: none;
+}
+.dd-steps li {
+  display: grid;
+  align-content: start;
+  gap: 0.9cqw;
+  padding-top: 1.4cqw;
+  border-top: 0.12cqw solid var(--slide-fg);
+}
+.dd-step-number {
+  color: var(--slide-muted);
+  font-size: 1.05cqw;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.dd-steps h3 {
+  font-size: 2cqw;
+  font-weight: 620;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+.dd-steps p {
+  color: var(--slide-muted);
+  font-size: 1.3cqw;
+  line-height: 1.5;
+}
+
+/* ---------- Crowd (decorative faces) ---------- */
+.dd-crowd {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.dd-crowd-item {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--size);
+  height: var(--size);
+  translate: -50% -50%;
+}
+.dd-crowd-item svg {
+  width: 100%;
+  height: 100%;
+}
+[data-motion-enabled="true"] .dd-crowd-item {
+  animation: dd-bob 5.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: calc(var(--i) * -0.73s);
+  animation-play-state: paused;
+}
+[data-motion-state="running"] .dd-crowd-item {
+  animation-play-state: running;
+}
+@keyframes dd-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-0.6cqw) rotate(-3deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-motion-enabled="true"] .dd-crowd-item {
+    animation: none;
+  }
+}
+
+/* ---------- 00 · Holding cover ---------- */
+.dd-cover {
+  padding: 0;
+}
+.dd-cover-title {
+  position: absolute;
+  left: 17cqw;
+  right: 12cqw;
+  top: 38.4cqw;
+  display: grid;
+  grid-template-columns: 30cqw 1fr;
+  align-items: start;
+}
+.dd-cover-openai {
+  width: 15.6cqw;
+  margin-top: 0.4cqw;
+}
+.dd-cover-title h1 {
+  font-size: 4.3cqw;
+  font-weight: 640;
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+.dd-cover-meta {
+  position: absolute;
+  left: 3cqw;
+  right: 3cqw;
+  bottom: 2.4cqw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--slide-muted);
+  font-size: 1.05cqw;
+  font-weight: 500;
+}
+.dd-cover-brands {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.3cqw;
+}
+.dd-cover-codex {
+  width: 5.4cqw;
+}
+.dd-cover-rule {
+  width: 0.08cqw;
+  height: 1.8cqw;
+  background: var(--slide-border);
+}
+.dd-cover-ailabs {
+  width: 8.4cqw;
+}
+
+/* ---------- 01 · Talk cover ---------- */
+.dd-talk-cover-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.dd-talk-cover-openai {
+  width: 8.6cqw;
+}
+.dd-talk-cover .dd-display {
+  max-width: 58cqw;
+  margin-top: auto !important;
+  font-size: 6cqw;
+}
+.dd-talk-cover-speaker {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1.4cqw;
+  margin: 3.4cqw 0 3.2cqw;
+}
+.dd-talk-cover-speaker div {
+  display: grid;
+  gap: 0.2cqw;
+}
+.dd-talk-cover-speaker strong {
+  font-size: 1.7cqw;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.dd-talk-cover-speaker span {
+  color: var(--slide-muted);
+  font-size: 1.25cqw;
+}
+.dd-talk-cover-face {
+  position: absolute;
+  right: -3cqw;
+  top: 9cqw;
+  z-index: 1;
+  transform: rotate(-8deg);
+}
+
+/* ---------- 02 · Speaker ---------- */
+.dd-speaker {
+  flex-direction: row;
+  align-items: stretch;
+  gap: 4cqw;
+}
+.dd-speaker-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  padding-bottom: 2cqw;
+}
+.dd-speaker .dd-display {
+  font-size: 7cqw;
+}
+.dd-speaker-about {
+  margin-top: 2.4cqw !important;
+  max-width: 44cqw;
+  padding-top: 1.6cqw;
+  border-top: 0.08cqw solid var(--slide-border);
+  font-size: 1.5cqw;
+  line-height: 1.5;
+}
+.dd-speaker-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34cqw;
+  flex: none;
+}
+.dd-speaker-photo {
+  position: absolute;
+  inset: auto 0 -4.6cqw;
+  width: 100%;
+  height: 46cqw;
+  object-fit: contain;
+  object-position: bottom center;
+}
+.dd-speaker-visual:has(.dd-speaker-photo) .dd-speaker-face {
+  position: absolute;
+  top: 2cqw;
+  right: 0;
+  z-index: 2;
+}
+
+/* ---------- Draft (title ready, content pending) ---------- */
+.dd-draft-area {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 2cqw;
+  margin-top: auto;
+  margin-bottom: 2.8cqw;
+  min-height: 14cqw;
+  padding: 2.4cqw 2.8cqw;
+  border: 0.14cqw dashed var(--slide-border);
+  border-radius: var(--dd-radius);
+  color: var(--slide-muted);
+}
+.dd-draft-area strong {
+  display: block;
+  margin-bottom: 0.6cqw;
+  color: var(--slide-fg);
+  font-size: 1.35cqw;
+  font-weight: 600;
+}
+.dd-draft-area p {
+  max-width: 62cqw;
+  font-size: 1.4cqw;
+  line-height: 1.5;
+}
+
+/* ---------- Closing ---------- */
+.dd-closing {
+  justify-content: center;
+  padding-bottom: 8cqw;
+}
+.dd-closing .dd-display {
+  display: flex;
+  align-items: center;
+  gap: 2.4cqw;
+  font-size: 9cqw;
+}
+.dd-card--night {
+  color: #f6f6ef;
+}
+.dd-card--night p {
+  color: rgb(246 246 239 / 0.72);
+}
+
+/* Charcoal faces would vanish on the night background: outline them in dark mode. */
+[data-slide-theme="dark"] .dd-slide circle[fill="#272725"] {
+  stroke: #6b6d62;
+  stroke-width: 1.2;
+}

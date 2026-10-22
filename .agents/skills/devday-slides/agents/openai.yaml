@@ -1,0 +1,4 @@
+interface:
+  display_name: "DevDay Slides"
+  short_description: "Arma y revisa las slides de DevDay Exchange San Salvador"
+  default_prompt: "Usá $devday-slides para completar las slides de mi charla con el kit visual de DevDay, respetando títulos, tiempos y guía móvil."
