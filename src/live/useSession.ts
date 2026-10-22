@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLiveTransport } from "./LiveProvider";
 import { emptySnapshot } from "./types";
-import type { SessionSnapshot } from "./types";
+import type { SessionSnapshot, SubscriptionOptions } from "./types";
 
-export function useSession(sessionId: string) {
+export function useSession(sessionId: string, options?: SubscriptionOptions) {
   const transport = useLiveTransport();
+  const publicOnly = options?.publicOnly ?? false;
   const [snapshot, setSnapshot] = useState<SessionSnapshot>(emptySnapshot);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,22 +25,28 @@ export function useSession(sessionId: string) {
         setIsLoading(false);
         setError(reason.message);
       },
+      { publicOnly },
     );
-  }, [sessionId, transport]);
+  }, [publicOnly, sessionId, transport]);
 
-  const run = useCallback(async (action: () => Promise<void>) => {
-    setError(null);
-    try {
-      await action();
-    } catch (reason) {
-      const failure =
-        reason instanceof Error
-          ? reason
-          : new Error("No pudimos completar esta acción.");
-      setError(failure.message);
-      throw failure;
-    }
-  }, []);
+  const run = useCallback(
+    async (action: () => Promise<void>) => {
+      setError(null);
+      try {
+        if (publicOnly)
+          throw new Error("La vista de proyección es de solo lectura.");
+        await action();
+      } catch (reason) {
+        const failure =
+          reason instanceof Error
+            ? reason
+            : new Error("No pudimos completar esta acción.");
+        setError(failure.message);
+        throw failure;
+      }
+    },
+    [publicOnly],
+  );
 
   const join = useCallback(
     () => run(() => transport.join(sessionId)),
@@ -69,6 +76,16 @@ export function useSession(sessionId: string) {
     () => run(() => transport.update(sessionId, { type: "end" })),
     [run, sessionId, transport],
   );
+  const setQrVisible = useCallback(
+    (visible: boolean) =>
+      run(() => transport.update(sessionId, { type: "qr", visible })),
+    [run, sessionId, transport],
+  );
+  const setProjectionTheme = useCallback(
+    (theme: "light" | "dark") =>
+      run(() => transport.update(sessionId, { type: "theme", theme })),
+    [run, sessionId, transport],
+  );
   const vote = useCallback(
     (optionIds: string[], expectedSlideSlug: string) =>
       run(() => transport.vote(sessionId, optionIds, expectedSlideSlug)),
@@ -83,6 +100,8 @@ export function useSession(sessionId: string) {
     navigate,
     setQuestionOpen,
     setShowResults,
+    setQrVisible,
+    setProjectionTheme,
     endSession,
     vote,
   };

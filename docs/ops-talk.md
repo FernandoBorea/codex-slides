@@ -4,6 +4,7 @@ Charla de 15 minutos para una audiencia mixta: estudiantes, operators, founders 
 
 | Slide                                    | Tiempo | Acumulado | Guía del presentador                                                                                                                                                          |
 | ---------------------------------------- | ------ | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 00. SpaceXAI × AI Labs | Espera | — | Portada sin encuesta, fuera del tiempo de exposición. |
 | 1. Grok Bot for Ops                      | 1:00   | 1:00      | Presentar el recorrido. Encuesta: ¿con qué organizas tu tiempo hoy?                                                                                                           |
 | 2. Saul Calderon                         | 0:30   | 1:30      | AI Product Engineer y SpaceXAI Ambassador. Así organizo mi semana.                                                                                                            |
 | 3. Nos perdemos en el plan               | 1:30   | 3:00      | El fallo no es solo tener muchas fuentes: es planificar y no ejecutar.                                                                                                        |

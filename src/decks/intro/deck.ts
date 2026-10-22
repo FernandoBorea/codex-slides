@@ -1,5 +1,5 @@
 import type { Deck } from "../types";
-import { AmbientLoopSlide } from "./AmbientLoopSlide";
+import { meetupCoverSlide } from "./meetupCover";
 import {
   MeetupAgendaSlide,
   MeetupContextSlide,
@@ -17,20 +17,9 @@ export const introDeck: Deck = {
   duration: "2 min 30 s",
   accent: "#1688ff",
   presentationMode: "standalone",
+  firstSlideNumber: 0,
   slides: [
-    {
-      slug: "espera",
-      title: "Grok bot Meetup",
-      kicker: "Antes de empezar · Loop de espera",
-      component: AmbientLoopSlide,
-      ambientMotion: true,
-      guide: {
-        intro:
-          "Bienvenido al primer meetup de SpaceXAI en El Salvador. AI Labs organiza esta iniciativa junto con SpaceXAI para explorar qué podemos hacer con Grok bot.",
-        takeaway:
-          "En unos momentos empezamos con una bienvenida breve y seguimos con charlas y demos por área.",
-      },
-    },
+    meetupCoverSlide,
     {
       slug: "bienvenida",
       title: "Bienvenidos, El Salvador",

@@ -28,33 +28,8 @@
 .meetup-brand-static .meetup-logo--spacexai {
   width: 32cqw;
 }
-.meetup-partner-logos {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3cqw;
-  background: var(--slide-bg);
-}
-.meetup-partner-logo {
-  display: block;
-  width: 19cqw;
-  height: 19cqw;
-  object-fit: contain;
-  mix-blend-mode: screen;
-}
-.meetup-partner-logo--ufm {
-  filter: invert(1) hue-rotate(180deg);
-}
-.meetup-partner-logo--u3 {
-  filter: invert(1);
-}
-.meetup-brand-static .meetup-partner-logo {
-  width: 13cqw;
-  height: 13cqw;
-}
-[data-slide-theme="light"] .meetup-partner-logo {
-  filter: none;
-  mix-blend-mode: multiply;
+.meetup-brand-static .meetup-logo--ailabs {
+  width: 22cqw;
 }
 .meetup-brand-cross {
   color: var(--slide-muted);
@@ -84,6 +59,9 @@
 }
 .meetup-mark--partners {
   opacity: 0;
+}
+.meetup-mark--partners .meetup-logo {
+  width: 32cqw;
 }
 .meetup-community {
   position: absolute;

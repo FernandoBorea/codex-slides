@@ -3,17 +3,19 @@ import {
   CaretRight,
   CornersIn,
   CornersOut,
-  QrCode,
+  ShareNetwork,
   Sun,
   Moon,
   Pause,
   Play,
 } from "@phosphor-icons/react";
 import type { SlideTheme } from "./useSlideTheme";
+import { formatSlideNumber } from "../../decks/slideNumbers";
 
 type SlideControlsProps = {
   activeIndex: number;
   slideCount: number;
+  firstSlideNumber?: 0 | 1;
   title: string;
   busy: boolean;
   ended: boolean;
@@ -33,6 +35,7 @@ type SlideControlsProps = {
 export function SlideControls({
   activeIndex,
   slideCount,
+  firstSlideNumber = 1,
   title,
   busy,
   ended,
@@ -56,8 +59,8 @@ export function SlideControls({
   return (
     <div className="slide-controlbar">
       <span className="slide-position">
-        <strong>{String(activeIndex + 1).padStart(2, "0")}</strong>
-        <span>/ {String(slideCount).padStart(2, "0")}</span>
+        <strong>{formatSlideNumber(activeIndex, firstSlideNumber)}</strong>
+        <span>/ {formatSlideNumber(slideCount - 1, firstSlideNumber)}</span>
         <span className="current-slide-name">{title}</span>
       </span>
       <div className="slide-controls">
@@ -83,15 +86,19 @@ export function SlideControls({
             className="icon-button"
             aria-label={motionLabel}
             aria-pressed={motionPaused || reducedMotion}
-            title={reducedMotion
-              ? "Animación desactivada por tu preferencia de movimiento reducido"
-              : motionLabel}
+            title={
+              reducedMotion
+                ? "Animación desactivada por tu preferencia de movimiento reducido"
+                : motionLabel
+            }
             disabled={reducedMotion}
             onClick={onToggleMotion}
           >
-            {motionPaused || reducedMotion
-              ? <Play size={20} />
-              : <Pause size={20} />}
+            {motionPaused || reducedMotion ? (
+              <Play size={20} />
+            ) : (
+              <Pause size={20} />
+            )}
           </button>
         )}
         <button
@@ -103,6 +110,7 @@ export function SlideControls({
               ? "Cambiar slides a modo claro"
               : "Cambiar slides a modo oscuro"
           }
+          disabled={isLive && (busy || ended)}
           onClick={onToggleTheme}
         >
           {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
@@ -119,10 +127,10 @@ export function SlideControls({
         {isLive && (
           <button
             className="icon-button"
-            aria-label="Mostrar QR"
+            aria-label="Compartir enlace de la sesión"
             onClick={onShare}
           >
-            <QrCode size={21} />
+            <ShareNetwork size={21} />
           </button>
         )}
       </div>

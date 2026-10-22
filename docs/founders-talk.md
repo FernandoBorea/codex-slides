@@ -4,6 +4,7 @@ Arco: operación → procesos → cerebro compartido → pod → prototipo → r
 
 | # | Slug | Min | Nota oral |
 | --- | --- | --- | --- |
+| 00 | `espera` | Fuera del reloj | Portada SpaceXAI × AI Labs, sin encuesta. |
 | 01 | `titulo` | 0:45 | De la operación al prototipo, una mesa. |
 | 02 | `andy` | 1:15 | EA con nombre y cara. |
 | 03 | `dos-modos` | 1:15 | Pedir vs procesos; el segundo escala. |

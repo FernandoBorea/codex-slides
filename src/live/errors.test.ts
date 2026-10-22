@@ -1,10 +1,20 @@
 import { ConvexError } from "convex/values";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { convexRequest, normalizeConvexError } from "./errors";
+import { convexRequest, normalizeConvexError, isPresenterAccessError } from "./errors";
 
 afterEach(() => vi.restoreAllMocks());
 
 describe("mensajes de Convex", () => {
+  it("conserva el código público de acceso sin registrar el error completo", () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const result = normalizeConvexError(new ConvexError({
+      code: "PRESENTER_PASSWORD_INVALID",
+      message: "La contraseña no es correcta.",
+    }));
+    expect(isPresenterAccessError(result)).toBe(true);
+    expect(result).toMatchObject({ code: "PRESENTER_PASSWORD_INVALID", message: "La contraseña no es correcta." });
+    expect(log).not.toHaveBeenCalled();
+  });
   it("explica funciones sin desplegar sin exponer detalles internos", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     const reason = new Error("[CONVEX Q(sessions:snapshot)] [Request ID: xyz] Server Error Could not find public function for 'sessions:snapshot'");

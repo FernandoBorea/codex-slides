@@ -94,10 +94,15 @@ describe("manifiesto y estado de una presentación", () => {
     duplicate.slides[0].question!.options[1].id = "yes";
     expect(() => validateManifest(duplicate)).toThrow("identificadores únicos");
   });
-  it("al navegar cierra la pregunta y oculta resultados", () => {
+  it("al navegar cierra la pregunta y reinicia los indicadores de la slide y el QR", () => {
     expect(
       applyPresenterAction(
-        { ...session, showResults: true },
+        {
+          ...session,
+          showResults: true,
+          qrVisible: true,
+          projectionTheme: "light",
+        },
         { type: "navigate", slug: "workflow" },
         2,
       ),
@@ -105,8 +110,70 @@ describe("manifiesto y estado de una presentación", () => {
       activeSlideSlug: "workflow",
       questionOpen: false,
       showResults: false,
+      qrVisible: false,
+      projectionTheme: "light",
       updatedAt: 2,
     });
+  });
+  it("abrir muestra resultados automáticamente y cerrar conserva el recuento", () => {
+    const opened = applyPresenterAction(
+      { ...session, questionOpen: false },
+      { type: "question", open: true, slideSlug: "welcome" },
+      2,
+    );
+    expect(opened).toMatchObject({ questionOpen: true, showResults: true });
+    const closed = applyPresenterAction(
+      opened,
+      { type: "question", open: false, slideSlug: "welcome" },
+      3,
+    );
+    expect(closed).toMatchObject({ questionOpen: false, showResults: true });
+    expect(
+      applyPresenterAction(
+        closed,
+        { type: "results", show: false, slideSlug: "welcome" },
+        4,
+      ).showResults,
+    ).toBe(true);
+    expect(
+      applyPresenterAction(
+        session,
+        { type: "question", open: false, slideSlug: "welcome" },
+        2,
+      ).showResults,
+    ).toBe(true);
+  });
+  it("identifica cada apertura incluso dentro del mismo milisegundo", () => {
+    const open = { type: "question", open: true, slideSlug: "welcome" } as const;
+    const opened = applyPresenterAction(
+      { ...session, questionOpen: false },
+      open,
+      10,
+    );
+    expect(opened.questionOpenedAt).toBe(10);
+    const repeated = applyPresenterAction(opened, open, 11);
+    expect(repeated.questionOpenedAt).toBe(10);
+    const closed = applyPresenterAction(
+      repeated,
+      { ...open, open: false },
+      11,
+    );
+    expect(closed.questionOpenedAt).toBe(10);
+    const reopened = applyPresenterAction(closed, open, 10);
+    expect(reopened.questionOpenedAt).toBe(11);
+    const moved = applyPresenterAction(
+      reopened,
+      { type: "navigate", slug: "workflow" },
+      12,
+    );
+    expect(moved.questionOpenedAt).toBe(11);
+    expect(
+      applyPresenterAction(
+        moved,
+        { ...open, slideSlug: "workflow" },
+        12,
+      ).questionOpenedAt,
+    ).toBe(12);
   });
   it("rechaza slides inexistentes y preguntas inexistentes", () => {
     expect(() =>
@@ -121,8 +188,19 @@ describe("manifiesto y estado de una presentación", () => {
     ).toThrow("no tiene una pregunta");
   });
   it("terminar la sesión bloquea el control y los votos", () => {
-    const ended = applyPresenterAction(session, { type: "end" }, 2);
+    const ended = applyPresenterAction(
+      { ...session, qrVisible: true },
+      { type: "end" },
+      2,
+    );
     expect(ended.questionOpen).toBe(false);
+    expect(ended.qrVisible).toBe(false);
+    expect(() =>
+      applyPresenterAction(ended, { type: "qr", visible: true }, 3),
+    ).toThrow("ya terminó");
+    expect(() =>
+      applyPresenterAction(ended, { type: "theme", theme: "light" }, 3),
+    ).toThrow("ya terminó");
     expect(() =>
       applyPresenterAction(ended, { type: "navigate", slug: "workflow" }, 3),
     ).toThrow("ya terminó");
@@ -164,11 +242,12 @@ describe("identidad, capacidades y votos", () => {
       requirePresenter(record, { presenterKey: "presenter-secret" }),
     ).not.toThrow();
   });
-  it("el snapshot público no revela claves, tokens ni votos ocultos ajenos", () => {
+  it("comparte resultados en vivo sin revelar claves ni tokens", () => {
     const snapshot = publicSnapshot(record, { participantToken: "token-two" });
     expect(snapshot.participant?.id).toBe("two");
     expect(snapshot.isPresenter).toBe(false);
-    expect(snapshot.votes).toEqual([]);
+    expect(snapshot.votes).toEqual(record.votes);
+    expect(snapshot.session?.showResults).toBe(true);
     expect(JSON.stringify(snapshot)).not.toMatch(
       /presenter-secret|token-one|token-two/,
     );
@@ -184,6 +263,27 @@ describe("identidad, capacidades y votos", () => {
         {},
       ).votes,
     ).toHaveLength(1);
+  });
+  it("recupera respuestas existentes al volver a la pregunta sin exponer otras slides", () => {
+    const closed = {
+      ...record,
+      session: { ...session, questionOpen: false, showResults: false },
+    };
+    expect(publicSnapshot(closed, {})).toMatchObject({
+      session: { showResults: true },
+      votes: record.votes,
+    });
+    const moved = {
+      ...closed,
+      session: { ...closed.session, activeSlideSlug: "workflow" },
+    };
+    expect(publicSnapshot(moved, {})).toMatchObject({
+      session: { showResults: false },
+      votes: [],
+    });
+    expect(
+      publicSnapshot(moved, { participantToken: "token-one" }).votes,
+    ).toEqual(record.votes);
   });
   it("solo cambia el voto de la identidad verificada", () => {
     const updated = recordVote(record, { participantToken: "token-two" }, [

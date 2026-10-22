@@ -1,4 +1,5 @@
 import type { Deck } from "../types";
+import { meetupCoverSlide } from "../intro/meetupCover";
 import {
   OpsWelcomeSlide,
   SpeakerSlide,
@@ -18,7 +19,9 @@ export const opsDeck: Deck = {
   category: "Ops",
   duration: "15 min",
   accent: "#00b9aa",
+  firstSlideNumber: 0,
   slides: [
+    meetupCoverSlide,
     {
       slug: "bienvenida",
       title: "Grok Bot for Ops",

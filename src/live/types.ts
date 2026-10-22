@@ -25,7 +25,10 @@ export type Session = {
   slides: SlideMeta[];
   activeSlideSlug: string;
   questionOpen: boolean;
+  questionOpenedAt?: number;
   showResults: boolean;
+  qrVisible?: boolean;
+  projectionTheme?: "light" | "dark";
   status: "live" | "ended";
   createdAt: number;
   updatedAt: number;
@@ -54,21 +57,27 @@ export type SessionSnapshot = {
 };
 
 export type Credentials = { presenterKey?: string; participantToken?: string };
+export type SubscriptionOptions = { publicOnly?: boolean };
 
 export type PresenterAction =
   | { type: "navigate"; slug: string }
   | { type: "question"; open: boolean; slideSlug: string }
   | { type: "results"; show: boolean; slideSlug: string }
+  | { type: "qr"; visible: boolean }
+  | { type: "theme"; theme: "light" | "dark" }
   | { type: "end" };
 
 export type LiveTransport = {
   mode: "local" | "convex";
   configurationMessage?: string;
+  authorizePresenter(password: string, signal?: AbortSignal): Promise<void>;
+  hasPresenterAccess(): boolean;
   createSession(input: CreateSessionInput): Promise<string>;
   subscribe(
     sessionId: string,
     next: (snapshot: SessionSnapshot) => void,
     error: (error: Error) => void,
+    options?: SubscriptionOptions,
   ): () => void;
   join(sessionId: string): Promise<void>;
   update(sessionId: string, action: PresenterAction): Promise<void>;

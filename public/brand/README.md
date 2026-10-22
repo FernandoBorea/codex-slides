@@ -5,7 +5,7 @@ Logos suministrados por Walter el 2 de octubre de 2026, conservados como archivo
 - `ufm.webp`: `arreglo-ufm.webp`, Universidad Francisco Marroquín.
 - `u3-tech.jpeg`: `WhatsApp Image 2026-09-24 at 1.56.38 PM.jpeg`, U3 Tech.
 
-La primera slide alterna SpaceXAI con UFM y U3 Tech. CSS integra el fondo blanco de los raster en ambos temas; los archivos originales no se modifican. AI Labs permanece en las demás slides.
+Todos los decks agregan la misma portada de espera 00 del meetup, con SpaceXAI y AI Labs, antes de su portada propia. No tiene encuesta ni cuenta en el tiempo de exposición. Meetup reutiliza su espera existente sin duplicarla. El loop alterna ambas marcas; en las miniaturas y con movimiento reducido aparecen juntas. UFM y U3 Tech ya no se muestran en la portada; sus archivos originales se conservan como referencia.
 
 Descargados el 19 de septiembre de 2026 sin modificar los SVG originales:
 

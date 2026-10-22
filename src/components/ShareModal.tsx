@@ -3,43 +3,34 @@ import { QRCodeSVG } from "qrcode.react";
 import { Check, Copy, ArrowUpRight, DeviceMobile } from "@phosphor-icons/react";
 import { Modal } from "./Modal";
 import { useLive } from "../live/LiveProvider";
+import { currentPublicSessionUrl } from "./publicSessionUrl";
 
 export function ShareModal({
   sessionId,
+  deckSlug,
   onClose,
   question,
 }: {
   sessionId: string;
+  deckSlug: string;
   onClose: () => void;
   question?: string;
 }) {
   const { mode } = useLive();
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<"session" | "slides" | null>(null);
   const [copyError, setCopyError] = useState(false);
-  const path = `/join/${encodeURIComponent(sessionId)}`;
-  let origin = window.location.origin;
   const isLocalHost = ["localhost", "127.0.0.1", "[::1]"].includes(
     window.location.hostname,
   );
-  if (mode === "convex" && isLocalHost && __DEV_LAN_HOST__) {
-    const networkUrl = new URL(origin);
-    networkUrl.hostname = __DEV_LAN_HOST__;
-    origin = networkUrl.origin;
-  }
-  try {
-    const configured = import.meta.env.VITE_PUBLIC_URL;
-    if (configured && /^https?:\/\//.test(configured))
-      origin = new URL(configured).origin;
-  } catch {
-    /* Use the current origin. */
-  }
-  const url = new URL(path, origin).href;
-  async function copy() {
+  const url = currentPublicSessionUrl(sessionId, mode);
+  const slidesUrl = new URL(`/slides/${encodeURIComponent(deckSlug)}`, url).href;
+  async function copy(value: string, kind: "session" | "slides") {
     try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
+      await navigator.clipboard.writeText(value);
+      setCopied(kind);
       setCopyError(false);
     } catch {
+      setCopied(null);
       setCopyError(true);
     }
   }
@@ -50,8 +41,8 @@ export function ShareModal({
       className="share-modal"
     >
       <p className="muted">
-        Escanea una vez. Lee a tu ritmo y vuelve al punto en vivo cuando
-        quieras.
+        Escaneá una vez y seguí las slides en vivo. También podés explorar a
+        tu ritmo y volver al vivo cuando quieras.
       </p>
       <div className="qr-wrap">
         <QRCodeSVG
@@ -79,26 +70,40 @@ export function ShareModal({
         <button
           className="icon-button"
           aria-label="Copiar enlace"
-          onClick={copy}
+          onClick={() => void copy(url, "session")}
         >
-          {copied ? <Check /> : <Copy />}
+          {copied === "session" ? <Check /> : <Copy />}
         </button>
       </div>
       <div role="status" className="small copy-status">
         {copied
-          ? "Enlace copiado."
+          ? copied === "slides" ? "Enlace de las slides copiado." : "Enlace de la sesión copiado."
           : copyError
             ? "Selecciona el enlace y cópialo manualmente."
             : "\u00a0"}
       </div>
       <a
         className="button primary full-width"
-        href={path}
+        href={url}
         target="_blank"
-        rel="noreferrer"
+        rel="noopener noreferrer"
       >
         Abrir vista del público <ArrowUpRight size={18} />
       </a>
+      <section className="share-static-slides" aria-label="Slides después del evento">
+        <h3>Para revisar después</h3>
+        <p className="small muted">Recorré las slides a tu ritmo, sin entrar a una sesión.</p>
+        <label className="field-label" htmlFor="slides-url">Enlace permanente de las slides</label>
+        <div className="copy-field">
+          <input id="slides-url" value={slidesUrl} readOnly onFocus={(e) => e.target.select()} />
+          <button className="icon-button" aria-label="Copiar enlace de las slides" onClick={() => void copy(slidesUrl, "slides")}>
+            {copied === "slides" ? <Check /> : <Copy />}
+          </button>
+        </div>
+        <a className="button secondary full-width" href={slidesUrl} target="_blank" rel="noopener noreferrer">
+          Ver slides <ArrowUpRight size={18} />
+        </a>
+      </section>
       {mode === "local" && (
         <div className="notice">
           Modo local: abre el enlace en otra pestaña de este navegador para

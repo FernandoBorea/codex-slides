@@ -1,4 +1,5 @@
 import type { Deck } from "../types";
+import { meetupCoverSlide } from "../intro/meetupCover";
 import { ResearchWelcomeSlide } from "./ResearchWelcomeSlide";
 import { HypothesisSlide } from "./HypothesisSlide";
 import { ExperimentSlide } from "./ExperimentSlide";
@@ -11,7 +12,9 @@ export const researchDeck: Deck = {
   category: "Research & Experiments",
   duration: "15 min",
   accent: "#00b9aa",
+  firstSlideNumber: 0,
   slides: [
+    meetupCoverSlide,
     {
       slug: "bienvenida",
       title: "Grok Bot for Research & Experiments",

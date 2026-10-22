@@ -1,10 +1,12 @@
 import { CheckSquare } from "@phosphor-icons/react";
 import type { SlideDefinition } from "../../decks";
 import type { SlideTheme } from "./useSlideTheme";
+import { formatSlideNumber } from "../../decks/slideNumbers";
 
 type SlideRailProps = {
   slides: SlideDefinition[];
   activeIndex: number;
+  firstSlideNumber?: 0 | 1;
   ended: boolean;
   theme: SlideTheme;
   onMove: (index: number) => void;
@@ -13,6 +15,7 @@ type SlideRailProps = {
 export function SlideRail({
   slides,
   activeIndex,
+  firstSlideNumber = 1,
   ended,
   theme,
   onMove,
@@ -35,7 +38,7 @@ export function SlideRail({
               aria-current={index === activeIndex ? "step" : undefined}
             >
               <span className="thumbnail-number">
-                {String(index + 1).padStart(2, "0")}
+                {formatSlideNumber(index, firstSlideNumber)}
               </span>
               <span className="thumbnail-content">
                 <span

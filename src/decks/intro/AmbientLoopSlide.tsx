@@ -5,15 +5,7 @@ import { meetupCommunity } from "./meetupBots";
 import { useMeetupAmbient } from "./useMeetupAmbient";
 import "./ambient.css";
 
-function MeetupPartnerLogos() {
-  return (
-    <div className="meetup-partner-logos">
-      <img className="meetup-partner-logo meetup-partner-logo--ufm" src="/brand/ufm.webp" alt="UFM · Universidad Francisco Marroquín" draggable={false} />
-      <img className="meetup-partner-logo meetup-partner-logo--u3" src="/brand/u3-tech.jpeg" alt="U3 Tech" draggable={false} />
-    </div>
-  );
-}
-
+/** Shared opening for every talk; the deck retains its own guide and timing. */
 export function AmbientLoopSlide() {
   const scene = useRef<HTMLElement>(null);
   useMeetupAmbient(scene);
@@ -23,12 +15,12 @@ export function AmbientLoopSlide() {
       <div
         className="meetup-brand-scene"
         role="img"
-        aria-label="Grok bot Meetup · SpaceXAI, UFM y U3 Tech"
+        aria-label="Grok bot Meetup · SpaceXAI y AI Labs"
       >
         <div className="meetup-brand-static" aria-hidden="true">
           <BrandLogo brand="spacexai" />
           <span className="meetup-brand-cross">×</span>
-          <MeetupPartnerLogos />
+          <BrandLogo brand="ailabs" />
         </div>
         <div className="meetup-brand-animated" aria-hidden="true">
           <div className="meetup-brand-aperture">
@@ -36,7 +28,7 @@ export function AmbientLoopSlide() {
               <BrandLogo brand="spacexai" />
             </div>
             <div className="meetup-mark meetup-mark--partners">
-              <MeetupPartnerLogos />
+              <BrandLogo brand="ailabs" />
             </div>
           </div>
         </div>

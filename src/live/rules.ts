@@ -130,6 +130,7 @@ export function applyPresenterAction(
         activeSlideSlug: action.slug,
         questionOpen: false,
         showResults: false,
+        qrVisible: false,
         updatedAt: now,
       };
     case "question":
@@ -143,11 +144,24 @@ export function applyPresenterAction(
           ?.question
       )
         throw new Error("Esta slide no tiene una pregunta.");
-      return { ...session, questionOpen: action.open, updatedAt: now };
+      return {
+        ...session,
+        questionOpen: action.open,
+        ...(action.open && !session.questionOpen
+          ? {
+              questionOpenedAt: Math.max(
+                now,
+                (session.questionOpenedAt ?? 0) + 1,
+              ),
+            }
+          : {}),
+        showResults: session.showResults || session.questionOpen || action.open,
+        updatedAt: now,
+      };
     case "results":
       if (action.slideSlug !== session.activeSlideSlug)
         throw new Error(
-          "La presentación avanzó. Publica los resultados de la slide actual.",
+          "La presentación avanzó. Controla la pregunta de la slide actual.",
         );
       if (
         action.show &&
@@ -155,15 +169,36 @@ export function applyPresenterAction(
           ?.question
       )
         throw new Error("Esta slide no tiene una pregunta.");
-      return { ...session, showResults: action.show, updatedAt: now };
+      // Older clients can still send this action, but results are now automatic.
+      return {
+        ...session,
+        showResults: session.showResults || session.questionOpen || action.show,
+        updatedAt: now,
+      };
+    case "qr":
+      return { ...session, qrVisible: action.visible, updatedAt: now };
+    case "theme":
+      return { ...session, projectionTheme: action.theme, updatedAt: now };
     case "end":
       return {
         ...session,
         status: "ended",
         questionOpen: false,
+        qrVisible: false,
         updatedAt: now,
       };
   }
+}
+
+export function resultsAreVisible(
+  session: Session,
+  hasCurrentVotes: boolean,
+): boolean {
+  return (
+    !!session.slides.find((slide) => slide.slug === session.activeSlideSlug)
+      ?.question &&
+    (session.questionOpen || session.showResults || hasCurrentVotes)
+  );
 }
 
 export function validateVote(

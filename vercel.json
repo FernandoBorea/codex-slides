@@ -4,8 +4,10 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/client",
   "rewrites": [
+    { "source": "/slides/:path*", "destination": "/index.html" },
     { "source": "/deck/:path*", "destination": "/index.html" },
     { "source": "/present/:path*", "destination": "/index.html" },
+    { "source": "/screen/:path*", "destination": "/index.html" },
     { "source": "/join/:path*", "destination": "/index.html" }
   ]
 }

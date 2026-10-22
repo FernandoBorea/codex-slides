@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -9,6 +9,7 @@ import {
   ArrowUpRight,
   BookOpen,
   Users,
+  Question as QuestionIcon,
 } from "@phosphor-icons/react";
 import { audienceRoute } from "../router";
 import { useSession } from "../live/useSession";
@@ -18,6 +19,11 @@ import { Brand } from "../components/Shell";
 import { Bot } from "../components/Bot";
 import { QuestionResults } from "../components/QuestionResults";
 import { AudienceNavigation } from "../components/audience/AudienceNavigation";
+import { AudienceWelcome } from "../components/audience/AudienceWelcome";
+import { PollNotification } from "../components/audience/PollNotification";
+import { readStorage, storagePrefix, writeStorage } from "../live/credentials";
+import { formatSlideNumber, getFirstSlideNumber } from "../decks/slideNumbers";
+import "../components/audience/audience-experience.css";
 
 export function AudiencePage() {
   const { sessionId } = audienceRoute.useParams();
@@ -112,9 +118,15 @@ function AudienceGuide({
   joinError: string;
   onRetryJoin: () => void;
 }) {
-  // Initialize at the live slide once. Updates from the presenter never replace
-  // the reader's location or scroll position.
-  const [viewedSlug, setViewedSlug] = useState(session.activeSlideSlug);
+  // A manual location pauses follow, even if the presenter later reaches it.
+  const [readingSlug, setReadingSlug] = useState<string | null>(null);
+  const viewedSlug = readingSlug ?? session.activeSlideSlug;
+  const welcomeKey = `${storagePrefix}:audience-welcome:${session.namespace}:${session.id}`;
+  const [showWelcome, setShowWelcome] = useState(
+    () => session.status === "live" && readStorage(welcomeKey) !== "seen",
+  );
+  const questionRef = useRef<HTMLElement>(null);
+  const [questionFocusRequest, setQuestionFocusRequest] = useState(0);
   const presenterIndex = Math.max(
     0,
     session.slides.findIndex((s) => s.slug === session.activeSlideSlug),
@@ -124,19 +136,35 @@ function AudienceGuide({
     session.slides.findIndex((s) => s.slug === viewedSlug),
   );
   const slide = session.slides[index];
+  const firstSlideNumber = getFirstSlideNumber(session.slides);
   const ended = session.status === "ended";
+  const following = readingSlug === null && !ended;
+  const presenterQuestion = session.slides[presenterIndex].question;
   const isPresenterSlide = slide.slug === session.activeSlideSlug;
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [viewedSlug]);
+  useEffect(() => {
+    if (!questionFocusRequest) return;
+    questionRef.current?.focus({ preventScroll: true });
+    questionRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
+  }, [questionFocusRequest]);
 
   function move(nextIndex: number) {
     if (nextIndex >= 0 && nextIndex < session.slides.length)
-      setViewedSlug(session.slides[nextIndex].slug);
+      setReadingSlug(session.slides[nextIndex].slug);
   }
   function catchUp() {
-    setViewedSlug(session.activeSlideSlug);
+    setReadingSlug(null);
     window.scrollTo({ top: 0, behavior: "instant" });
+  }
+  function respondToPoll() {
+    setReadingSlug(null);
+    setQuestionFocusRequest((request) => request + 1);
+  }
+  function dismissWelcome() {
+    writeStorage(welcomeKey, "seen");
+    setShowWelcome(false);
   }
   const ownVote = live.votes.find(
     (v) =>
@@ -148,10 +176,21 @@ function AudienceGuide({
     <div className="audience-shell">
       <header className="audience-header">
         <Brand compact />
-        <span className="audience-live">
-          <span className={`status-dot ${ended ? "" : "green"}`} />
-          {ended ? "Finalizada" : "En vivo"}
-        </span>
+        <div className="audience-header-actions">
+          <span className="audience-live">
+            <span className={`status-dot ${following ? "green" : ""}`} />
+            {ended ? "Finalizada" : following ? "En vivo" : "A tu ritmo"}
+          </span>
+          {!ended && (
+            <button
+              className="icon-button audience-help"
+              aria-label="Cómo funciona"
+              onClick={() => setShowWelcome(true)}
+            >
+              <QuestionIcon size={21} />
+            </button>
+          )}
+        </div>
       </header>
       <main className="audience-main">
         <div className="audience-identity">
@@ -202,8 +241,8 @@ function AudienceGuide({
         <div className="guide-meta">
           <span>{session.deckTitle}</span>
           <span>
-            {String(index + 1).padStart(2, "0")} /{" "}
-            {String(session.slides.length).padStart(2, "0")}
+            {formatSlideNumber(index, firstSlideNumber)} /{" "}
+            {formatSlideNumber(session.slides.length - 1, firstSlideNumber)}
           </span>
         </div>
         <article className="audience-guide" key={slide.slug} aria-live="polite">
@@ -214,6 +253,7 @@ function AudienceGuide({
         {slide.question && (
           <AudienceQuestion
             key={`${slide.slug}:${slide.question.id}`}
+            sectionRef={questionRef}
             question={slide.question}
             slideSlug={slide.slug}
             open={isPresenterSlide && session.questionOpen && !ended}
@@ -225,7 +265,7 @@ function AudienceGuide({
               ended
                 ? "La presentación terminó. Ya no se reciben respuestas."
                 : !isPresenterSlide
-                  ? `El presentador está en la slide ${presenterIndex + 1}. Solo puedes responder su pregunta abierta.`
+                  ? `El presentador está en la slide ${formatSlideNumber(presenterIndex, firstSlideNumber)}. Solo puedes responder su pregunta abierta.`
                   : "El presentador no tiene abierta esta pregunta."
             }
             onVote={live.vote}
@@ -250,7 +290,9 @@ function AudienceGuide({
           <span>
             {ended
               ? "Esta guía queda disponible para ti."
-              : "Lee a tu ritmo. Puedes volver al presentador cuando quieras."}
+              : following
+                ? "Estás en vivo. Las slides avanzan con el presentador."
+                : "Estás leyendo a tu ritmo. Tocá «Volver al vivo» para seguir al presentador."}
           </span>
         </div>
         {mode === "local" && (
@@ -269,16 +311,29 @@ function AudienceGuide({
         index={index}
         presenterIndex={presenterIndex}
         slideCount={session.slides.length}
+        firstSlideNumber={firstSlideNumber}
         questionOpen={session.questionOpen}
         ended={ended}
+        following={following}
         onMove={move}
         onCatchUp={catchUp}
+        notification={
+          !ended && session.questionOpen && presenterQuestion ? (
+            <PollNotification
+              key={`${session.activeSlideSlug}:${presenterQuestion.id}:${session.questionOpenedAt ?? "legacy"}`}
+              prompt={presenterQuestion.prompt}
+              onRespond={respondToPoll}
+            />
+          ) : null
+        }
       />
+      {showWelcome && !ended && <AudienceWelcome onContinue={dismissWelcome} />}
     </div>
   );
 }
 
 function AudienceQuestion({
+  sectionRef,
   question,
   slideSlug,
   open,
@@ -289,6 +344,7 @@ function AudienceQuestion({
   closedMessage,
   onVote,
 }: {
+  sectionRef: RefObject<HTMLElement | null>;
   question: Question;
   slideSlug: string;
   open: boolean;
@@ -331,7 +387,12 @@ function AudienceQuestion({
     }
   }
   return (
-    <section className="audience-question">
+    <section
+      ref={sectionRef}
+      className="audience-question"
+      tabIndex={-1}
+      aria-label={question.prompt}
+    >
       <div className="audience-question-heading">
         <span className="eyebrow">
           <span className={`status-dot ${open ? "green" : ""}`} />

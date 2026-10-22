@@ -107,14 +107,14 @@ export function Library() {
                 </span>
               </div>
             </div>
-            <Link
-              className="button primary"
-              to="/deck/$deckSlug"
-              params={{ deckSlug: featured.slug }}
-              search={{ slide: undefined }}
-            >
-              Abrir deck <ArrowUpRight size={19} />
-            </Link>
+            <div className="deck-actions">
+              <Link className="button secondary" to="/slides/$deckSlug" params={{ deckSlug: featured.slug }} search={{ slide: undefined }}>
+                Ver slides <ArrowRight size={18} />
+              </Link>
+              <Link className="button primary" to="/deck/$deckSlug" params={{ deckSlug: featured.slug }} search={{ slide: undefined }}>
+                Abrir deck <ArrowUpRight size={19} />
+              </Link>
+            </div>
           </div>
         )}
         {filtered.length > 1 && (
@@ -146,7 +146,9 @@ export function Library() {
                         {deck.duration}
                       </p>
                     </div>
-                    <ArrowRight size={22} />
+                    <Link className="button subtle" to="/slides/$deckSlug" params={{ deckSlug: deck.slug }} search={{ slide: undefined }} aria-label={`Ver slides de ${deck.title}`}>
+                      Ver slides <ArrowRight size={18} />
+                    </Link>
                   </div>
                 </article>
               );

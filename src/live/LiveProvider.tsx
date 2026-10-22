@@ -48,6 +48,8 @@ export function useLive() {
     mode: transport.mode,
     configurationMessage: transport.configurationMessage,
     createSession: transport.createSession,
+    authorizePresenter: transport.authorizePresenter,
+    hasPresenterAccess: transport.hasPresenterAccess,
   };
 }
 

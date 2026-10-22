@@ -31,7 +31,7 @@ export function MeetupWelcomeSlide() {
           <Bot className="slide-bot" {...meetupBots.flower} />
         </div>
       </div>
-      <MeetupFooter number="02" note="AI Labs × SpaceXAI" />
+      <MeetupFooter number="01" note="AI Labs × SpaceXAI" />
     </section>
   );
 }
@@ -53,7 +53,7 @@ export function MeetupOrganizationsSlide() {
         <span>AI Labs · Programas de embajadores</span>
         <p>SpaceXAI · OpenAI Codex · ElevenLabs · Notion · Mistral</p>
       </div>
-      <MeetupFooter number="03" note="Una iniciativa para la comunidad local" />
+      <MeetupFooter number="02" note="Una iniciativa para la comunidad local" />
     </section>
   );
 }
@@ -77,7 +77,7 @@ export function MeetupContextSlide() {
           <span className="meetup-account-note">Empezás con tu cuenta de Cursor.</span>
         </div>
       </div>
-      <MeetupFooter number="04" note="Cursor · Anuncio oficial del 14 de agosto de 2026" />
+      <MeetupFooter number="03" note="Cursor · Anuncio oficial del 14 de agosto de 2026" />
     </section>
   );
 }
@@ -109,7 +109,7 @@ export function MeetupAgendaSlide() {
         <span>Charlas + demos</span>
         <p>Una detrás de otra. Ejemplos para llevar a tu trabajo.</p>
       </div>
-      <MeetupFooter number="05" note="Arrancamos con Founders" />
+      <MeetupFooter number="04" note="Arrancamos con Founders" />
     </section>
   );
 }
@@ -129,7 +129,7 @@ export function MeetupStartSlide() {
         <p className="meetup-request-example">“Con estas notas del meetup, prepará<br />tres ideas que pueda probar en mi trabajo.”</p>
         <span className="meetup-request-caption">Ejemplo · Revisá el resultado y ajustá lo que falte.</span>
       </div>
-      <MeetupFooter number="06" note="Ahora sí: Founders →" />
+      <MeetupFooter number="05" note="Ahora sí: Founders →" />
     </section>
   );
 }

@@ -178,6 +178,12 @@ describe("transporte local", () => {
     const id = await transport.createSession(input);
     const owner = readCredentials(namespace, id);
     saveCredentials(namespace, id, {});
+    await expect(
+      transport.update(id, { type: "qr", visible: true }),
+    ).rejects.toThrow("Solo el presentador");
+    await expect(
+      transport.update(id, { type: "theme", theme: "light" }),
+    ).rejects.toThrow("Solo el presentador");
     await expect(transport.update(id, { type: "end" })).rejects.toThrow(
       "Solo el presentador",
     );
@@ -190,6 +196,8 @@ describe("transporte local", () => {
   it("sincroniza otra instancia y restaura la sesión guardada", async () => {
     const { namespace, transport } = setup();
     const id = await transport.createSession(input);
+    await transport.update(id, { type: "qr", visible: true });
+    await transport.update(id, { type: "theme", theme: "light" });
     const other = createLocalTransport(namespace);
     transports.push(other);
     let current!: SessionSnapshot;
@@ -203,9 +211,137 @@ describe("transporte local", () => {
       },
     );
     expect(current.session?.deckTitle).toBe("Demo");
+    expect(current.session).toMatchObject({
+      qrVisible: true,
+      projectionTheme: "light",
+    });
     await transport.update(id, { type: "navigate", slug: "second" });
     await expect.poll(() => current.session?.activeSlideSlug).toBe("second");
+    expect(current.session).toMatchObject({
+      qrVisible: false,
+      projectionTheme: "light",
+    });
     unsubscribe();
+  });
+
+  it("la proyección recibe votos en vivo y conserva los resultados al cerrar y volver", async () => {
+    const { namespace, transport } = setup();
+    const id = await transport.createSession(input);
+    await transport.join(id);
+    await transport.update(id, {
+      type: "question",
+      open: true,
+      slideSlug: "first",
+    });
+    await transport.vote(id, ["yes"], "first");
+    let projection!: SessionSnapshot;
+    let moderator!: SessionSnapshot;
+    const onError = (error: Error) => {
+      throw error;
+    };
+    const stopModerator = transport.subscribe(
+      id,
+      (value) => {
+        moderator = value;
+      },
+      onError,
+    );
+    const stopProjection = transport.subscribe(
+      id,
+      (value) => {
+        projection = value;
+      },
+      onError,
+      { publicOnly: true },
+    );
+    const credentials = readCredentials(namespace, id);
+    expect(credentials.presenterKey).toBeTruthy();
+    expect(credentials.participantToken).toBeTruthy();
+    expect(moderator.isPresenter).toBe(true);
+    expect(moderator.votes).toHaveLength(1);
+    expect(projection).toMatchObject({
+      isPresenter: false,
+      participant: null,
+      session: { showResults: true },
+    });
+    expect(projection.votes).toHaveLength(1);
+    expect(projection.votes[0].optionIds).toEqual(["yes"]);
+    expect(projection.participants).toHaveLength(1);
+    expect(JSON.stringify(projection)).not.toContain(credentials.presenterKey);
+    expect(JSON.stringify(projection)).not.toContain(
+      credentials.participantToken,
+    );
+
+    const openedAt = projection.session?.questionOpenedAt;
+    expect(openedAt).toBeTypeOf("number");
+    await transport.vote(id, ["no"], "first");
+    expect(projection.votes).toHaveLength(1);
+    expect(projection.votes[0].optionIds).toEqual(["no"]);
+    expect(projection.session?.questionOpenedAt).toBe(openedAt);
+    await transport.update(id, {
+      type: "question",
+      open: false,
+      slideSlug: "first",
+    });
+    expect(projection.votes).toHaveLength(1);
+    await transport.update(id, {
+      type: "results",
+      show: false,
+      slideSlug: "first",
+    });
+    expect(projection.votes).toHaveLength(1);
+    expect(moderator.votes).toHaveLength(1);
+    await transport.update(id, { type: "qr", visible: true });
+    await transport.update(id, { type: "theme", theme: "light" });
+    stopProjection();
+    const reopened = createLocalTransport(namespace);
+    transports.push(reopened);
+    const stopReopened = reopened.subscribe(
+      id,
+      (value) => {
+        projection = value;
+      },
+      onError,
+      { publicOnly: true },
+    );
+    expect(projection.session).toMatchObject({
+      activeSlideSlug: "first",
+      qrVisible: true,
+      projectionTheme: "light",
+    });
+    expect(projection).toMatchObject({
+      isPresenter: false,
+      participant: null,
+      session: { showResults: true, questionOpenedAt: openedAt },
+    });
+    expect(projection.votes).toHaveLength(1);
+    await transport.update(id, { type: "navigate", slug: "second" });
+    await expect.poll(() => projection.session?.activeSlideSlug).toBe("second");
+    expect(projection.session).toMatchObject({
+      questionOpen: false,
+      showResults: false,
+      qrVisible: false,
+    });
+    await transport.update(id, { type: "navigate", slug: "first" });
+    expect(moderator.votes).toHaveLength(1);
+    await expect.poll(() => projection.votes.length).toBe(1);
+    expect(projection.session).toMatchObject({
+      questionOpen: false,
+      showResults: true,
+    });
+    await transport.update(id, {
+      type: "question",
+      open: true,
+      slideSlug: "first",
+    });
+    await expect.poll(() => projection.session?.questionOpen).toBe(true);
+    expect(projection.session!.questionOpenedAt!).toBeGreaterThan(openedAt!);
+    await transport.update(id, { type: "qr", visible: true });
+    await transport.update(id, { type: "end" });
+    await expect.poll(() => projection.session?.status).toBe("ended");
+    expect(projection.session?.qrVisible).toBe(false);
+    stopModerator();
+    stopReopened();
   });
 
   it("separa namespaces y devuelve una sesión ausente sin fallar", async () => {

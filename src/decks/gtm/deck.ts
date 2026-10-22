@@ -1,4 +1,5 @@
 import type { Deck } from "../types";
+import { meetupCoverSlide } from "../intro/meetupCover";
 import { Welcome, Speaker, Market, Jobs, Research, Meeting, Compare, Brief, Followup, Experience, Start } from "./CairoseSlides";
 
 export const gtmDeck: Deck = {
@@ -8,7 +9,9 @@ export const gtmDeck: Deck = {
   category: "Estrategia comercial",
   duration: "15 min",
   accent: "#ff2c9c",
+  firstSlideNumber: 0,
   slides: [
+    meetupCoverSlide,
     {
       "slug": "bienvenida",
       "title": "Grok bot for GTM",
@@ -23,7 +26,7 @@ export const gtmDeck: Deck = {
         ],
         "takeaway": "Pensá qué información comercial te ayudaría a avanzar."
       },
-      component: Welcome
+      component: Welcome,
     },
     {
       "slug": "daniela-huezo",

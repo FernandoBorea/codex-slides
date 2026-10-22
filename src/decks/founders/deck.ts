@@ -1,4 +1,5 @@
 import type { Deck } from "../types";
+import { meetupCoverSlide } from "../intro/meetupCover";
 import {
   FoundersTitleSlide,
   AndySlide,
@@ -21,7 +22,9 @@ export const foundersDeck: Deck = {
   category: "Founders",
   duration: "15 min",
   accent: "#ff2c9c",
+  firstSlideNumber: 0,
   slides: [
+    meetupCoverSlide,
     {
       slug: "titulo",
       title: "Grok Bot for Founders",

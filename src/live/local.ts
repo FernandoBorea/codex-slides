@@ -1,6 +1,7 @@
 import {
   applyPresenterAction,
   avatarFromToken,
+  resultsAreVisible,
   validateManifest,
   validateVote,
 } from "./rules";
@@ -59,12 +60,23 @@ export function publicSnapshot(
     name,
     seed,
   });
+  const showResults = resultsAreVisible(
+    record.session,
+    record.votes.some(
+      (vote) => vote.slideSlug === record.session.activeSlideSlug,
+    ),
+  );
   return {
-    session: record.session,
+    session: {
+      ...record.session,
+      showResults,
+      qrVisible: record.session.qrVisible ?? false,
+      projectionTheme: record.session.projectionTheme ?? "dark",
+    },
     participants: record.participants.map(publicPerson),
     votes: record.votes.filter(
       (vote) =>
-        ((isPresenter || record.session.showResults) &&
+        ((isPresenter || showResults) &&
           vote.slideSlug === record.session.activeSlideSlug) ||
         vote.participantId === participant?.id,
     ),
@@ -109,6 +121,7 @@ export function createLocalTransport(
     Set<{
       next: (snapshot: SessionSnapshot) => void;
       error: (error: Error) => void;
+      publicOnly: boolean;
     }>
   >();
   const key = (id: string) => `${storagePrefix}:session:${namespace}:${id}`;
@@ -131,7 +144,10 @@ export function createLocalTransport(
     for (const subscriber of subscribers.get(id) ?? []) {
       try {
         subscriber.next(
-          publicSnapshot(read(id), readCredentials(namespace, id)),
+          publicSnapshot(
+            read(id),
+            subscriber.publicOnly ? {} : readCredentials(namespace, id),
+          ),
         );
       } catch (error) {
         subscriber.error(
@@ -181,6 +197,8 @@ export function createLocalTransport(
   return {
     mode: "local",
     configurationMessage,
+    async authorizePresenter() {},
+    hasPresenterAccess: () => true,
     async createSession(input) {
       validateManifest(input);
       let id = newSessionId();
@@ -194,6 +212,8 @@ export function createLocalTransport(
         activeSlideSlug: input.slides[0].slug,
         questionOpen: false,
         showResults: false,
+        qrVisible: false,
+        projectionTheme: "dark",
         status: "live",
         createdAt: now,
         updatedAt: now,
@@ -202,8 +222,12 @@ export function createLocalTransport(
       write(id, { session, presenterKey, participants: [], votes: [] });
       return id;
     },
-    subscribe(id, next, error) {
-      const subscriber = { next, error };
+    subscribe(id, next, error, options) {
+      const subscriber = {
+        next,
+        error,
+        publicOnly: options?.publicOnly ?? false,
+      };
       if (!subscribers.has(id)) subscribers.set(id, new Set());
       subscribers.get(id)!.add(subscriber);
       notify(id);

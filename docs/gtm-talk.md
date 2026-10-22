@@ -1,10 +1,14 @@
 # Grok bot for GTM
 
-11 slides · 12:00 de contenido, incluidos 2:00 para el dashboard. Duración disponible: 15 minutos.
+12 slides: portada de espera 00 y 11 slides de la charla · 12:00 de contenido, incluidos 2:00 para el dashboard. Duración disponible: 15 minutos.
 
 ## Dirección
 
 Tres trabajos conectados: investigar, seguir cambios y prepararte para actuar. Slides fijas; no ejecutar Grok Bot. El único recorrido externo es el dashboard previamente abierto.
+
+### 00. SpaceXAI × AI Labs — Espera
+
+Portada sin encuesta, fuera del tiempo de exposición. La charla comienza en la slide 01.
 
 ### 1. Grok bot for GTM — Introducción · 0:30
 

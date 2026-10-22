@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Users } from "@phosphor-icons/react";
+import { QrCode, ShareNetwork, Users } from "@phosphor-icons/react";
 import { deckRoute, presenterRoute } from "../router";
 import { findDeck, type Deck } from "../decks";
 import { slideMetadata } from "../decks/metadata";
+import { formatSlideNumber, getFirstSlideNumber } from "../decks/slideNumbers";
 import { ConnectionNotice } from "../components/Shell";
 import { ShareModal } from "../components/ShareModal";
 import { PresenterHeader } from "../components/presenter/PresenterHeader";
@@ -11,11 +12,14 @@ import { SlideRail } from "../components/presenter/SlideRail";
 import { SlideControls } from "../components/presenter/SlideControls";
 import { PresenterDetails } from "../components/presenter/PresenterDetails";
 import { EndSessionModal } from "../components/presenter/EndSessionModal";
+import { PresenterAccessModal } from "../components/presenter/PresenterAccessModal";
 import { ProjectedQuestion } from "../components/presenter/ProjectedQuestion";
 import { useSlideTheme } from "../components/presenter/useSlideTheme";
 import { useAmbientMotion } from "../components/presenter/useAmbientMotion";
 import { useLive } from "../live/LiveProvider";
 import { useSession } from "../live/useSession";
+import { ProjectedQr } from "../components/presenter/ProjectedQr";
+import { stableContent } from "../components/presenter/sessionContent";
 
 type LiveSession = ReturnType<typeof useSession>;
 
@@ -110,16 +114,6 @@ function LivePresenterPage({
   return <Workbench deck={deck} live={live} sessionId={sessionId} />;
 }
 
-function stableContent(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(stableContent).join(",")}]`;
-  if (value && typeof value === "object")
-    return `{${Object.entries(value)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, item]) => `${JSON.stringify(key)}:${stableContent(item)}`)
-      .join(",")}}`;
-  return JSON.stringify(value) ?? "";
-}
-
 function MissingDeck() {
   return (
     <main className="empty-page">
@@ -153,12 +147,20 @@ function Workbench({
   const [focusMode, setFocusMode] = useState(false);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState("");
+  const [accessOpen, setAccessOpen] = useState(false);
+  const pendingAction = useRef<{
+    action: () => Promise<void>;
+    resolve: (completed: boolean) => void;
+  } | null>(null);
   const stage = useRef<HTMLDivElement>(null);
-  const { theme, toggleTheme } = useSlideTheme(deck.slug);
+  const { theme: previewTheme, toggleTheme } = useSlideTheme(deck.slug);
+  const theme = live?.session?.projectionTheme ?? previewTheme;
   const motion = useAmbientMotion();
   const standalone = deck.presentationMode === "standalone";
+  const firstSlideNumber = getFirstSlideNumber(deck.slides);
   const navigate = useNavigate();
-  const { createSession } = useLive();
+  const { mode, createSession, authorizePresenter, hasPresenterAccess } =
+    useLive();
   const activeIndex = live?.session
     ? Math.max(
         0,
@@ -167,9 +169,17 @@ function Workbench({
     : previewIndex;
   const slide = deck.slides[activeIndex];
   const Component = slide.component;
+  const nextSlide = deck.slides[activeIndex + 1];
+  const NextComponent = nextSlide?.component;
   const ended = live?.session?.status === "ended";
   const votingOpen = live?.session?.questionOpen ?? false;
-  async function performAction(action: () => Promise<void>): Promise<boolean> {
+  const showResults = live?.session?.showResults ?? false;
+  const qrVisible = live?.session?.qrVisible ?? false;
+  const hasQuestion = !!slide.question && (!live || votingOpen || showResults);
+  const projectionUrl = sessionId
+    ? `/screen/${encodeURIComponent(deck.slug)}/${encodeURIComponent(sessionId)}`
+    : undefined;
+  async function executeAction(action: () => Promise<void>): Promise<boolean> {
     setActionError("");
     setBusy(true);
     try {
@@ -186,6 +196,38 @@ function Workbench({
       setBusy(false);
     }
   }
+  function performAction(action: () => Promise<void>): Promise<boolean> {
+    if (mode === "convex" && !hasPresenterAccess()) {
+      if (pendingAction.current) return Promise.resolve(false);
+      setActionError("");
+      setAccessOpen(true);
+      return new Promise((resolve) => {
+        pendingAction.current = { action, resolve };
+      });
+    }
+    return executeAction(action);
+  }
+  function closeAccess() {
+    const pending = pendingAction.current;
+    pendingAction.current = null;
+    setAccessOpen(false);
+    pending?.resolve(false);
+  }
+  async function authorizeAction(password: string, signal: AbortSignal) {
+    const pending = pendingAction.current;
+    await authorizePresenter(password, signal);
+    if (signal.aborted || !pending || pendingAction.current !== pending) return;
+    pendingAction.current = null;
+    setAccessOpen(false);
+    void executeAction(pending.action).then(pending.resolve);
+  }
+  useEffect(
+    () => () => {
+      pendingAction.current?.resolve(false);
+      pendingAction.current = null;
+    },
+    [],
+  );
   function move(index: number) {
     if (
       index === activeIndex ||
@@ -290,10 +332,12 @@ function Workbench({
         busy={busy}
         onStart={() => void start()}
         onEnd={() => setConfirmEnd(true)}
+        projectionUrl={projectionUrl}
       />
       <div className="presenter-body">
         <SlideRail
           slides={deck.slides}
+          firstSlideNumber={firstSlideNumber}
           activeIndex={activeIndex}
           ended={ended}
           theme={theme}
@@ -315,59 +359,139 @@ function Workbench({
               </span>
             )}
           </div>
-          <div
-            ref={stage}
-            className={`presentation-area ${focusMode ? "focus-mode" : ""}`}
-          >
-            <div
-              className={`projection-surface ${slide.question ? "has-question" : ""}`}
-              data-slide-theme={theme}
-            >
-              <div
-                className="slide-stage active-stage"
-                data-slide-theme={theme}
-                data-testid="active-slide"
-                data-motion-enabled={!!slide.ambientMotion}
-                data-motion-state={
-                  slide.ambientMotion && motion.running ? "running" : "paused"
+          {live && (
+            <div className="moderator-session-actions">
+              <span className="small muted">
+                Controlás la ventana de proyección desde aquí.
+              </span>
+              <button
+                className={`button secondary ${qrVisible ? "is-active" : ""}`}
+                disabled={busy || ended}
+                aria-pressed={qrVisible}
+                onClick={() =>
+                  void performAction(() => live.setQrVisible(!qrVisible))
                 }
               >
-                <Component key={slide.slug} />
+                <QrCode size={18} />
+                {qrVisible
+                  ? "Ocultar QR de proyección"
+                  : "Mostrar QR en proyección"}
+              </button>
+              <button className="button subtle" onClick={() => setShare(true)}>
+                <ShareNetwork size={18} />
+                Compartir
+              </button>
+            </div>
+          )}
+          <div className={live ? "moderator-stage-row" : undefined}>
+            <div
+              ref={stage}
+              className={`presentation-area ${focusMode ? "focus-mode" : ""}`}
+            >
+              <div
+                className={`projection-surface ${hasQuestion && !qrVisible ? "has-question" : ""}`}
+                data-slide-theme={theme}
+              >
+                {qrVisible && sessionId ? (
+                  <ProjectedQr sessionId={sessionId} />
+                ) : (
+                  <>
+                    <div
+                      className="slide-stage active-stage"
+                      data-slide-theme={theme}
+                      data-testid="active-slide"
+                      data-motion-enabled={!!slide.ambientMotion}
+                      data-motion-state={
+                        slide.ambientMotion && motion.running
+                          ? "running"
+                          : "paused"
+                      }
+                    >
+                      <Component key={slide.slug} />
+                    </div>
+                    {hasQuestion && slide.question && (
+                      <ProjectedQuestion
+                        question={slide.question}
+                        votes={live?.votes ?? []}
+                        slideSlug={slide.slug}
+                        isLive={!!live}
+                        votingOpen={votingOpen && !ended}
+                        showResults={showResults}
+                      />
+                    )}
+                  </>
+                )}
               </div>
-              {slide.question && (
-                <ProjectedQuestion
-                  question={slide.question}
-                  votes={live?.votes ?? []}
-                  slideSlug={slide.slug}
-                  isLive={!!live}
-                  votingOpen={votingOpen && !ended}
+              <SlideControls
+                activeIndex={activeIndex}
+                slideCount={deck.slides.length}
+                firstSlideNumber={firstSlideNumber}
+                title={slide.title}
+                busy={busy}
+                ended={ended}
+                focusMode={focusMode}
+                isLive={!!live}
+                theme={theme}
+                ambientMotion={slide.ambientMotion}
+                motionPaused={motion.paused}
+                reducedMotion={motion.reducedMotion}
+                onToggleMotion={motion.toggle}
+                onToggleTheme={() => {
+                  if (live && !busy && !ended)
+                    void performAction(() =>
+                      live.setProjectionTheme(
+                        theme === "dark" ? "light" : "dark",
+                      ),
+                    );
+                  else if (!live) toggleTheme();
+                }}
+                onMove={move}
+                onFullscreen={() => void fullscreen()}
+                onShare={() => setShare(true)}
+              />
+              {focusMode && share && sessionId && (
+                <ShareModal
+                  sessionId={sessionId}
+                  deckSlug={deck.slug}
+                  question={votingOpen ? slide.question?.prompt : undefined}
+                  onClose={() => setShare(false)}
                 />
               )}
             </div>
-            <SlideControls
-              activeIndex={activeIndex}
-              slideCount={deck.slides.length}
-              title={slide.title}
-              busy={busy}
-              ended={ended}
-              focusMode={focusMode}
-              isLive={!!live}
-              theme={theme}
-              ambientMotion={slide.ambientMotion}
-              motionPaused={motion.paused}
-              reducedMotion={motion.reducedMotion}
-              onToggleMotion={motion.toggle}
-              onToggleTheme={toggleTheme}
-              onMove={move}
-              onFullscreen={() => void fullscreen()}
-              onShare={() => setShare(true)}
-            />
-            {focusMode && share && sessionId && (
-              <ShareModal
-                sessionId={sessionId}
-                question={votingOpen ? slide.question?.prompt : undefined}
-                onClose={() => setShare(false)}
-              />
+            {live && (
+              <aside
+                className="next-slide-preview"
+                aria-label="Siguiente slide"
+              >
+                <p className="section-label">
+                  {nextSlide ? "A CONTINUACIÓN" : "ÚLTIMA SLIDE"}
+                </p>
+                {nextSlide && NextComponent ? (
+                  <>
+                    <div
+                      className="slide-stage"
+                      data-slide-theme={theme}
+                      aria-hidden="true"
+                      inert
+                    >
+                      <NextComponent />
+                    </div>
+                    <p className="next-slide-title">
+                      {formatSlideNumber(activeIndex + 1, firstSlideNumber)} ·{" "}
+                      {nextSlide.title}
+                    </p>
+                    {nextSlide.speakerNotes && (
+                      <p className="small muted">
+                        {nextSlide.speakerNotes.timing}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <p className="small muted">
+                    Dejá este espacio para la conversación final.
+                  </p>
+                )}
+              </aside>
             )}
           </div>
           {(actionError || live?.error) && (
@@ -388,17 +512,10 @@ function Workbench({
             busy={busy}
             ended={ended}
             votingOpen={votingOpen}
-            showResults={live?.session?.showResults ?? false}
+            votes={live?.votes ?? []}
             onQuestionOpen={(open) => {
               if (live) void performAction(() => live.setQuestionOpen(open));
             }}
-            onShowResults={() => {
-              if (live)
-                void performAction(() =>
-                  live.setShowResults(!live.session?.showResults),
-                );
-            }}
-            onShare={() => setShare(true)}
           />
           {!standalone && <ConnectionNotice />}
         </main>
@@ -406,6 +523,7 @@ function Workbench({
       {share && !focusMode && sessionId && (
         <ShareModal
           sessionId={sessionId}
+          deckSlug={deck.slug}
           question={votingOpen ? slide.question?.prompt : undefined}
           onClose={() => setShare(false)}
         />
@@ -415,6 +533,12 @@ function Workbench({
           busy={busy}
           onClose={() => setConfirmEnd(false)}
           onFinish={() => void finishSession()}
+        />
+      )}
+      {accessOpen && (
+        <PresenterAccessModal
+          onAuthorize={authorizeAction}
+          onClose={closeAccess}
         />
       )}
     </div>

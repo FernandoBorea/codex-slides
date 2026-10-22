@@ -34,28 +34,47 @@ export const presenterActionValidator = v.union(
     slideSlug: v.string(),
   }),
   v.object({ type: v.literal("end") }),
+  v.object({ type: v.literal("qr"), visible: v.boolean() }),
+  v.object({
+    type: v.literal("theme"),
+    theme: v.union(v.literal("light"), v.literal("dark")),
+  }),
 );
 
 export const publicSessionValidator = v.object({
-  id: v.string(), namespace: v.string(), deckSlug: v.string(), deckTitle: v.string(),
-  slides: v.array(slideValidator), activeSlideSlug: v.string(),
-  questionOpen: v.boolean(), showResults: v.boolean(),
+  id: v.string(),
+  namespace: v.string(),
+  deckSlug: v.string(),
+  deckTitle: v.string(),
+  slides: v.array(slideValidator),
+  activeSlideSlug: v.string(),
+  questionOpen: v.boolean(),
+  questionOpenedAt: v.optional(v.number()),
+  showResults: v.boolean(),
+  qrVisible: v.optional(v.boolean()),
+  projectionTheme: v.optional(v.union(v.literal("light"), v.literal("dark"))),
   status: v.union(v.literal("live"), v.literal("ended")),
-  createdAt: v.number(), updatedAt: v.number(),
+  createdAt: v.number(),
+  updatedAt: v.number(),
 });
 
 export const publicParticipantValidator = v.object({
-  id: v.id("participants"), name: v.string(), seed: v.number(),
+  id: v.id("participants"),
+  name: v.string(),
+  seed: v.number(),
 });
 
 export const publicVoteValidator = v.object({
-  participantId: v.id("participants"), questionId: v.string(),
-  slideSlug: v.string(), optionIds: v.array(v.string()),
+  participantId: v.id("participants"),
+  questionId: v.string(),
+  slideSlug: v.string(),
+  optionIds: v.array(v.string()),
 });
 
 export const snapshotValidator = v.object({
   session: v.union(publicSessionValidator, v.null()),
   participants: v.array(publicParticipantValidator),
   participant: v.union(publicParticipantValidator, v.null()),
-  votes: v.array(publicVoteValidator), isPresenter: v.boolean(),
+  votes: v.array(publicVoteValidator),
+  isPresenter: v.boolean(),
 });

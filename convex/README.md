@@ -14,19 +14,23 @@ Las funciones usan los imports oficiales de `convex/_generated/server` y `src/li
 
 ## Modelo de sesión
 
-- `sessions` conserva el manifiesto de slides, la slide activa, el estado de la pregunta y la visibilidad de resultados.
+- `sessions` conserva el manifiesto de slides, la slide activa, el estado de la pregunta, la visibilidad de resultados, `qrVisible` y `projectionTheme`. Estos dos últimos campos son opcionales y se leen con valores por defecto para conservar sesiones existentes. `questionOpenedAt` también es opcional: identifica cada apertura de encuesta para avisar al público incluso tras una reconexión, sin repetir avisos por nuevos votos o cambios de tema.
 - Cada sesión tiene un ID aleatorio. El namespace separa las variantes que comparten el deployment.
 - La clave de presentador es una capacidad aleatoria de 192 bits guardada aparte en el navegador creador. El enlace público y el QR nunca la contienen.
 - Cada participante conserva un token de 192 bits por sesión en su navegador. Recibe un nombre de animal y un avatar estables. Refrescar la página conserva su identidad y respuesta.
 - Las queries devuelven solamente campos públicos; nunca claves o tokens. Las mutaciones de presentación comprueban la clave. Los votos se asocian al participante mediante su token, nunca mediante un ID proporcionado por el votante.
-- Navegar cierra la pregunta y oculta resultados; abrirlos es una decisión del presentador. Tanto los votos como los controles de pregunta/resultados incluyen la slide esperada para rechazar acciones tardías desde una pestaña atrasada. La respuesta propia siempre es visible para su autor. Los resultados de los demás solo se comparten para la slide actual cuando el presentador los publica.
+- La proyección se suscribe con `publicOnly`: no lee ni envía las credenciales del navegador y no se registra como participante. Recibe automáticamente los resultados de la slide actual mientras llegan los votos.
+- Las acciones de QR y tema usan la misma comprobación de autoridad del moderador que la navegación.
+- Navegar cierra la pregunta y oculta el QR. Los resultados aparecen al abrir la encuesta, se conservan al cerrarla y vuelven a mostrarse al regresar a una pregunta con votos. Tanto los votos como los controles de pregunta/resultados incluyen la slide esperada para rechazar acciones tardías desde una pestaña atrasada. La respuesta propia siempre es visible para su autor. Los resultados de los demás solo se comparten para la slide actual; no requieren publicación manual.
 - `poll` y `single` admiten una respuesta; `multiple` admite varias opciones sin duplicados. Cambiar la respuesta reemplaza el voto propio de esa slide. Terminar la sesión bloquea navegación, ingreso y votación.
 - Una sesión admite hasta **500 participantes** y **100 slides**. El participante 501 recibe un mensaje explícito; quienes ya ingresaron pueden volver a entrar. Las queries leen la sala acotada, los resultados de la slide actual y los votos propios mediante índices; nunca recortan silenciosamente los resultados.
 
-El modo local es una demostración que almacena todos los datos en el navegador. Las verificaciones de autoridad definitivas viven en las mutaciones de Convex. Este MVP usa enlaces y capacidades de sesión, sin cuentas de usuario. Crear una sesión es público; el workspace slug organiza contenido y no es una contraseña.
+Configura **`GROK_PRESENTER_PASSWORD`** en las variables de entorno de este deployment de Convex. Es un secreto del servidor, sin prefijo `VITE_`; no se configura en Vercel. `authorizePresenter` comprueba el acceso sin leer ni escribir la base. `create` y `update` vuelven a verificarlo antes de acceder a datos; `update` exige además la clave de propiedad de la sesión. Esto protege también los controles de sesiones existentes. Una configuración ausente, vacía o de más de 1024 caracteres bloquea esas acciones. La comparación conserva los espacios de la contraseña.
+
+La contraseña compartida nunca se guarda en la base, respuestas, enlaces ni almacenamiento del navegador: el cliente la mantiene en memoria hasta recargar o cerrar la página. Rotarla en Convex invalida el acceso anterior en la siguiente acción. Las vistas públicas, el ingreso y los votos siguen disponibles sin contraseña. El modo local es una demostración sin conexión a Convex y no requiere contraseña. El workspace slug organiza contenido y no es una credencial.
 
 ## Pruebas sin deployment
 
-`npm test` verifica las reglas, los mensajes de error y el transporte local. También ejecuta las funciones reales de `sessions.ts` contra el esquema y la base de datos simulada oficial de `convex-test` con el entorno `edge-runtime`. Incluye rechazo de capacidades ajenas, votos inválidos, comandos atrasados y capacidad máxima. Las pruebas no crean ni se conectan a un deployment.
+`npm test` verifica las reglas, los mensajes de error y los transportes. También ejecuta las funciones reales de `sessions.ts` contra el esquema y la base de datos simulada oficial de `convex-test` con el entorno `edge-runtime`. Incluye contraseñas incorrectas/ausentes, configuración faltante, rotación, sesiones anteriores, rechazo de capacidades ajenas, votos inválidos, comandos atrasados y capacidad máxima. Las pruebas no crean ni se conectan a un deployment.
 
 Referencia oficial: [API del servidor de Convex](https://docs.convex.dev/api/modules/server) y [cliente React](https://docs.convex.dev/api/classes/react.ConvexReactClient).

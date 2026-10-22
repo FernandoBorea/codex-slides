@@ -4,20 +4,71 @@ import { mutation, query } from "./_generated/server";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
 import { MAX_DECK_SLIDES, MAX_SESSION_PARTICIPANTS } from "../src/live/limits";
-import { presenterActionValidator, slideValidator, snapshotValidator } from "./validators";
+import {
+  presenterActionValidator,
+  slideValidator,
+  snapshotValidator,
+} from "./validators";
 import {
   applyPresenterAction,
   avatarFromToken,
+  resultsAreVisible,
   validateManifest,
   validateVote,
 } from "../src/live/rules";
 import type { Session } from "../src/live/types";
 
 const addressArgs = { namespace: v.string(), sessionId: v.string() };
+const MAX_PRESENTER_PASSWORD_LENGTH = 1024;
+
+function requirePresenterPassword(password: string | undefined): void {
+  const expected = process.env.GROK_PRESENTER_PASSWORD;
+  if (
+    !expected ||
+    !expected.trim() ||
+    expected.length > MAX_PRESENTER_PASSWORD_LENGTH
+  ) {
+    throw new ConvexError({
+      code: "PRESENTER_PASSWORD_NOT_CONFIGURED",
+      message: "Falta configurar la contraseña del presentador en el servidor.",
+    });
+  }
+  if (!password) {
+    throw new ConvexError({
+      code: "PRESENTER_PASSWORD_REQUIRED",
+      message: "Ingresá la contraseña para controlar la presentación.",
+    });
+  }
+  if (password.length > MAX_PRESENTER_PASSWORD_LENGTH) {
+    throw new ConvexError({
+      code: "PRESENTER_PASSWORD_INVALID",
+      message: "La contraseña del presentador no es correcta.",
+    });
+  }
+
+  let difference = expected.length ^ password.length;
+  for (let index = 0; index < expected.length; index++) {
+    difference |=
+      expected.charCodeAt(index) ^ (password.charCodeAt(index) || 0);
+  }
+  if (difference !== 0) {
+    throw new ConvexError({
+      code: "PRESENTER_PASSWORD_INVALID",
+      message: "La contraseña del presentador no es correcta.",
+    });
+  }
+}
 
 function publicRule<T>(run: () => T): T {
-  try { return run(); }
-  catch (error) { throw new ConvexError(error instanceof Error ? error.message : "No pudimos validar esta acción."); }
+  try {
+    return run();
+  } catch (error) {
+    throw new ConvexError(
+      error instanceof Error
+        ? error.message
+        : "No pudimos validar esta acción.",
+    );
+  }
 }
 
 function validateAddress(namespace: string, sessionId: string): void {
@@ -67,23 +118,39 @@ function publicSession(row: Doc<"sessions">): Session {
     slides: row.slides,
     activeSlideSlug: row.activeSlideSlug,
     questionOpen: row.questionOpen,
+    ...(row.questionOpenedAt !== undefined
+      ? { questionOpenedAt: row.questionOpenedAt }
+      : {}),
     showResults: row.showResults,
+    qrVisible: row.qrVisible ?? false,
+    projectionTheme: row.projectionTheme ?? "dark",
     status: row.status,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
 }
 
+export const authorizePresenter = mutation({
+  args: { password: v.string() },
+  returns: v.null(),
+  handler: (_ctx, args): null => {
+    requirePresenterPassword(args.password);
+    return null;
+  },
+});
+
 export const create = mutation({
   returns: v.string(),
   args: {
     ...addressArgs,
     presenterKey: v.string(),
+    presenterPassword: v.optional(v.string()),
     deckSlug: v.string(),
     deckTitle: v.string(),
     slides: v.array(slideValidator),
   },
   handler: async (ctx, args): Promise<string> => {
+    requirePresenterPassword(args.presenterPassword);
     validateAddress(args.namespace, args.sessionId);
     validateToken(args.presenterKey);
     publicRule(() => validateManifest(args));
@@ -100,6 +167,8 @@ export const create = mutation({
       activeSlideSlug: args.slides[0].slug,
       questionOpen: false,
       showResults: false,
+      qrVisible: false,
+      projectionTheme: "dark",
       status: "live",
       createdAt: now,
       updatedAt: now,
@@ -130,23 +199,56 @@ export const snapshot = query({
       .query("participants")
       .withIndex("by_sessionId", (q) => q.eq("sessionId", row._id))
       .take(MAX_SESSION_PARTICIPANTS + 1);
-    if (people.length > MAX_SESSION_PARTICIPANTS) throw new ConvexError("Esta sesión supera el límite de 500 participantes. Crea una nueva sesión.");
+    if (people.length > MAX_SESSION_PARTICIPANTS)
+      throw new ConvexError(
+        "Esta sesión supera el límite de 500 participantes. Crea una nueva sesión.",
+      );
     const participantRow = args.participantToken
-      ? await ctx.db.query("participants").withIndex("by_sessionId_and_token", q => q.eq("sessionId", row._id).eq("token", args.participantToken!)).unique()
+      ? await ctx.db
+          .query("participants")
+          .withIndex("by_sessionId_and_token", (q) =>
+            q.eq("sessionId", row._id).eq("token", args.participantToken!),
+          )
+          .unique()
       : null;
-    const publicPerson = (person: Doc<"participants">) => ({ id: person._id, name: person.name, seed: person.seed });
-    const isPresenter = !!args.presenterKey && args.presenterKey === row.presenterKey;
-    const currentVotes = isPresenter || row.showResults
-      ? await ctx.db.query("votes").withIndex("by_sessionId_and_slideSlug", q => q.eq("sessionId", row._id).eq("slideSlug", row.activeSlideSlug)).take(MAX_SESSION_PARTICIPANTS + 1)
-      : [];
-    if (currentVotes.length > MAX_SESSION_PARTICIPANTS) throw new ConvexError("Los resultados de esta sesión superan el límite permitido.");
+    const publicPerson = (person: Doc<"participants">) => ({
+      id: person._id,
+      name: person.name,
+      seed: person.seed,
+    });
+    const isPresenter =
+      !!args.presenterKey && args.presenterKey === row.presenterKey;
+    const currentVotes = await ctx.db
+      .query("votes")
+      .withIndex("by_sessionId_and_slideSlug", (q) =>
+        q.eq("sessionId", row._id).eq("slideSlug", row.activeSlideSlug),
+      )
+      .take(MAX_SESSION_PARTICIPANTS + 1);
+    if (currentVotes.length > MAX_SESSION_PARTICIPANTS)
+      throw new ConvexError(
+        "Los resultados de esta sesión superan el límite permitido.",
+      );
     const ownVotes = participantRow
-      ? await ctx.db.query("votes").withIndex("by_participantId_and_slideSlug", q => q.eq("participantId", participantRow._id)).take(MAX_DECK_SLIDES + 1)
+      ? await ctx.db
+          .query("votes")
+          .withIndex("by_participantId_and_slideSlug", (q) =>
+            q.eq("participantId", participantRow._id),
+          )
+          .take(MAX_DECK_SLIDES + 1)
       : [];
-    if (ownVotes.length > MAX_DECK_SLIDES) throw new ConvexError("La sesión supera el límite de 100 slides.");
-    const visibleVotes = [...new Map([...currentVotes, ...ownVotes].map(vote => [vote._id, vote])).values()];
+    if (ownVotes.length > MAX_DECK_SLIDES)
+      throw new ConvexError("La sesión supera el límite de 100 slides.");
+    const visibleVotes = [
+      ...new Map(
+        [...currentVotes, ...ownVotes].map((vote) => [vote._id, vote]),
+      ).values(),
+    ];
+    const session = publicSession(row);
     return {
-      session: publicSession(row),
+      session: {
+        ...session,
+        showResults: resultsAreVisible(session, currentVotes.length > 0),
+      },
       participants: people.map(publicPerson),
       participant: participantRow ? publicPerson(participantRow) : null,
       isPresenter,
@@ -168,7 +270,8 @@ export const join = mutation({
   handler: async (ctx, args): Promise<null> => {
     validateToken(args.participantToken);
     const session = await requireSession(ctx, args.namespace, args.sessionId);
-    if (session.status !== "live") throw new ConvexError("Esta sesión ya terminó.");
+    if (session.status !== "live")
+      throw new ConvexError("Esta sesión ya terminó.");
     const existing = await ctx.db
       .query("participants")
       .withIndex("by_sessionId_and_token", (q) =>
@@ -176,8 +279,18 @@ export const join = mutation({
       )
       .unique();
     if (existing) return null;
-    const participantCount = session.participantCount ?? (await ctx.db.query("participants").withIndex("by_sessionId", q => q.eq("sessionId", session._id)).take(MAX_SESSION_PARTICIPANTS + 1)).length;
-    if (participantCount >= MAX_SESSION_PARTICIPANTS) throw new ConvexError("Esta sesión llegó al máximo de 500 participantes.");
+    const participantCount =
+      session.participantCount ??
+      (
+        await ctx.db
+          .query("participants")
+          .withIndex("by_sessionId", (q) => q.eq("sessionId", session._id))
+          .take(MAX_SESSION_PARTICIPANTS + 1)
+      ).length;
+    if (participantCount >= MAX_SESSION_PARTICIPANTS)
+      throw new ConvexError(
+        "Esta sesión llegó al máximo de 500 participantes.",
+      );
     const { name, seed } = avatarFromToken(args.participantToken);
     await ctx.db.insert("participants", {
       sessionId: session._id,
@@ -185,7 +298,9 @@ export const join = mutation({
       name,
       seed,
     });
-    await ctx.db.patch("sessions", session._id, { participantCount: participantCount + 1 });
+    await ctx.db.patch("sessions", session._id, {
+      participantCount: participantCount + 1,
+    });
     return null;
   },
 });
@@ -195,21 +310,26 @@ export const update = mutation({
   args: {
     ...addressArgs,
     presenterKey: v.string(),
+    presenterPassword: v.optional(v.string()),
     action: presenterActionValidator,
   },
   handler: async (ctx, args): Promise<null> => {
+    requirePresenterPassword(args.presenterPassword);
     const row = await requireSession(ctx, args.namespace, args.sessionId);
     if (!args.presenterKey || row.presenterKey !== args.presenterKey)
       throw new ConvexError("Solo el presentador puede controlar esta sesión.");
-    const changed = publicRule(() => applyPresenterAction(
-      publicSession(row),
-      args.action,
-      Date.now(),
-    ));
+    const changed = publicRule(() =>
+      applyPresenterAction(publicSession(row), args.action, Date.now()),
+    );
     await ctx.db.patch("sessions", row._id, {
       activeSlideSlug: changed.activeSlideSlug,
       questionOpen: changed.questionOpen,
+      ...(changed.questionOpenedAt !== undefined
+        ? { questionOpenedAt: changed.questionOpenedAt }
+        : {}),
       showResults: changed.showResults,
+      qrVisible: changed.qrVisible ?? false,
+      projectionTheme: changed.projectionTheme ?? "dark",
       status: changed.status,
       updatedAt: changed.updatedAt,
     });
@@ -233,13 +353,16 @@ export const vote = mutation({
         q.eq("sessionId", session._id).eq("token", args.participantToken),
       )
       .unique();
-    if (!participant) throw new ConvexError("Únete a la sesión antes de responder.");
-    const answer = publicRule(() => validateVote(
-      publicSession(session),
-      participant._id,
-      args.optionIds,
-      args.slideSlug,
-    ));
+    if (!participant)
+      throw new ConvexError("Únete a la sesión antes de responder.");
+    const answer = publicRule(() =>
+      validateVote(
+        publicSession(session),
+        participant._id,
+        args.optionIds,
+        args.slideSlug,
+      ),
+    );
     const existing = await ctx.db
       .query("votes")
       .withIndex("by_participantId_and_slideSlug", (q) =>

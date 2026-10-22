@@ -91,9 +91,10 @@ La slide proyectada puede tener una frase grande, un diagrama o código. La guí
 - `guide.intro` resume la idea principal.
 - `guide.sections` añade pasos, ejemplos o explicación; es opcional.
 - `guide.takeaway` guarda una conclusión o acción concreta; es opcional.
-- `question` activa la participación en esa slide; omítelo si no hace falta.
+- `question` prepara una pregunta para abrir manualmente en esa slide; omítelo si no hace falta.
+- `speakerNotes` vive solo en `SlideDefinition`: `script`, `timing`, `cues`, `interaction` y `transition` ayudan al moderador. `slideMetadata()` lo excluye del manifiesto de Convex y de la guía móvil. No pongas información confidencial en el código del frontend.
 
-Al entrar, el público abre la guía de `activeSlideSlug`. Después, cada persona conserva su slide y posición de lectura aunque el presentador avance. Puede navegar hacia atrás o adelante y usar **Ir al presentador** para saltar al punto en vivo; este botón no activa un avance automático posterior. No se envía el componente React de la slide a Convex ni se intenta mostrar una copia reducida de la presentación en el teléfono.
+Al entrar, el público abre la guía de `activeSlideSlug` en modo **En vivo**: los cambios del presentador actualizan automáticamente la guía y llevan al inicio de la nueva slide. Usar las flechas pausa el seguimiento y conserva la lectura aunque el presentador avance; **Volver al vivo** vuelve a la slide actual y reanuda el seguimiento. Una bienvenida en la primera entrada a cada sesión explica este comportamiento y los avisos de encuestas. Se puede volver a abrir con **Cómo funciona**. No se envía el componente React de la slide a Convex ni se intenta mostrar una copia reducida de la presentación en el teléfono.
 
 Al iniciar una sesión, la aplicación guarda una copia de estos metadatos en Convex o en el almacenamiento local. Los cambios posteriores en el código no reescriben ese contenido: inicia una sesión nueva después de editar el deck. Evita reemplazar el frontend de una presentación que esté en curso.
 
@@ -107,7 +108,13 @@ Al iniciar una sesión, la aplicación guarda una copia de estos metadatos en Co
 
 Cada pregunta acepta entre 2 y 20 opciones con IDs únicos. `id` identifica la pregunta; cada opción tiene `id` y `label`. Conserva esos IDs cuando ajustes únicamente el texto. El participante puede actualizar su voto mientras esté abierta; reemplaza su respuesta anterior, no agrega otra.
 
-El presentador controla el checkbox **Activar pregunta**. La pregunta y sus resultados se muestran a la derecha del contenido, dentro del mismo marco 16:9: se actualizan en tiempo real y permanecen visibles en pantalla completa. Las slides con y sin encuestas utilizan las mismas dimensiones de proyección. **Mostrar en móviles** y **Ocultar en móviles** controlan solamente su publicación en las guías del público. La pregunta empieza cerrada en una sesión nueva; avanzar a otra slide vuelve a cerrar la participación y ocultar los resultados en los móviles. La proyección conserva los votos de cada pregunta al regresar a ella. En el público, solo se habilita la respuesta cuando la slide leída coincide con `activeSlideSlug`, la pregunta está abierta y la sesión sigue en vivo. Cada envío incluye el slug de la slide leída: el backend rechaza votos adelantados o atrasados incluso si las opciones de dos preguntas comparten IDs. Los resultados agregados solo se muestran en la slide activa cuando se han publicado; las respuestas propias anteriores se conservan. El QR identifica la sesión, por eso basta escanearlo una vez.
+El moderador abre y cierra cada encuesta. Mientras está abierta, los conteos se actualizan automáticamente en el moderador, la proyección y los teléfonos. Cerrar una encuesta detiene las respuestas y conserva los votos y sus resultados. Al volver a una pregunta con votos, su conteo vuelve a mostrarse sin abrirla de nuevo.
+
+Abrir una encuesta muestra un aviso en la guía del público, incluso si la persona está leyendo otra slide. El aviso permanece hasta descartarlo, pulsar **Responder** o cerrar la encuesta. **Responder** vuelve a `activeSlideSlug`, reanuda el seguimiento y lleva el foco a la pregunta.
+
+Al navegar se cierra la encuesta y se oculta el QR. En el teléfono solo se habilita el voto si la slide leída coincide con `activeSlideSlug`, la pregunta está abierta y la sesión sigue en vivo. El backend rechaza votos y controles atrasados. El voto propio se conserva al volver a una slide.
+
+La ruta `/present/<deck>/<sessionId>` es el moderador; **Abrir proyección** abre `/screen/<deck>/<sessionId>`, que se suscribe sin credenciales y no se registra como participante. Ambas usan el estado de Convex. `qrVisible` y `projectionTheme` son campos opcionales para admitir sesiones antiguas. El botón **Mostrar QR en proyección** cambia el estado compartido; **Compartir** abre un modal local. El QR mantiene una URL `/join/<sessionId>` durante toda la sesión.
 
 ## Slugs e identidad
 
@@ -163,10 +170,10 @@ npm run build
 npm run preview
 ```
 
-Revisa tu deck en vista previa, sus miniaturas y la guía del público a tamaño móvil. Inicia una sesión nueva, abre/cierra una pregunta, envía y actualiza una respuesta, cambia de slide y termina la sesión. Después de conectar o publicar tu variante, repite el flujo entre el navegador del presentador y un teléfono.
+Revisa tu deck en vista previa, sus miniaturas y la guía del público a tamaño móvil. Inicia una sesión nueva y comprueba la bienvenida, el seguimiento automático, su pausa con las flechas y **Volver al vivo**. Abre/cierra una pregunta, verifica el aviso desde otra slide, envía y actualiza una respuesta, y comprueba que los conteos cambian automáticamente y se conservan al cerrar o volver a la pregunta. Cambia de slide y termina la sesión. Después de conectar o publicar tu variante, repite el flujo entre el navegador del presentador y un teléfono.
 
 En la versión inicial se comprobó el flujo real con Convex remoto —creación, ingreso, votación, actualización, resultados y navegación— entre entornos de navegador con almacenamiento separado en `localhost` y la dirección LAN. Esa comprobación no incluyó un teléfono físico; valida el QR y la conectividad en los dispositivos que usarás durante la presentación.
 
-Publica `dist/client` con fallback SPA a `index.html` para que funcionen los enlaces directos a `/deck/...`, `/present/...` y `/join/...`. La salida incluye también el worker de Sites en `dist/server/index.js`; en otro hosting configura el equivalente. Consulta [la publicación en el README](../README.md#publicar).
+Publica `dist/client` con fallback SPA a `index.html` para que funcionen los enlaces directos a `/deck/...`, `/present/...`, `/screen/...` y `/join/...`. La salida incluye también el worker de Sites en `dist/server/index.js`; en otro hosting configura el equivalente. Consulta [la publicación en el README](../README.md#publicar).
 
 Las rutas programáticas están en `src/router.tsx`; la [documentación oficial de TanStack Router](https://tanstack.com/router/latest/docs/routing/code-based-routing) explica sus APIs. Para conectar y publicar el backend, consulta [Convex con React](https://docs.convex.dev/quickstart/react) y [hosting del frontend con Convex](https://docs.convex.dev/production/hosting/custom).

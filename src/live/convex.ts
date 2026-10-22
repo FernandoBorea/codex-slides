@@ -9,7 +9,12 @@ import {
 } from "./credentials";
 import { validateManifest } from "./rules";
 import type { LiveTransport } from "./types";
-import { convexRequest, normalizeConvexError } from "./errors";
+import {
+  convexRequest,
+  normalizeConvexError,
+  isPresenterAccessError,
+  PresenterAccessError,
+} from "./errors";
 
 export function createConvexTransport(
   url: string,
@@ -28,23 +33,60 @@ export function createConvexTransport(
   const client = new ConvexReactClient(parsed.origin, {
     unsavedChangesWarning: false,
   });
+  // Only retained for this transport's lifetime. Never put the shared password
+  // in persistent browser storage, session metadata or subscription arguments.
+  let presenterPassword: string | undefined;
+  let authorizationAttempt = 0;
+
+  async function presenterRequest<T>(
+    request: (password: string) => Promise<T>,
+  ): Promise<T> {
+    const password = presenterPassword;
+    if (!password)
+      throw new PresenterAccessError(
+        "PRESENTER_PASSWORD_REQUIRED",
+        "Ingresá la contraseña del moderador para continuar.",
+      );
+    try {
+      return await convexRequest(request(password));
+    } catch (reason) {
+      if (isPresenterAccessError(reason) && presenterPassword === password)
+        presenterPassword = undefined;
+      throw reason;
+    }
+  }
 
   return {
     mode: "convex",
-    async createSession(input) {
-      validateManifest(input);
-      const sessionId = newSessionId();
-      const presenterKey = randomToken();
-      // Save before the mutation: reconnects or a refresh must not lose ownership.
-      saveCredentials(namespace, sessionId, { presenterKey });
-      return convexRequest(client.mutation(sessionsApi.create, {
-        namespace,
-        sessionId,
-        presenterKey,
-        ...input,
-      }));
+    hasPresenterAccess: () => presenterPassword !== undefined,
+    async authorizePresenter(password, signal) {
+      const attempt = ++authorizationAttempt;
+      presenterPassword = undefined;
+      if (signal?.aborted) throw new Error("Validación cancelada.");
+      await convexRequest(
+        client.mutation(sessionsApi.authorizePresenter, { password }),
+      );
+      if (signal?.aborted || attempt !== authorizationAttempt)
+        throw new Error("Validación cancelada.");
+      presenterPassword = password;
     },
-    subscribe(sessionId, next, error) {
+    async createSession(input) {
+      return presenterRequest((password) => {
+        validateManifest(input);
+        const sessionId = newSessionId();
+        const presenterKey = randomToken();
+        // Save before the mutation: reconnects or a refresh must not lose ownership.
+        saveCredentials(namespace, sessionId, { presenterKey });
+        return client.mutation(sessionsApi.create, {
+          namespace,
+          sessionId,
+          presenterKey,
+          ...input,
+          presenterPassword: password,
+        });
+      });
+    },
+    subscribe(sessionId, next, error, options) {
       let stopWatch = () => {};
       let timeout: ReturnType<typeof setTimeout> | undefined;
       let disposed = false;
@@ -55,7 +97,9 @@ export function createConvexTransport(
           const watch = client.watchQuery(sessionsApi.snapshot, {
             namespace,
             sessionId,
-            ...readCredentials(namespace, sessionId),
+            ...(options?.publicOnly
+              ? {}
+              : readCredentials(namespace, sessionId)),
           });
           const deliver = () => {
             if (disposed) return;
@@ -86,9 +130,12 @@ export function createConvexTransport(
         }
       };
       subscribe();
-      window.addEventListener("grok-credentials-changed", subscribe);
       const onStorage = () => subscribe();
-      window.addEventListener("storage", onStorage);
+      // Projections stay public even when a moderator logs in in another tab.
+      if (!options?.publicOnly) {
+        window.addEventListener("grok-credentials-changed", subscribe);
+        window.addEventListener("storage", onStorage);
+      }
       return () => {
         disposed = true;
         stopWatch();
@@ -99,36 +146,45 @@ export function createConvexTransport(
     },
     async join(sessionId) {
       const participantToken = ensureParticipantToken(namespace, sessionId);
-      await convexRequest(client.mutation(sessionsApi.join, {
-        namespace,
-        sessionId,
-        participantToken,
-      }));
+      await convexRequest(
+        client.mutation(sessionsApi.join, {
+          namespace,
+          sessionId,
+          participantToken,
+        }),
+      );
     },
     async update(sessionId, action) {
       const { presenterKey } = readCredentials(namespace, sessionId);
       if (!presenterKey)
         throw new Error("Solo el presentador puede controlar esta sesión.");
-      await convexRequest(client.mutation(sessionsApi.update, {
-        namespace,
-        sessionId,
-        presenterKey,
-        action,
-      }));
+      await presenterRequest((password) =>
+        client.mutation(sessionsApi.update, {
+          namespace,
+          sessionId,
+          presenterKey,
+          action,
+          presenterPassword: password,
+        }),
+      );
     },
     async vote(sessionId, optionIds, slideSlug) {
       const { participantToken } = readCredentials(namespace, sessionId);
       if (!participantToken)
         throw new Error("Únete a la sesión antes de responder.");
-      await convexRequest(client.mutation(sessionsApi.vote, {
-        namespace,
-        sessionId,
-        participantToken,
-        slideSlug,
-        optionIds,
-      }));
+      await convexRequest(
+        client.mutation(sessionsApi.vote, {
+          namespace,
+          sessionId,
+          participantToken,
+          slideSlug,
+          optionIds,
+        }),
+      );
     },
     close() {
+      authorizationAttempt++;
+      presenterPassword = undefined;
       void client.close();
     },
   };

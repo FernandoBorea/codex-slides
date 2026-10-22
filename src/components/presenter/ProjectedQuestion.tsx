@@ -7,12 +7,14 @@ export function ProjectedQuestion({
   slideSlug,
   isLive,
   votingOpen,
+  showResults = false,
 }: {
   question: Question;
   votes: Vote[];
   slideSlug: string;
   isLive: boolean;
   votingOpen: boolean;
+  showResults?: boolean;
 }) {
   return (
     <section
@@ -30,11 +32,26 @@ export function ProjectedQuestion({
               : "Votación cerrada"}
         </span>
       </div>
-      <QuestionResults
-        question={question}
-        votes={votes}
-        slideSlug={slideSlug}
-      />
+      {showResults || votingOpen ? (
+        <QuestionResults
+          question={question}
+          votes={votes}
+          slideSlug={slideSlug}
+        />
+      ) : (
+        <>
+          <ol className="projected-options">
+            {question.options.map((option) => (
+              <li key={option.id}>{option.label}</li>
+            ))}
+          </ol>
+          {isLive && (
+            <p className="projected-question-hint">
+              Respondé desde tu teléfono.
+            </p>
+          )}
+        </>
+      )}
     </section>
   );
 }

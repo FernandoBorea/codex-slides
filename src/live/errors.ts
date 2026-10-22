@@ -1,7 +1,29 @@
 import { ConvexError } from "convex/values";
 
+export type PresenterAccessCode =
+  | "PRESENTER_PASSWORD_REQUIRED"
+  | "PRESENTER_PASSWORD_INVALID"
+  | "PRESENTER_PASSWORD_NOT_CONFIGURED";
+
+export class PresenterAccessError extends Error {
+  constructor(public readonly code: PresenterAccessCode, message: string) {
+    super(message);
+    this.name = "PresenterAccessError";
+  }
+}
+
+export function isPresenterAccessError(reason: unknown): reason is PresenterAccessError {
+  return reason instanceof PresenterAccessError;
+}
+
 export function normalizeConvexError(reason: unknown): Error {
-  if (import.meta.env.DEV) console.error("Error de Convex", reason);
+  if (reason instanceof PresenterAccessError) return reason;
+  if (reason instanceof ConvexError && typeof reason.data === "object" && reason.data !== null) {
+    const data = reason.data as { code?: unknown; message?: unknown };
+    if ((data.code === "PRESENTER_PASSWORD_REQUIRED" || data.code === "PRESENTER_PASSWORD_INVALID" || data.code === "PRESENTER_PASSWORD_NOT_CONFIGURED") && typeof data.message === "string") {
+      return new PresenterAccessError(data.code, data.message);
+    }
+  }
   if (reason instanceof ConvexError && typeof reason.data === "string") return new Error(reason.data);
   const message = reason instanceof Error ? reason.message : String(reason);
   if (/could not find public function|function.*not found|no function registered/i.test(message)) {

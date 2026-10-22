@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Play, Stop } from "@phosphor-icons/react";
+import { ArrowLeft, Monitor, Play, Stop } from "@phosphor-icons/react";
 import { Brand } from "../Shell";
 
 type PresenterHeaderProps = {
@@ -9,6 +9,7 @@ type PresenterHeaderProps = {
   busy: boolean;
   onStart: () => void;
   onEnd: () => void;
+  projectionUrl?: string;
 };
 
 export function PresenterHeader({
@@ -18,6 +19,7 @@ export function PresenterHeader({
   busy,
   onStart,
   onEnd,
+  projectionUrl,
 }: PresenterHeaderProps) {
   return (
     <header className="presenter-header">
@@ -34,9 +36,19 @@ export function PresenterHeader({
             : isLive
               ? ended
                 ? "Sesión finalizada"
-                : "Sesión en vivo"
+                : "Moderador"
               : "Vista previa"}
         </span>
+        {isLive && !ended && projectionUrl && (
+          <a
+            className="button secondary"
+            href={projectionUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Monitor size={17} /> Abrir proyección
+          </a>
+        )}
         {isLive && !ended && (
           <button className="button subtle end-button" onClick={onEnd}>
             <Stop size={15} />

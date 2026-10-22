@@ -1,31 +1,41 @@
 import { Broadcast, CaretLeft, CaretRight } from "@phosphor-icons/react";
+import { formatSlideNumber } from "../../decks/slideNumbers";
+import type { ReactNode } from "react";
 
 export function AudienceNavigation({
   index,
   presenterIndex,
   slideCount,
+  firstSlideNumber = 1,
   questionOpen,
   ended,
+  following,
+  notification,
   onMove,
   onCatchUp,
 }: {
   index: number;
   presenterIndex: number;
   slideCount: number;
+  firstSlideNumber?: 0 | 1;
   questionOpen: boolean;
   ended: boolean;
+  following: boolean;
+  notification?: ReactNode;
   onMove: (index: number) => void;
   onCatchUp: () => void;
 }) {
-  const isCurrent = index === presenterIndex;
   return (
     <nav className="audience-navigation" aria-label="Navegar la guía">
+      {notification}
       <p className="audience-navigation-status" role="status">
         {ended
           ? "La presentación terminó. Puedes seguir explorando."
           : questionOpen
-            ? `Pregunta abierta en la slide ${presenterIndex + 1}`
-            : `El presentador está en la slide ${presenterIndex + 1}`}
+            ? `Encuesta abierta en la slide ${formatSlideNumber(presenterIndex, firstSlideNumber)}`
+            : following
+              ? "Las slides avanzan con el presentador"
+              : `A tu ritmo · Presentador en la slide ${formatSlideNumber(presenterIndex, firstSlideNumber)}`}
       </p>
       <div className="audience-navigation-controls">
         <button
@@ -38,10 +48,10 @@ export function AudienceNavigation({
         </button>
         <span
           className="audience-page-number"
-          aria-label={`Slide ${index + 1} de ${slideCount}`}
+          aria-label={`Slide ${formatSlideNumber(index, firstSlideNumber)} de ${formatSlideNumber(slideCount - 1, firstSlideNumber)}`}
         >
-          {String(index + 1).padStart(2, "0")}{" "}
-          <span>/ {String(slideCount).padStart(2, "0")}</span>
+          {formatSlideNumber(index, firstSlideNumber)}{" "}
+          <span>/ {formatSlideNumber(slideCount - 1, firstSlideNumber)}</span>
         </span>
         <button
           className="audience-nav-arrow"
@@ -52,13 +62,14 @@ export function AudienceNavigation({
           <CaretRight size={21} />
         </button>
         <button
-          className={`audience-sync-button ${isCurrent ? "is-current" : ""}`}
-          aria-label="Ir al presentador"
+          className={`audience-sync-button ${following ? "is-current" : ""}`}
+          aria-label={following ? "En vivo: siguiendo al presentador" : "Volver al vivo"}
+          aria-pressed={following}
           disabled={ended}
           onClick={onCatchUp}
         >
           <Broadcast size={18} />
-          {ended ? "Finalizada" : isCurrent ? "En vivo" : "Ir al presentador"}
+          {ended ? "Finalizada" : following ? "En vivo" : "Volver al vivo"}
         </button>
       </div>
     </nav>

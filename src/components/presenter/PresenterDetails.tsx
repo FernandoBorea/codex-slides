@@ -1,17 +1,23 @@
-import { Broadcast, ChartBar, NoteBlank, QrCode } from "@phosphor-icons/react";
-import type { SlideMeta } from "../../live/types";
+import {
+  Broadcast,
+  Clock,
+  NoteBlank,
+  Play,
+  Stop,
+} from "@phosphor-icons/react";
+import type { SlideDefinition } from "../../decks";
+import type { Vote } from "../../live/types";
+import { QuestionResults } from "../QuestionResults";
 
 type PresenterDetailsProps = {
-  slide: SlideMeta;
+  slide: SlideDefinition;
   standalone?: boolean;
   isLive: boolean;
   busy: boolean;
   ended: boolean;
   votingOpen: boolean;
-  showResults: boolean;
+  votes: Vote[];
   onQuestionOpen: (open: boolean) => void;
-  onShowResults: () => void;
-  onShare: () => void;
 };
 
 export function PresenterDetails(props: PresenterDetailsProps) {
@@ -19,44 +25,85 @@ export function PresenterDetails(props: PresenterDetailsProps) {
     <div
       className={`presenter-details ${props.standalone ? "standalone-details" : ""}`}
     >
-      <SpeakerNotes
-        guide={props.slide.guide}
-        standalone={props.standalone}
-      />
+      <SpeakerNotes slide={props.slide} standalone={props.standalone} />
       {!props.standalone && <InteractionPanel {...props} />}
     </div>
   );
 }
 
 function SpeakerNotes({
-  guide,
+  slide,
   standalone,
 }: {
-  guide: SlideMeta["guide"];
+  slide: SlideDefinition;
   standalone?: boolean;
 }) {
+  const notes = slide.speakerNotes;
+  const guide = slide.guide;
   return (
-    <section className="speaker-notes">
-      <p className="section-label">
-        <NoteBlank size={16} /> GUÍA DE ESTA SLIDE
-      </p>
-      <h2>{guide.intro}</h2>
-      {standalone ? (
+    <section
+      className="speaker-notes"
+      aria-label={notes ? "Notas del moderador" : "Guía de la slide"}
+    >
+      <div className="speaker-notes-heading">
+        <p className="section-label">
+          <NoteBlank size={16} />{" "}
+          {notes ? "NOTAS DEL MODERADOR" : "GUÍA DE ESTA SLIDE"}
+        </p>
+        {notes && (
+          <span className="speaker-timing">
+            <Clock size={14} /> {notes.timing}
+          </span>
+        )}
+      </div>
+      {notes ? (
         <>
-          {guide.sections?.map((section) => (
-            <div className="speaker-guide-section" key={section.title}>
-              <h3>{section.title}</h3>
-              <p>{section.body}</p>
+          <h2>{slide.title}</h2>
+          <p className="speaker-script">{notes.script}</p>
+          {!!notes.cues?.length && (
+            <ul className="speaker-cues">
+              {notes.cues.map((cue) => (
+                <li key={cue}>{cue}</li>
+              ))}
+            </ul>
+          )}
+          {notes.interaction && (
+            <div className="speaker-cue">
+              <strong>Participación</strong>
+              <p>{notes.interaction}</p>
             </div>
-          ))}
-          {guide.takeaway && <p>{guide.takeaway}</p>}
+          )}
+          {notes.transition && (
+            <div className="speaker-cue">
+              <strong>Para seguir</strong>
+              <p>{notes.transition}</p>
+            </div>
+          )}
+          <span className="small muted">
+            Estas notas solo aparecen en el moderador.
+          </span>
         </>
       ) : (
         <>
-          <p>{guide.takeaway || guide.sections?.[0]?.body}</p>
-          <span className="small muted">
-            El público verá esta guía adaptada a su dispositivo.
-          </span>
+          <h2>{guide.intro}</h2>
+          {standalone ? (
+            <>
+              {guide.sections?.map((section) => (
+                <div className="speaker-guide-section" key={section.title}>
+                  <h3>{section.title}</h3>
+                  <p>{section.body}</p>
+                </div>
+              ))}
+              {guide.takeaway && <p>{guide.takeaway}</p>}
+            </>
+          ) : (
+            <>
+              <p>{guide.takeaway || guide.sections?.[0]?.body}</p>
+              <span className="small muted">
+                El público tiene esta guía en su teléfono.
+              </span>
+            </>
+          )}
         </>
       )}
     </section>
@@ -69,10 +116,8 @@ function InteractionPanel({
   busy,
   ended,
   votingOpen,
-  showResults,
+  votes,
   onQuestionOpen,
-  onShowResults,
-  onShare,
 }: PresenterDetailsProps) {
   const question = slide.question;
   return (
@@ -82,16 +127,11 @@ function InteractionPanel({
           <Broadcast size={17} /> PARTICIPACIÓN
         </p>
         {question && (
-          <label className="question-toggle">
-            <input
-              type="checkbox"
-              aria-label="Activar pregunta"
-              checked={votingOpen}
-              disabled={!isLive || busy || ended}
-              onChange={(event) => onQuestionOpen(event.target.checked)}
-            />
-            <span>{votingOpen ? "Abierta" : "Cerrada"}</span>
-          </label>
+          <span
+            className={`poll-state ${votingOpen && !ended ? "is-open" : ""}`}
+          >
+            {votingOpen && !ended ? "Abierta" : "Cerrada"}
+          </span>
         )}
       </div>
       {question ? (
@@ -109,23 +149,29 @@ function InteractionPanel({
           {isLive ? (
             <>
               <div className="interaction-actions">
-                <button className="button secondary" onClick={onShare}>
-                  <QrCode size={19} />
-                  Mostrar QR
-                </button>
                 <button
-                  className={`button subtle ${showResults ? "is-active" : ""}`}
+                  className="button secondary"
                   disabled={busy || ended}
-                  onClick={onShowResults}
+                  onClick={() => onQuestionOpen(!votingOpen)}
                 >
-                  <ChartBar size={18} />
-                  {showResults ? "Ocultar en móviles" : "Mostrar en móviles"}
+                  {votingOpen ? <Stop size={16} /> : <Play size={16} />}
+                  {votingOpen ? "Cerrar encuesta" : "Abrir encuesta"}
                 </button>
               </div>
               <p className="small muted">
-                Los resultados se actualizan en la slide. También puedes
-                mostrarlos en los teléfonos del público.
+                Los resultados se actualizan en vivo en la proyección y los
+                teléfonos. Al cerrar la encuesta, quedan visibles.
               </p>
+              <div
+                className="moderator-results"
+                data-testid="moderator-results"
+              >
+                <QuestionResults
+                  question={question}
+                  votes={votes}
+                  slideSlug={slide.slug}
+                />
+              </div>
             </>
           ) : (
             <>
@@ -135,7 +181,7 @@ function InteractionPanel({
                 ))}
               </div>
               <p className="small muted">
-                Inicia la presentación para compartir el QR y recibir
+                Iniciá la presentación para compartir el QR y recibir
                 respuestas.
               </p>
             </>
@@ -148,12 +194,6 @@ function InteractionPanel({
             Esta slide no tiene pregunta. El público puede explorar la guía y
             volver a tu slide en vivo.
           </p>
-          {isLive && (
-            <button className="button secondary" onClick={onShare}>
-              <QrCode size={18} />
-              Compartir sesión
-            </button>
-          )}
         </>
       )}
     </section>

@@ -9,10 +9,16 @@ import {
 import { Library } from "./pages/Library";
 import { DeckPage, PresenterPage } from "./pages/Presenter";
 import { AudiencePage } from "./pages/Audience";
+import { ProjectionPage } from "./pages/Projection";
+import { StaticSlidesPage } from "./pages/StaticSlides";
 import { findDeck } from "./decks";
 import { LiveProvider } from "./live/LiveProvider";
 
 function RootLayout() {
+  const isStaticReader = useRouterState({
+    select: (state) =>
+      state.matches.some((match) => match.routeId === "/slides/$deckSlug"),
+  });
   const deckSlug = useRouterState({
     select: (state) => {
       for (const match of state.matches) {
@@ -24,6 +30,7 @@ function RootLayout() {
   const standalone =
     typeof deckSlug === "string" &&
     findDeck(deckSlug)?.presentationMode === "standalone";
+  if (isStaticReader) return <Outlet />;
   return (
     <LiveProvider localOnly={standalone}>
       <Outlet />
@@ -75,17 +82,32 @@ export const presenterRoute = createRoute({
   path: "/present/$deckSlug/$sessionId",
   component: PresenterPage,
 });
+export const staticSlidesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/slides/$deckSlug",
+  validateSearch: (search: Record<string, unknown>) => ({
+    slide: typeof search.slide === "string" ? search.slide : undefined,
+  }),
+  component: StaticSlidesPage,
+});
 export const audienceRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/join/$sessionId",
   component: AudiencePage,
 });
+export const projectionRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/screen/$deckSlug/$sessionId",
+  component: ProjectionPage,
+});
 export const router = createRouter({
   routeTree: rootRoute.addChildren([
     libraryRoute,
     deckRoute,
+    staticSlidesRoute,
     presenterRoute,
     audienceRoute,
+    projectionRoute,
   ]),
   defaultPreload: "intent",
   scrollRestoration: true,
