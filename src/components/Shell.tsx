@@ -9,18 +9,19 @@ import {
   DeviceMobile,
   ArrowRight,
 } from "@phosphor-icons/react";
-import { Bot } from "./Bot";
+import { Face } from "../devday/Face";
+import { FACE_PALETTE, FACE_PRESETS } from "../devday/faces";
 import { Modal } from "./Modal";
 import { useLive } from "../live/LiveProvider";
 
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
-    <Link to="/" className="brand" aria-label="Grok bot Slides, inicio">
-      <Bot seed={42} color="#ff6b00" shape="round" />
+    <Link to="/" className="brand" aria-label="DevDay Slides, inicio">
+      <Face config={{ ...FACE_PRESETS.squeeze, color: FACE_PALETTE.blue }} />
       <span>
-        Grok bot<span className="brand-light"> Slides</span>
+        DevDay<span className="brand-light"> Slides</span>
       </span>
-      {!compact && <span className="beta-label">BETA</span>}
+      {!compact && <span className="beta-label">San Salvador</span>}
     </Link>
   );
 }

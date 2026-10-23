@@ -16,7 +16,9 @@ import { useSession } from "../live/useSession";
 import { useLive } from "../live/LiveProvider";
 import type { Question, Session, Vote } from "../live/types";
 import { Brand } from "../components/Shell";
-import { Bot } from "../components/Bot";
+import { Face } from "../devday/Face";
+import { DEVDAY_EVENT } from "../devday/event";
+import { createFace, FACE_PALETTE, FACE_PRESETS } from "../devday/faces";
 import { QuestionResults } from "../components/QuestionResults";
 import { AudienceNavigation } from "../components/audience/AudienceNavigation";
 import { AudienceWelcome } from "../components/audience/AudienceWelcome";
@@ -80,7 +82,7 @@ function AudienceSession({ sessionId }: { sessionId: string }) {
           <Brand compact />
         </header>
         <main className="empty-page">
-          <Bot color="#00b9aa" shape="flower" className="empty-bot" />
+          <Face config={{ ...FACE_PRESETS.sleepy, color: FACE_PALETTE.orange }} className="empty-bot" />
           <h1>La sesión no está disponible.</h1>
           <p>
             {live.error ||
@@ -195,11 +197,7 @@ function AudienceGuide({
       <main className="audience-main">
         <div className="audience-identity">
           <div className="avatar-chip">
-            <Bot
-              seed={live.participant?.seed ?? 7}
-              color="#00b9aa"
-              shape="flower"
-            />
+            <Face config={createFace(live.participant?.seed ?? 7)} />
           </div>
           <div>
             <span className="eyebrow">TU LUGAR EN LA CONVERSACIÓN</span>
@@ -301,9 +299,9 @@ function AudienceGuide({
           </p>
         )}
         <footer className="audience-footer">
-          <span>Las buenas ideas se construyen juntos.</span>
+          <span>{DEVDAY_EVENT.hashtag} · {DEVDAY_EVENT.city}</span>
           <Link to="/">
-            Grok bot Slides <ArrowUpRight size={13} />
+            DevDay Slides <ArrowUpRight size={13} />
           </Link>
         </footer>
       </main>

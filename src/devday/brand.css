@@ -1,0 +1,25 @@
+.dd-logo {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+.dd-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.dd-logo-paper {
+  display: none !important;
+}
+[data-slide-theme="dark"] .dd-logo-ink,
+.dd-on-dark .dd-logo-ink {
+  display: none !important;
+}
+[data-slide-theme="dark"] .dd-logo-paper,
+.dd-on-dark .dd-logo-paper {
+  display: block !important;
+}
+[data-slide-theme="dark"] .dd-logo--codex img,
+.dd-on-dark .dd-logo--codex img {
+  filter: invert(1) brightness(1.6);
+}

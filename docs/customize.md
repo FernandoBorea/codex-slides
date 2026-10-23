@@ -1,87 +1,71 @@
-# Personalizar Grok bot Slides
+# Personalizar DevDay Slides
 
-Cada slide es un componente React escrito a mano. El archivo `deck.ts` de cada carpeta en `src/decks/` ordena sus componentes y añade su guía móvil y pregunta opcional. El registro de `src/decks/index.ts` establece el orden de los seis decks de la biblioteca. No hay un esquema de layouts, un editor visual ni un motor de renderizado que debas extender.
+Cada slide es un componente React escrito a mano. Las charlas se arman con `defineTalk()` (`src/decks/kit/talk.tsx`), que agrega la portada de espera 00, la portada de la charla, la slide del speaker y el cierre de preguntas alrededor del `outline` que escribís. El orden de la agenda está en `src/decks/talks.ts`; la apertura del evento, en `src/decks/devday/`. No hay editor visual ni motor de layouts: el kit es un conjunto de componentes y CSS.
 
-## Crear una slide
+La guía completa para speakers y agentes está en la skill [`devday-slides`](../.agents/skills/devday-slides/SKILL.md) y su [sistema visual](../.agents/skills/devday-slides/references/design-system.md).
 
-Crea un archivo dentro de la carpeta de tu deck, por ejemplo `src/decks/mi-equipo/WelcomeSlide.tsx`:
+## Completar una slide de tu charla
+
+Las entradas del `outline` sin `component` se muestran como borrador: título, kicker y un recuadro «Contenido pendiente». Para construir la slide real, escribí un componente con `SlideFrame` dentro de la carpeta de tu charla, por ejemplo `src/decks/notion-codex/Slides.tsx`:
 
 ```tsx
-import { Bot } from "../../components/Bot";
+import { Cards, Eyebrow, SlideFrame } from "../kit/layouts";
+import { FACE_PALETTE, FACE_PRESETS } from "../../devday/faces";
 
-export function WelcomeSlide() {
+export function NotionEsLaMemoriaSlide() {
   return (
-    <section className="slide-canvas">
-      <div className="slide-eyebrow">Una sesión para construir juntos</div>
-      <h1 className="slide-display">
-        Hola, equipo<span className="slide-teal">.</span>
-      </h1>
-      <Bot
-        className="slide-bot slide-corner-bot"
-        shape="flower"
-        color="#00b9aa"
-        seed={42}
+    <SlideFrame>
+      <Eyebrow>Concepto · 1:00</Eyebrow>
+      <h2 className="dd-heading">Notion es la memoria del equipo</h2>
+      <Cards
+        items={[
+          { title: "Spec", body: "Qué queremos y por qué.", color: FACE_PALETTE.blue, face: FACE_PRESETS.squeeze },
+          { title: "Criterios", body: "Cómo sabemos que está listo." },
+          { title: "Estado", body: "Qué falta y quién decide." },
+        ]}
       />
-      <div className="slide-footer">
-        <span>Mi equipo</span>
-        <span>01</span>
-      </div>
-    </section>
+    </SlideFrame>
   );
 }
 ```
 
-El presentador envuelve el componente en `.slide-stage`, un contenedor 16:9. La proyección completa también mantiene 16:9: cuando hay una pregunta, el componente se centra en la columna izquierda conservando sus proporciones, y la encuesta ocupa la columna derecha. No agregues altura fuera del marco para los resultados. Los estilos de `src/decks/slides.css` usan unidades `cqw` para que texto y composición escalen con la slide, también en miniaturas. Puedes usar clases propias con prefijo `slide-` y escribir el JSX que necesites. Usa los tokens `--slide-bg`, `--slide-fg`, `--slide-muted`, `--slide-surface` y `--slide-border` para respetar el selector claro/oscuro. Los acentos textuales también tienen tokens; los cuerpos de los bots conservan sus colores y los ojos permanecen negros y opacos. El tema se limita a la proyección y las miniaturas, sin modificar la aplicación ni la guía móvil.
+Después pasalo en la entrada correspondiente de `deck.ts`, sin cambiar su `slug`:
 
-## Registrar un deck
-
-En `src/decks/mi-equipo/deck.ts`, importa el componente y describe tu deck:
-
-```tsx
-import type { Deck } from "../types";
-import { WelcomeSlide } from "./WelcomeSlide";
-
-export const miEquipoDeck: Deck = {
-  slug: "grok-bot-mi-equipo",
-  title: "Grok Bot para mi equipo",
-  description: "Una sesión práctica con nuestros propios ejemplos.",
-  category: "Workshop",
-  duration: "15 min",
-  accent: "#00b9aa",
-  slides: [
-    {
-      slug: "bienvenida",
-      title: "Hola, equipo",
-      kicker: "Antes de empezar",
-      component: WelcomeSlide,
-      guide: {
-        intro: "Usa esta guía para seguir la sesión desde tu teléfono.",
-        sections: [
-          {
-            title: "Tu punto de partida",
-            body: "Piensa en una tarea repetitiva que te gustaría mejorar.",
-          },
-        ],
-        takeaway:
-          "Nos enfocaremos en una mejora pequeña que podamos comprobar.",
-      },
-      question: {
-        id: "experiencia-inicial",
-        prompt: "¿Ya has utilizado Grok bot?",
-        type: "poll",
-        options: [
-          { id: "yes", label: "Sí" },
-          { id: "no", label: "No" },
-        ],
-      },
-    },
-  ],
-};
+```ts
+{
+  slug: "notion-es-la-memoria",
+  title: "Notion es la memoria del equipo",
+  kicker: "Concepto · 1:00",
+  component: NotionEsLaMemoriaSlide,
+  guide: { intro: "…" },
+}
 ```
 
-Después, importa `miEquipoDeck` desde `./mi-equipo/deck` en `src/decks/index.ts` y añádelo al array `decks` en la posición deseada. Se mostrará automáticamente en la biblioteca y estará disponible en `/deck/grok-bot-mi-equipo`. Para enlazar una slide de la vista previa usa `/deck/grok-bot-mi-equipo?slide=bienvenida`. Añadir una slide consiste en crear su componente y añadir otra entrada a `slides` en el `deck.ts` correspondiente; el orden del array es el de la presentación.
+`defineTalk` le agrega el footer con tu cara, el título de la charla y la numeración. El presentador envuelve la slide en `.slide-stage`, un contenedor 16:9; usá unidades `cqw` y los tokens `--slide-*` (`--slide-bg`, `--slide-fg`, `--slide-muted`, `--slide-surface`, `--slide-border`) para que funcionen el tema claro (default) y el oscuro. Si tu charla necesita estilos propios, creá un CSS con prefijo propio dentro de su carpeta.
 
-Los tipos están en `src/decks/types.ts` y `src/live/types.ts`. `component` recibe una referencia al componente, no un elemento como `<WelcomeSlide />`. Las guías y las preguntas son metadatos serializables; no incluyas funciones ni JSX dentro de `guide` o `question`.
+Para reemplazar la portada, la slide de speaker o el cierre, pasá `coverComponent`, `speakerComponent` o `closingComponent` a `defineTalk`.
+
+## Agregar una charla
+
+```ts
+import { speakers } from "../../devday/speakers";
+import { defineTalk } from "../kit/talk";
+
+export const miCharlaDeck = defineTalk({
+  slug: "mi-charla",
+  title: "Mi charla",
+  description: "Una frase que explique de qué se trata.",
+  topic: "Anuncio de DevDay",
+  speaker: speakers.walter,
+  accent: "#0066ff",
+  about: "Quién sos y qué construís.",
+  outline: [
+    { slug: "contexto", title: "El contexto", kicker: "Contexto · 2:00", guide: { intro: "…" } },
+  ],
+});
+```
+
+Importala en `src/decks/talks.ts` en la posición de la agenda. Si el speaker es nuevo, agregalo a `src/devday/speakers.ts` con una cara propia (color de `FACE_PALETTE` + preset de `FACE_PRESETS`). `component` recibe una referencia, no `<Componente />`; `guide` y `question` son datos serializables.
 
 ## Diseñar para dos lecturas
 
@@ -123,7 +107,7 @@ Hay tres identificadores con funciones distintas:
 | Identificador         | Ejemplo              | Alcance                                          |
 | --------------------- | -------------------- | ------------------------------------------------ |
 | `VITE_WORKSPACE_SLUG` | `equipo-diseno`      | Variante del frontend que comparte el backend.   |
-| `deck.slug`           | `grok-bot-mi-equipo` | Deck y su ruta en la biblioteca.                 |
+| `deck.slug`           | `mi-charla` | Deck y su ruta en la biblioteca.                 |
 | `slide.slug`          | `bienvenida`         | Slide dentro de un deck y su navegación en vivo. |
 
 Usa slugs de deck únicos en la biblioteca y slugs de slide únicos dentro de cada deck. Decks distintos pueden tener una slide llamada `bienvenida`. Para ambos usa letras minúsculas, números y guiones entre palabras, con un máximo de 100 caracteres. Conserva los slugs al corregir textos para mantener los enlaces existentes. Un deck puede tener entre 1 y 100 slides.
@@ -154,11 +138,9 @@ En modo local, el almacenamiento y la identidad se comparten solo entre pestaña
 
 Para probar en la misma Wi-Fi durante el desarrollo, abre `localhost` con Convex conectado: el QR sustituye ese host por una dirección LAN detectada automáticamente, si existe. Mantén Vite en ejecución y comprueba que el teléfono puede acceder a esa dirección. Si la detección elige otra interfaz, abre el frontend desde la dirección de red correcta o define `VITE_PUBLIC_URL`. Esta variable tiene prioridad y permite fijar el dominio del QR al publicar; el build de producción no incorpora una dirección LAN.
 
-## Adaptar los bots
+## Caras y marcas
 
-Usa `Bot` con `shape`, `color`, `seed`, `expression` y `className`. Las formas disponibles son `round`, `flower`, `square` y `triangle`. Un seed numérico fijo mantiene la misma variación al renderizar. El componente es SVG decorativo y estático.
-
-La geometría se extrajo de **bloub**, el proyecto local que se había mencionado como Flow. Si redistribuyes el código, conserva `src/bot/LICENSE` y su atribución. Consulta [la procedencia y API de los bots](bot-origin.md) antes de modificar su geometría.
+Las caras vienen del motor de DevDay (`src/devday/faces.ts`): un círculo y dos ojos, con seis colores (`FACE_PALETTE`) y siete expresiones (`FACE_PRESETS`). `Face` las dibuja en SVG; dentro de una slide usá `SlideFace` (tamaño en `cqw`) o `Crowd` para una multitud. Cada speaker conserva su cara en todo el evento. Los logos de OpenAI, Codex y Ai Labs están en `src/devday/Brand.tsx` y cambian solos de versión en tema oscuro.
 
 ## Comprobar y publicar tu variante
 

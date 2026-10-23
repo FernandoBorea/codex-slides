@@ -4,7 +4,7 @@
   height: 100dvh;
   width: 100%;
   overflow: hidden;
-  background: #050505;
+  background: #232420;
 }
 
 .static-slides-heading {
@@ -38,7 +38,7 @@
 
 .static-slides-keyboard {
   font-size: 12px;
-  color: #68715e;
+  color: #5d6157;
 }
 
 .static-slides-screen {
@@ -84,7 +84,7 @@
   width: 100%;
   margin-top: 6px;
   padding: 8px;
-  border: 1px solid #d4d7cf;
+  border: 1px solid #d9dad6;
   border-radius: 4px;
   background: #fff;
 }
@@ -103,16 +103,16 @@
   width: 100%;
   min-height: 40px;
   padding: 8px 28px 8px 12px;
-  border: 1px solid #d4d7cf;
+  border: 1px solid #d9dad6;
   border-radius: 6px;
   background: #fff;
-  color: #333c2c;
+  color: #232420;
   font-size: 13px;
   text-overflow: ellipsis;
 }
 
 .static-slides-picker select:focus-visible {
-  outline: 3px solid #1688ff;
+  outline: 3px solid #0066ff;
   outline-offset: 3px;
 }
 

@@ -14,7 +14,7 @@ Convex agent skills for common tasks can be installed by running
 
 ## Slides
 
-Para crear, modificar o revisar los decks de este repositorio, usá la skill
-[`grok-slides`](.agents/skills/grok-slides/SKILL.md). Incluye las convenciones de
-contenido, visuales, identidad de bots y verificación del presentador. El contexto
-de Engineering está separado de las reglas que aplican a los demás decks.
+Para crear, completar o revisar los decks de DevDay Exchange San Salvador, usá la skill
+[`devday-slides`](.agents/skills/devday-slides/SKILL.md) (también enlazada en
+`.claude/skills/devday-slides`). Incluye la estructura de cada charla, el kit visual
+DevDay (caras, Geist, OpenAI/Codex/Ai Labs), las guías móviles y la verificación.

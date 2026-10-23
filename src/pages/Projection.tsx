@@ -115,7 +115,7 @@ function LiveProjection({
   const Component = slide?.component;
   const hasQuestion =
     !!slide?.question && (session.questionOpen || session.showResults);
-  const theme = session.projectionTheme ?? "dark";
+  const theme = session.projectionTheme ?? "light";
   return (
     <div
       ref={surface}

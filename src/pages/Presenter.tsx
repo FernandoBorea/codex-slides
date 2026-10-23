@@ -16,7 +16,7 @@ import { PresenterAccessModal } from "../components/presenter/PresenterAccessMod
 import { ProjectedQuestion } from "../components/presenter/ProjectedQuestion";
 import { useSlideTheme } from "../components/presenter/useSlideTheme";
 import { useAmbientMotion } from "../components/presenter/useAmbientMotion";
-import { useLive } from "../live/LiveProvider";
+import { useLive, useLiveTransport } from "../live/LiveProvider";
 import { useSession } from "../live/useSession";
 import { ProjectedQr } from "../components/presenter/ProjectedQr";
 import { stableContent } from "../components/presenter/sessionContent";
@@ -161,6 +161,7 @@ function Workbench({
   const navigate = useNavigate();
   const { mode, createSession, authorizePresenter, hasPresenterAccess } =
     useLive();
+  const transport = useLiveTransport();
   const activeIndex = live?.session
     ? Math.max(
         0,
@@ -304,6 +305,9 @@ function Workbench({
         deckTitle: deck.title,
         slides: slideMetadata(deck.slides),
       });
+      // Sessions start dark on the backend; DevDay projects light unless the presenter chose dark.
+      if (previewTheme !== "dark")
+        await transport.update(id, { type: "theme", theme: previewTheme });
       await navigate({
         to: "/present/$deckSlug/$sessionId",
         params: { deckSlug: deck.slug, sessionId: id },

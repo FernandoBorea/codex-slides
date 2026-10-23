@@ -4,8 +4,9 @@ dist/
 !.env.example
 .vercel/
 .agents/skills/*
-!.agents/skills/grok-slides/
-.claude/skills/
+!.agents/skills/devday-slides/
+.claude/skills/*
+!.claude/skills/devday-slides
 skills-lock.json
 convex/_generated/ai/ai-files.state.json
 .DS_Store

@@ -1,18 +1,10 @@
-# Retratos de ponentes
+# Retratos de speakers
 
-Se copiaron los activos existentes del proyecto local `bloub` sin regenerarlos,
-retocarlos ni cambiar sus píxeles. El encuadre se resuelve con CSS en las slides
-de presentación de Engineering y GTM.
+`SpeakerIntro` muestra el retrato si el speaker tiene `photo` en `src/devday/speakers.ts`; si no, muestra su cara grande.
 
-| Archivo | Origen en `bloub` | Uso |
+| Archivo | Speaker | Origen |
 | --- | --- | --- |
-| `walter-morales.png` | `public/speakers/walter-morales.png` | Walter Morales, Engineering |
-| `daniela-huezo.png` | `public/speakers/speaker-2.png` | Daniela Huezo, GTM |
+| `walter-morales.png` | Walter Morales | Proyecto local `bloub`, `public/speakers/walter-morales.png`, sin retoques. |
+| `daniela-huezo.png` | Daniela Huezo | Proyecto local `bloub`, `public/speakers/speaker-2.png`: recorte transparente editado con IA y aprobado previamente; se reutiliza tal cual. |
 
-El registro `src/ui/speakerLibrary.ts` de `bloub` identifica esos activos como
-Walter Morales y Daniela, respectivamente. Para el nombre visible de Daniela se
-conserva el del deck aprobado (Daniela Huezo); el registro de origen usa Daniela
-López. `bloub/docs/interface.md` documenta el PNG de Daniela como un recorte
-transparente editado con IA y previamente aprobado. Aquí se reutiliza ese archivo
-tal cual, sin una nueva edición. La fotografía de origen permanece en
-`bloub/output/portrait-review/daniela-original.jpeg`.
+Para agregar un retrato: PNG con fondo transparente, recortado a la altura del torso, en esta carpeta. Pedí el archivo al speaker; no generes ni retoques retratos de personas reales.
