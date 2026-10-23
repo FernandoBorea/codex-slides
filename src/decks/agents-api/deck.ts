@@ -2,78 +2,100 @@ import { speakers } from "../../devday/speakers";
 import { defineTalk } from "../kit/talk";
 
 export const agentsApiDeck = defineTalk({
-  slug: "agents-api",
-  title: "Agents API: automatizar lo que solo existe en una pantalla",
-  description:
-    "La Agents API con computer use permite automatizar sistemas que solo tienen interfaz gráfica. Un recorrido práctico para operaciones.",
-  topic: "Agents API · Computer use",
-  speaker: speakers.saul,
-  accent: "#00b449",
-  about: "Pendiente: una frase de Saul sobre quién es y qué construye.",
-  openingQuestion: {
-    id: "agents-api-herramientas",
-    prompt: "¿Cuántas herramientas sin API tocás en una semana normal?",
-    type: "single",
-    options: [
-      { id: "ninguna", label: "Ninguna" },
-      { id: "pocas", label: "Entre 1 y 3" },
-      { id: "varias", label: "Entre 4 y 10" },
-      { id: "muchas", label: "Perdí la cuenta" },
+  "slug": "agents-api",
+  "title": "Un asistente que trabaja entre tus herramientas",
+  "description": "Veamos cómo un agente puede reunir información y completar un proceso entre varias herramientas, con vos al mando.",
+  "topic": "Agents API · Uso de herramientas",
+  "speaker": speakers.fernando,
+  "accent": "#0066ff",
+  "brief": {
+    "goal": "Conectá los pasos de un trabajo repetitivo.",
+    "topics": [
+      "Entender qué hace un agente y qué es una conexión.",
+      "Ver cuándo usa herramientas y cuándo una pantalla.",
+      "Comprobar el resultado antes de confirmar una acción."
     ],
+    "demo": "Recibir una solicitud de ejemplo, consultar una lista de horarios y completar un formulario de prueba, deteniéndose antes de enviarlo.",
+    "takeaway": "Una forma de elegir un proceso pequeño que vale la pena delegar.",
+    "preparation": [
+      "Preparar datos ficticios, una lista de horarios y un formulario de prueba sin efectos reales.",
+      "Explicar API como una conexión entre programas y computer use como operar una pantalla.",
+      "Mostrar entrada, pasos y resultado; dejar la configuración técnica y el código como material opcional.",
+      "Distinguir el navegador o entorno preparado para la demo del control irrestricto de una computadora personal.",
+      "Relacionar el ejemplo con Agents API y computer use anunciados en DevDay; confirmar acceso y herramientas antes de presentar."
+    ]
   },
-  outline: [
-    {
-      slug: "trabajo-en-pantallas",
-      title: "El trabajo que vive en pantallas",
-      kicker: "Contexto · 1:30",
-      guide: {
-        intro:
-          "Mucha operación ocurre en sistemas sin API: portales, paneles internos y formularios. Ahí la automatización clásica se queda corta.",
+  "openingQuestion": {
+    "id": "agents-api-herramientas",
+    "prompt": "¿Qué tarea repetís entre varias herramientas?",
+    "type": "single",
+    "options": [
+      {
+        "id": "ninguna",
+        "label": "Copiar información"
       },
+      {
+        "id": "pocas",
+        "label": "Coordinar horarios"
+      },
+      {
+        "id": "varias",
+        "label": "Completar formularios"
+      },
+      {
+        "id": "muchas",
+        "label": "Varias de estas"
+      }
+    ]
+  },
+  "outline": [
+    {
+      "slug": "trabajo-en-pantallas",
+      "title": "El trabajo de pasar de una app a otra",
+      "kicker": "Contexto · 1:00",
+      "guide": {
+        "intro": "Copiar datos, consultar un horario y completar un formulario son pasos pequeños que juntos consumen tiempo."
+      }
     },
     {
-      slug: "agents-api",
-      title: "La Agents API en un diagrama",
-      kicker: "Concepto · 2:00",
-      guide: {
-        intro:
-          "Las piezas que OpenAI administra por vos: herramientas, varios agentes trabajando juntos, búsqueda de tools y compactación de contexto.",
-      },
+      "slug": "agents-api",
+      "title": "Un asistente con herramientas",
+      "kicker": "Concepto · 1:00",
+      "guide": {
+        "intro": "Un agente recibe un objetivo y puede usar herramientas para avanzar. Agents API permite integrar ese comportamiento en una aplicación; API significa una conexión entre programas."
+      }
     },
     {
-      slug: "computer-use",
-      title: "Computer use: cuando no hay endpoint",
-      kicker: "Concepto · 1:30",
-      guide: {
-        intro:
-          "El agente opera la interfaz gráfica como lo haría una persona: mira la pantalla, hace clic, escribe y verifica el resultado.",
-      },
+      "slug": "computer-use",
+      "title": "Conexiones y pantallas",
+      "kicker": "Concepto · 1:30",
+      "guide": {
+        "intro": "Cuando hay una conexión, el agente usa los datos directamente. Cuando hace falta una interfaz, puede operar una pantalla en un entorno preparado y autorizado."
+      }
     },
     {
-      slug: "un-caso-de-ops",
-      title: "Un caso de operación, paso a paso",
-      kicker: "Ejemplo · 2:00",
-      guide: {
-        intro:
-          "Un flujo de operación recreado de punta a punta, incluido el momento en que el agente se detiene a pedir confirmación.",
-      },
+      "slug": "un-caso-de-ops",
+      "title": "Demo: de la solicitud al formulario",
+      "kicker": "Demo · 3:00",
+      "guide": {
+        "intro": "Con datos de ejemplo, el agente lee una solicitud, consulta horarios y completa un formulario de prueba. Se detiene para que una persona revise antes de enviar."
+      }
     },
     {
-      slug: "que-vigilar",
-      title: "Lo que tenés que vigilar",
-      kicker: "Criterio · 1:30",
-      guide: {
-        intro:
-          "Costo por ejecución, errores silenciosos, credenciales y permisos. Qué registrar para poder auditar después.",
-      },
+      "slug": "que-vigilar",
+      "title": "Revisá antes de confirmar",
+      "kicker": "Práctica · 1:30",
+      "guide": {
+        "intro": "Comprobá nombres, fechas y opciones elegidas. Si falta información, es mejor pedirla que completar datos por suposición."
+      }
     },
     {
-      slug: "por-donde-empezar",
-      title: "Por dónde empezar esta semana",
-      kicker: "Cierre · 1:30",
-      guide: {
-        intro: "Elegí un proceso repetitivo, corto y fácil de verificar como primer candidato.",
-      },
-    },
-  ],
+      "slug": "por-donde-empezar",
+      "title": "Elegí un proceso fácil de comprobar",
+      "kicker": "Cierre · 2:00",
+      "guide": {
+        "intro": "Empezá con pocos pasos y un resultado visible. Medí si ahorra tiempo y si podés detectar los errores antes de usarlo con información real."
+      }
+    }
+  ]
 });

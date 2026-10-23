@@ -1,3 +1,4 @@
+import { devdayHighlights } from "../../devday/event";
 import type { Deck, SlideDefinition } from "../types";
 import { devdayCoverSlide } from "../kit/talk";
 import { withSlideInfo } from "../kit/SlideInfo";
@@ -38,19 +39,14 @@ const slides: SlideDefinition[] = [
     kicker: "Contexto · 1:30",
     component: withSlideInfo(AnnouncementsSlide, info(2)),
     guide: {
-      intro: "OpenAI presentó DevDay 2026 el 29 de septiembre en San Francisco. Estas son las piezas que recorren las charlas de hoy.",
-      sections: [
-        { title: "GPT-6.1 Sol y GPT-6 Astra", body: "Sol apunta al trabajo diario, con código agéntico y uso de computadora a menor costo. Astra es el modelo más capaz y el que mueve a Dots." },
-        { title: "Dots", body: "Agentes siempre activos dentro de ChatGPT, con su propia computadora y navegador en la nube." },
-        { title: "Codex en la nube", body: "Las tareas de Codex pueden correr en entornos cloud, además de la computadora local." },
-        { title: "Agents API y Decisions API", body: "Agents API suma computer use y varios agentes; Decisions API, en preview limitado, elige entre respuestas predefinidas con Luna." },
-      ],
-      takeaway: "Cada speaker profundiza en una de estas piezas.",
+      intro: "OpenAI presentó DevDay 2026 el 29 de septiembre en San Francisco. Estos anuncios abren posibilidades para el trabajo, los estudios y los proyectos de todos los días.",
+      sections: devdayHighlights.map(({ tag, title, body }) => ({ title: `${title} · ${tag}`, body })),
+      takeaway: "Las charlas conectan estas novedades con ejemplos prácticos. La edición de video es una aplicación propuesta de Codex, no un editor nativo anunciado en DevDay.",
     },
     speakerNotes: {
-      script: "Recorrido rápido, sin entrar en detalle: cada charla se encarga de una pieza.",
+      script: "Explicá cada anuncio desde una situación cotidiana. API es una conexión entre programas; un agente es un asistente que puede usar herramientas. No asumir experiencia técnica.",
       timing: "1:30",
-      cues: ["Verificar nombres y disponibilidad contra openai.com/index/devday-2026 antes del evento."],
+      cues: ["Fuente: https://openai.com/index/devday-2026-recap/ (consultada el 23 oct 2026). Confirmar acceso en la cuenta de cada demo. Decisions figura en beta pública en https://developers.openai.com/api/docs/guides/decisions; no asignarlo como tema de Frank."],
     },
   },
   {
@@ -59,7 +55,7 @@ const slides: SlideDefinition[] = [
     kicker: "Agenda · 1:00",
     component: withSlideInfo(AgendaSlide, info(3)),
     guide: {
-      intro: "Seis charlas de quince minutos. Al final, demos y conversación en la terraza.",
+      intro: "Walter abre con Codex, Daniela sigue con Notion, después Rodrigo con video, Saul con Dots y Fernando con asistentes entre herramientas. El tema de Frank está por confirmar. Reservamos quince minutos por charla.",
     },
     speakerNotes: { script: "Presentá a cada speaker por nombre, en orden.", timing: "1:00" },
   },

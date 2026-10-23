@@ -2,7 +2,7 @@ import type { ComponentType } from "react";
 import type { Question } from "../../live/types";
 import type { Speaker } from "../../devday/speakers";
 import type { Deck, SlideDefinition } from "../types";
-import { ClosingSlide, DevDayCoverSlide, DraftSlide, SpeakerIntro, TalkCover } from "./layouts";
+import { ClosingSlide, DevDayCoverSlide, DraftSlide, TalkBriefSlide, TalkCover } from "./layouts";
 import { withSlideInfo } from "./SlideInfo";
 
 /** Slide 00, shared by every deck. No poll and outside the talk's time. */
@@ -33,6 +33,14 @@ export type OutlineSlide = Omit<SlideDefinition, "component" | "guide"> & {
   component?: ComponentType;
 };
 
+export type TalkBrief = {
+  goal: string;
+  topics: string[];
+  demo: string;
+  takeaway: string;
+  preparation: string[];
+};
+
 export type TalkInput = {
   slug: string;
   title: string;
@@ -42,8 +50,9 @@ export type TalkInput = {
   speaker: Speaker;
   accent: string;
   duration?: string;
-  /** What the speaker says about themselves on slide 02. */
-  about: string;
+  /** Slide 02: shared summary for the audience and the person building the deck. */
+  brief: TalkBrief;
+  pending?: boolean;
   /** Optional poll on the talk cover (slide 01). */
   openingQuestion?: Question;
   outline: OutlineSlide[];
@@ -54,7 +63,7 @@ export type TalkInput = {
 };
 
 /**
- * Builds a talk deck: 00 shared cover, 01 talk cover, 02 speaker,
+ * Builds a talk deck: 00 shared cover, 01 talk cover, 02 talk brief,
  * the outline, and a closing slide for questions.
  */
 export function defineTalk(talk: TalkInput): Deck {
@@ -68,7 +77,7 @@ export function defineTalk(talk: TalkInput): Deck {
   });
 
   const Cover = talk.coverComponent ?? (() => <TalkCover title={talk.title} topic={talk.topic} speaker={speaker} accent={talk.accent} />);
-  const Intro = talk.speakerComponent ?? (() => <SpeakerIntro speaker={speaker} about={talk.about} />);
+  const Intro = talk.speakerComponent ?? (() => <TalkBriefSlide speaker={speaker} brief={talk.brief} pending={talk.pending} />);
   const Closing = talk.closingComponent ?? (() => <ClosingSlide speaker={speaker} title={talk.title} />);
 
   const slides: SlideDefinition[] = [
@@ -87,11 +96,23 @@ export function defineTalk(talk: TalkInput): Deck {
     },
     {
       slug: speaker.id,
-      title: speaker.name,
-      kicker: "Sobre mí · 0:30",
+      title: talk.pending ? "Tema pendiente de definir" : "El recorrido de la charla",
+      kicker: talk.pending ? "Resumen pendiente" : "Resumen · 1:30",
       component: withSlideInfo(Intro, info(2)),
-      guide: { intro: talk.about },
-      speakerNotes: { script: "Una frase sobre quién sos y por qué te importa este tema.", timing: "0:30" },
+      ...(talk.pending ? { draft: true } : {}),
+      guide: {
+        intro: talk.brief.goal,
+        sections: [
+          { title: "Qué vamos a recorrer", body: talk.brief.topics.join(" · ") },
+          { title: "Demo o enfoque", body: talk.brief.demo },
+        ],
+        takeaway: talk.brief.takeaway,
+      },
+      speakerNotes: {
+        script: "Presentate brevemente y contá qué se va a llevar el público. Este resumen también orienta a quien complete el deck.",
+        timing: talk.pending ? "Por definir" : "1:30",
+        cues: talk.brief.preparation,
+      },
     },
     ...talk.outline.map(({ component, ...slide }, index): SlideDefinition => {
       const Draft = () => <DraftSlide kicker={slide.kicker} title={slide.title} intro={slide.guide.intro} speaker={speaker} />;
@@ -104,13 +125,13 @@ export function defineTalk(talk: TalkInput): Deck {
     {
       slug: "preguntas",
       title: "¿Preguntas?",
-      kicker: "Cierre · preguntas",
+      kicker: talk.pending ? "Cierre · por definir" : "Preguntas · 3:00",
       component: withSlideInfo(Closing, info(talk.outline.length + 3)),
       guide: {
         intro: `Gracias por acompañar a ${speaker.name}. Si te quedó una pregunta, este es el momento.`,
         takeaway: "La conversación sigue en la terraza después de las charlas.",
       },
-      speakerNotes: { script: "Abrí preguntas del público. Cerrá agradeciendo y presentando a quien sigue.", timing: "Preguntas" },
+      speakerNotes: { script: "Abrí preguntas del público. Cerrá agradeciendo y presentando a quien sigue.", timing: talk.pending ? "Por definir" : "3:00" },
     },
   ];
 

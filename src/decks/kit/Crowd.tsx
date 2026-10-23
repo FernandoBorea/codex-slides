@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { Face, Mark } from "../../devday/Face";
-import type { CrowdFace, CrowdMark } from "./crowd";
+import type { CrowdFace, CrowdMark } from "./crowd-layout";
 
 /** Decorative faces placed in slide units. Motion only runs on a stage with data-motion-state="running". */
 export function Crowd({

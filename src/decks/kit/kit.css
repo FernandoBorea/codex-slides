@@ -549,3 +549,16 @@
   stroke: #6b6d62;
   stroke-width: 1.2;
 }
+
+/* Talk brief: scope and demo on slide 02, shared with the mobile guide. */
+.dd-brief .dd-heading { max-width: 84cqw; font-size: 3.8cqw; }
+.dd-brief-body { display: grid; grid-template-columns: 1.25fr 1fr; gap: 4cqw; margin-top: 3cqw; }
+.dd-brief-body h3 { font-size: 1.2cqw; font-weight: 600; color: var(--slide-muted); margin-bottom: 1.4cqw; }
+.dd-brief-topics ol { display: grid; gap: 1.15cqw; padding-left: 1.8cqw; }
+.dd-brief-topics li { padding-left: 0.5cqw; font-size: 1.55cqw; line-height: 1.4; }
+.dd-brief-topics li::marker { color: var(--slide-muted); font-variant-numeric: tabular-nums; }
+.dd-brief-demo { padding: 2cqw; background: var(--slide-surface); border-radius: var(--dd-radius); }
+.dd-brief-demo p { font-size: 1.55cqw; line-height: 1.45; }
+.dd-brief-demo .dd-face { margin-top: 1.6cqw; }
+.dd-brief-takeaway { display: flex; gap: 1.5cqw; margin-top: auto; margin-bottom: 3cqw; padding-top: 1.4cqw; border-top: 0.08cqw solid var(--slide-border); font-size: 1.35cqw; line-height: 1.4; }
+.dd-brief-takeaway strong { flex-shrink: 0; }

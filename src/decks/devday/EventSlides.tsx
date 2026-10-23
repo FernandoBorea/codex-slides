@@ -1,10 +1,10 @@
 import { Face } from "../../devday/Face";
 import { FACE_PALETTE, FACE_PRESETS } from "../../devday/faces";
-import { DEVDAY_EVENT } from "../../devday/event";
+import { DEVDAY_EVENT, devdayHighlights } from "../../devday/event";
 import { AiLabsLogo, CodexWordmark, OpenAIWordmark } from "../../devday/Brand";
 import { talkDecks } from "../talks";
 import { Crowd } from "../kit/Crowd";
-import type { CrowdFace } from "../kit/crowd";
+import type { CrowdFace } from "../kit/crowd-layout";
 import { Cards, Eyebrow, Pill, SlideFace, SlideFrame, Steps } from "../kit/layouts";
 import "./event.css";
 
@@ -30,7 +30,7 @@ export function WelcomeSlide() {
         construir con IA.
       </h1>
       <p className="dd-lead">
-        Los anuncios de DevDay, contados por la comunidad de {DEVDAY_EVENT.city}. Seis charlas cortas, demos y tiempo para conocernos.
+        Ideas para tu trabajo, tus estudios o tu proyecto. Cinco temas propuestos y uno por confirmar, con demos que podés seguir sin saber programar.
       </p>
       <ul className="ev-facts">
         <li>{DEVDAY_EVENT.dateLong}</li>
@@ -47,17 +47,13 @@ export function AnnouncementsSlide() {
   return (
     <SlideFrame className="ev-announcements">
       <Eyebrow>DevDay 2026 · 29 de septiembre</Eyebrow>
-      <h2 className="dd-heading">Lo que trajo DevDay, en seis piezas.</h2>
+      <h2 className="dd-heading">Lo que DevDay cambia en tu día a día.</h2>
       <Cards
         columns={3}
-        items={[
-          { tag: "Modelo", title: "GPT-6.1 Sol", body: "Código agéntico y uso de computadora a menor costo.", color: blue, face: FACE_PRESETS.squeeze },
-          { tag: "Modelo", title: "GPT-6 Astra", body: "El modelo más capaz; el motor detrás de Dots.", color: charcoal, face: { ...FACE_PRESETS.happy, color: "#3a3b35" } },
-          { tag: "ChatGPT", title: "Dots", body: "Agentes siempre activos, con su propia computadora en la nube.", color: orange, face: { ...FACE_PRESETS.wink, color: "#ffa04d" } },
-          { tag: "Codex", title: "Codex en la nube", body: "Tareas que siguen corriendo con la laptop cerrada.", color: gray, face: { ...FACE_PRESETS.spark, color: "#c9c9c6" } },
-          { tag: "API", title: "Agents API", body: "Computer use y varios agentes, con la infraestructura administrada.", color: green, face: { ...FACE_PRESETS.plus, color: "#33c46c" } },
-          { tag: "API · preview", title: "Decisions API", body: "Luna elige entre respuestas predefinidas, rápido y medible.", color: purple, face: { ...FACE_PRESETS.curious, color: "#a874ff" } },
-        ]}
+        items={devdayHighlights.map((item, index) => ({
+          ...item,
+          color: [blue, orange, gray, green, purple, charcoal][index],
+        }))}
       />
     </SlideFrame>
   );
@@ -67,7 +63,7 @@ export function AgendaSlide() {
   return (
     <SlideFrame className="ev-agenda">
       <Eyebrow>La agenda de hoy</Eyebrow>
-      <h2 className="dd-heading">Seis charlas, quince minutos cada una.</h2>
+      <h2 className="dd-heading">Cinco temas y un espacio por confirmar.</h2>
       <ol className="ev-agenda-list">
         {talkDecks.map((talk, index) => (
           <li key={talk.slug}>

@@ -27,7 +27,7 @@ Todas las charlas comparten la misma base visual. Tu trabajo es que una slide nu
 | --- | --- | --- |
 | 00 | Portada de espera compartida (`espera`) | `DevDayCoverSlide` |
 | 01 | Portada de la charla (`portada`) + encuesta de apertura | `TalkCover` |
-| 02 | Speaker (`<speaker.id>`) | `SpeakerIntro` |
+| 02 | Resumen del recorrido (`<speaker.id>`) | `TalkBriefSlide` desde `brief` |
 | 03… | Una por cada entrada de `outline` | `DraftSlide` hasta que pases `component` |
 | último | `preguntas` | `ClosingSlide` |
 
@@ -58,9 +58,11 @@ Los **títulos ya están definidos** en cada `outline`. Una entrada sin `compone
 
 3. Pasalo en el outline: `{ slug: "el-puente", …, component: ElPuenteSlide }`. `defineTalk` le inyecta el número de slide y el footer con la cara del speaker; no los escribas a mano.
 4. Actualizá `guide.intro` (y `sections`/`takeaway` si suman) para que la guía del teléfono diga lo mismo que la slide.
-5. Si agregás o quitás slides, redistribuí los tiempos de los kickers para que sigan sumando la duración de la charla (15 min: 0:30 + 0:30 + outline + preguntas).
+5. Si agregás o quitás slides, redistribuí los tiempos de los kickers para que sigan sumando la duración de la charla (15 min: 0:30 de portada + 1:30 de resumen + 10:00 de outline + 3:00 de preguntas).
 
-Para reemplazar la portada, la slide de speaker o el cierre, usá `coverComponent`, `speakerComponent` o `closingComponent` en `defineTalk`. No edites `layouts.tsx` para una sola charla.
+La slide 02 usa `brief.goal`, `topics`, `demo` y `takeaway`; `preparation` se reserva para notas del speaker. Consultá `docs/charlas.md` para el orden y los enfoques aprobados. Frank sigue pendiente.
+
+Para reemplazar la portada, el resumen o el cierre, usá `coverComponent`, `speakerComponent` o `closingComponent` en `defineTalk`. No edites `layouts.tsx` para una sola charla.
 
 ## Contenido y ritmo
 
@@ -73,7 +75,7 @@ Para reemplazar la portada, la slide de speaker o el cierre, usá `coverComponen
 
 ## Fuentes y hechos
 
-DevDay 2026 fue el 29 de septiembre de 2026. Los nombres (GPT-6.1 Sol, GPT-6 Astra, Dots, Decisions API, Luna, Agents API, Codex cloud) vienen de coberturas que no siempre coinciden. Antes de afirmar precios, disponibilidad, planes o benchmarks en una slide, verificalo en una fuente primaria de OpenAI y anotá la fuente en `references/agenda.md` o en el guion. Si no lo podés verificar, decilo en la slide o dejalo fuera.
+DevDay 2026 fue el 29 de septiembre de 2026. La agenda y las fuentes oficiales consultadas están en `references/agenda.md` y `docs/charlas.md`; usá los enfoques accesibles y las asignaciones acordadas allí. Antes de afirmar precios, disponibilidad, planes o benchmarks en una slide, verificalo en una fuente primaria de OpenAI y anotá la fuente en `references/agenda.md` o en el guion. Si no lo podés verificar, decilo en la slide o dejalo fuera.
 
 Separá lo relatado por el speaker, lo confirmado con fuentes y lo ilustrativo. No inventes métricas, resultados de demos ni capturas. Una conversación o pantalla recreada se marca como ejemplo.
 

@@ -5,8 +5,9 @@ import { DEVDAY_EVENT } from "../../devday/event";
 import { firstName, type Speaker } from "../../devday/speakers";
 import { FACE_PALETTE, type FaceConfig } from "../../devday/faces";
 import { Crowd } from "./Crowd";
-import { closingCrowd, coverCrowd, coverMarks, speakerCluster } from "./crowd";
+import { closingCrowd, coverCrowd, coverMarks, speakerCluster } from "./crowd-layout";
 import { useSlideInfo } from "./SlideInfo";
+import type { TalkBrief } from "./talk";
 import "./kit.css";
 
 /* ------------------------------------------------------------------ */
@@ -186,6 +187,28 @@ export function TalkCover({ title, topic, speaker, accent }: { title: string; to
           <span>{speaker.role ?? "Speaker"}</span>
         </div>
       </div>
+    </SlideFrame>
+  );
+}
+
+/** Slide 02 summarizes the scope; detailed preparation cues live in presenter notes. */
+export function TalkBriefSlide({ speaker, brief, pending = false }: { speaker: Speaker; brief: TalkBrief; pending?: boolean }) {
+  return (
+    <SlideFrame className="dd-brief">
+      <Eyebrow>{speaker.name} · {pending ? "Por definir" : "El recorrido de la charla"}</Eyebrow>
+      <h2 className="dd-heading">{brief.goal}</h2>
+      <div className="dd-brief-body">
+        <section className="dd-brief-topics">
+          <h3>Qué vamos a recorrer</h3>
+          <ol>{brief.topics.map((topic) => <li key={topic}>{topic}</li>)}</ol>
+        </section>
+        <section className="dd-brief-demo">
+          <h3>{pending ? "Enfoque pendiente" : "Demo o enfoque"}</h3>
+          <p>{brief.demo}</p>
+          <SlideFace face={speaker.face} size={4.8} />
+        </section>
+      </div>
+      <p className="dd-brief-takeaway"><strong>{pending ? "Próximo paso" : "Te llevás"}</strong>{brief.takeaway}</p>
     </SlideFrame>
   );
 }

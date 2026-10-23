@@ -24,18 +24,24 @@ Sin `VITE_CONVEX_URL` aparece **«No ha sido configurado Convex»**: el modo loc
 | Deck | Slug | Speaker | Slides |
 | --- | --- | --- | ---: |
 | DevDay Exchange San Salvador (apertura) | `devday-exchange-san-salvador` | Ai Labs | 6 |
-| Sol o Astra: elegir modelo cuando vos pagás la cuenta | `sol-o-astra` | Fernando Borea | 10 |
-| Dots: agentes que siguen trabajando cuando cerrás la laptop | `dots` | Daniela Huezo | 10 |
-| Agents API: automatizar lo que solo existe en una pantalla | `agents-api` | Saul Calderon | 10 |
-| Decisions API: muchas decisiones pequeñas, bien tomadas | `decisions-api` | Frank Calderon | 10 |
-| Codex en la nube: el backlog avanza sin tu laptop | `codex-en-la-nube` | Rodrigo Garciaguirre | 10 |
-| Notion × Codex: del spec al pull request | `notion-codex` | Walter Morales | 11 |
+| De una idea a algo que funciona con Codex | `codex-en-la-nube` | Walter Morales | 10 |
+| Notion × Codex: de tus notas al trabajo hecho | `notion-codex` | Daniela Huezo | 10 |
+| De un video largo a un clip con Codex | `video-con-codex` | Rodrigo Garciaguirre | 10 |
+| Dots: ayuda que le da seguimiento a tus pendientes | `dots` | Saul Calderon | 10 |
+| Un asistente que trabaja entre tus herramientas | `agents-api` | Fernando Borea | 10 |
+| Tema por definir | `decisions-api` | Frank Calderon | 4 |
 
 Todos los decks empiezan con la misma portada de espera **00** (la multitud de caras del holding screen de DevDay, OpenAI DevDay Exchange, Codex y Ai Labs), sin encuesta y fuera del tiempo de charla.
 
 La **apertura** está completa y sirve de ejemplo del sistema visual: bienvenida, los seis anuncios de DevDay en tarjetas, la agenda (leída de las charlas), cómo participar desde el teléfono y el cierre con `#DevDayCommunity`.
 
-Cada **charla** dura 15 minutos y tiene la misma estructura: 01 portada con encuesta de apertura, 02 speaker, seis o siete slides de contenido con **título, kicker, tiempo y guía ya definidos**, y una slide final de preguntas. Las slides de contenido son borradores: muestran su título y un recuadro «Contenido pendiente» hasta que el speaker pasa su propio componente. La biblioteca muestra cuántas slides faltan en cada charla. La asignación de speakers es una propuesta que se cambia en el `deck.ts` de cada charla.
+Las cinco charlas con tema definido están pensadas para público variado, sin experiencia técnica previa. Cada una dura 15 minutos: **01 portada** (0:30), **02 resumen del recorrido** (1:30), seis slides de contenido (10:00) y preguntas (3:00). La portada de espera 00 queda fuera del tiempo.
+
+La **slide 02** explica el objetivo, los puntos a cubrir, la demo propuesta y lo que se lleva el público. Se genera desde `brief` en cada `deck.ts`; su guía móvil usa el mismo contenido. `brief.preparation` agrega instrucciones para preparar y ensayar la demo en las notas del presentador. Es el punto de partida para quien complete el deck.
+
+Las slides de contenido siguen como borradores hasta que el speaker agregue su componente. **Frank queda pendiente**, sin tema ni demo asignados: su ruta `decisions-api` se conserva por compatibilidad, pero no confirma una charla sobre esa API. El antiguo deck `sol-o-astra` fue reemplazado por `video-con-codex`.
+
+El [brief de las charlas](docs/charlas.md) reúne el orden, los enlaces a los resúmenes y las fuentes oficiales.
 
 Para armar una charla, usá la skill [`devday-slides`](.agents/skills/devday-slides/SKILL.md) o seguí [cómo personalizar los decks](docs/customize.md).
 

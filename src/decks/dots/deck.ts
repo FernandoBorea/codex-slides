@@ -2,78 +2,100 @@ import { speakers } from "../../devday/speakers";
 import { defineTalk } from "../kit/talk";
 
 export const dotsDeck = defineTalk({
-  slug: "dots",
-  title: "Dots: agentes que siguen trabajando cuando cerrás la laptop",
-  description:
-    "Dots trae agentes siempre activos a ChatGPT. Qué delegar, cómo darles un objetivo y dónde poner los límites.",
-  topic: "Dots · GPT-6 Astra",
-  speaker: speakers.daniela,
-  accent: "#ff7900",
-  about: "Pendiente: una frase de Daniela sobre quién es y qué construye.",
-  openingQuestion: {
-    id: "dots-delegar",
-    prompt: "¿Qué dejarías corriendo con un agente siempre activo?",
-    type: "single",
-    options: [
-      { id: "investigacion", label: "Investigación" },
-      { id: "seguimiento", label: "Seguimiento a clientes" },
-      { id: "reportes", label: "Reportes" },
-      { id: "nada", label: "Todavía no confiaría" },
+  "slug": "dots",
+  "title": "Dots: ayuda que le da seguimiento a tus pendientes",
+  "description": "Cómo encargar un seguimiento continuo, elegir las fuentes y recibir avisos útiles mientras te dedicás a otras cosas.",
+  "topic": "Dots · Seguimiento continuo",
+  "speaker": speakers.saul,
+  "accent": "#00b449",
+  "brief": {
+    "goal": "Delegá un seguimiento sin perder el control.",
+    "topics": [
+      "Distinguir una consulta puntual de un seguimiento.",
+      "Definir objetivo, fuentes y cuándo recibir un aviso.",
+      "Revisar qué cambió y decidir el siguiente paso."
     ],
+    "demo": "Seguir convocatorias de becas o eventos: mostrar el encargo, un cambio detectado y un aviso con la fuente para revisarlo.",
+    "takeaway": "Un objetivo con límites claros y un criterio para avisarte.",
+    "preparation": [
+      "Comprobar acceso a Dots y preparar un seguimiento con fuentes públicas.",
+      "Un seguimiento necesita tiempo: usar un historial real preparado o marcar cualquier recreación como ejemplo. No simular un hallazgo en vivo.",
+      "Mostrar cómo cambiar el encargo y detener el seguimiento.",
+      "Usar un caso accesible a estudiantes, profesionales y emprendedores; explicar agente como un asistente que actúa con herramientas.",
+      "Relacionar el flujo con Dots anunciado en DevDay sin asegurar que toda cuenta tiene acceso."
+    ]
   },
-  outline: [
-    {
-      slug: "de-chatear-a-delegar",
-      title: "De chatear a delegar",
-      kicker: "Contexto · 1:30",
-      guide: {
-        intro:
-          "Hasta ahora el chat esperaba tu siguiente mensaje. Dots cambia la pregunta: qué objetivo podés dejar corriendo mientras hacés otra cosa.",
+  "openingQuestion": {
+    "id": "dots-delegar",
+    "prompt": "¿A qué te gustaría darle seguimiento?",
+    "type": "single",
+    "options": [
+      {
+        "id": "investigacion",
+        "label": "Becas y oportunidades"
       },
+      {
+        "id": "seguimiento",
+        "label": "Cambios en un proyecto"
+      },
+      {
+        "id": "reportes",
+        "label": "Novedades de mi sector"
+      },
+      {
+        "id": "nada",
+        "label": "Primero quiero ver cómo funciona"
+      }
+    ]
+  },
+  "outline": [
+    {
+      "slug": "de-chatear-a-delegar",
+      "title": "Hay pendientes que necesitan seguimiento",
+      "kicker": "Contexto · 1:00",
+      "guide": {
+        "intro": "Buscar una convocatoria una vez no alcanza si cambia la fecha o aparece otra oportunidad. Un seguimiento revisa el tema con continuidad."
+      }
     },
     {
-      slug: "que-es-un-dot",
-      title: "Qué es un Dot",
-      kicker: "Concepto · 2:00",
-      guide: {
-        intro:
-          "Un agente siempre activo dentro de ChatGPT. Corre sobre GPT-6 Astra, tiene su propia computadora y navegador en la nube, y trabaja hacia el objetivo que le diste.",
-      },
+      "slug": "que-es-un-dot",
+      "title": "Qué es un Dot",
+      "kicker": "Concepto · 1:00",
+      "guide": {
+        "intro": "Es un agente de OpenAI pensado para trabajar en responsabilidades continuas usando las herramientas y fuentes que le permitas."
+      }
     },
     {
-      slug: "un-dot-para-gtm",
-      title: "Un Dot para GTM: el seguimiento que nadie olvida",
-      kicker: "Ejemplo · 2:00",
-      guide: {
-        intro:
-          "Un ejemplo comercial: investigar cuentas, detectar cambios y preparar el siguiente contacto sin depender de que alguien se acuerde.",
-      },
+      "slug": "objetivos-no-tareas",
+      "title": "Decile qué buscar y cuándo avisar",
+      "kicker": "Práctica · 1:30",
+      "guide": {
+        "intro": "Definí el objetivo, las fuentes, la frecuencia apropiada y qué cambio merece un aviso. Un encargo concreto hace más fácil revisar el resultado."
+      }
     },
     {
-      slug: "objetivos-no-tareas",
-      title: "Dale un objetivo, no una lista de tareas",
-      kicker: "Práctica · 1:30",
-      guide: {
-        intro:
-          "Cómo redactar el encargo: resultado esperado, fuentes que puede usar, cuándo debe avisarte y qué no debe hacer.",
-      },
+      "slug": "un-dot-para-gtm",
+      "title": "Demo: una oportunidad que no se te pasa",
+      "kicker": "Demo · 3:00",
+      "guide": {
+        "intro": "Recorremos un seguimiento de becas o eventos: qué se pidió, qué cambió y qué fuente respalda el aviso. Los ejemplos preparados se identifican como tales."
+      }
     },
     {
-      slug: "limites",
-      title: "Permisos, límites y revisión humana",
-      kicker: "Criterio · 1:30",
-      guide: {
-        intro:
-          "Qué conviene dejar en manos de una persona (enviar, pagar, publicar) y cómo revisar lo que el Dot hizo mientras no mirabas.",
-      },
+      "slug": "limites",
+      "title": "Vos decidís qué pasa después",
+      "kicker": "Práctica · 1:30",
+      "guide": {
+        "intro": "Revisá los enlaces y las fechas antes de actuar. Acordá qué puede hacer el agente por su cuenta y qué requiere tu aprobación."
+      }
     },
     {
-      slug: "que-delegarias",
-      title: "Qué delegarías mañana",
-      kicker: "Cierre · 1:30",
-      guide: {
-        intro: "Un ejercicio rápido: elegí un objetivo de tu semana que podría avanzar solo.",
-      },
-    },
-  ],
+      "slug": "que-delegarias",
+      "title": "Elegí un seguimiento para tu semana",
+      "kicker": "Cierre · 2:00",
+      "guide": {
+        "intro": "Pensá en algo que hoy revisás manualmente. Escribí qué querés saber, dónde buscarlo y cuándo sería útil recibir un aviso."
+      }
+    }
+  ]
 });

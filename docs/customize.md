@@ -1,6 +1,8 @@
 # Personalizar DevDay Slides
 
-Cada slide es un componente React escrito a mano. Las charlas se arman con `defineTalk()` (`src/decks/kit/talk.tsx`), que agrega la portada de espera 00, la portada de la charla, la slide del speaker y el cierre de preguntas alrededor del `outline` que escribís. El orden de la agenda está en `src/decks/talks.ts`; la apertura del evento, en `src/decks/devday/`. No hay editor visual ni motor de layouts: el kit es un conjunto de componentes y CSS.
+Cada slide es un componente React escrito a mano. Las charlas se arman con `defineTalk()` (`src/decks/kit/talk.tsx`), que agrega la portada de espera 00, la portada de la charla, el resumen de la charla en la slide 02 y el cierre de preguntas alrededor del `outline` que escribís. El orden de la agenda está en `src/decks/talks.ts`; la apertura del evento, en `src/decks/devday/`. No hay editor visual ni motor de layouts: el kit es un conjunto de componentes y CSS.
+
+La slide 02 toma `goal`, `topics`, `demo` y `takeaway` del objeto `brief`. Las instrucciones `preparation` se muestran en las notas del moderador. Empezá por el [brief de las charlas](charlas.md).
 
 La guía completa para speakers y agentes está en la skill [`devday-slides`](../.agents/skills/devday-slides/SKILL.md) y su [sistema visual](../.agents/skills/devday-slides/references/design-system.md).
 
@@ -43,7 +45,7 @@ Después pasalo en la entrada correspondiente de `deck.ts`, sin cambiar su `slug
 
 `defineTalk` le agrega el footer con tu cara, el título de la charla y la numeración. El presentador envuelve la slide en `.slide-stage`, un contenedor 16:9; usá unidades `cqw` y los tokens `--slide-*` (`--slide-bg`, `--slide-fg`, `--slide-muted`, `--slide-surface`, `--slide-border`) para que funcionen el tema claro (default) y el oscuro. Si tu charla necesita estilos propios, creá un CSS con prefijo propio dentro de su carpeta.
 
-Para reemplazar la portada, la slide de speaker o el cierre, pasá `coverComponent`, `speakerComponent` o `closingComponent` a `defineTalk`.
+Para reemplazar la portada, el resumen o el cierre, pasá `coverComponent`, `speakerComponent` o `closingComponent` a `defineTalk`.
 
 ## Agregar una charla
 
@@ -58,7 +60,13 @@ export const miCharlaDeck = defineTalk({
   topic: "Anuncio de DevDay",
   speaker: speakers.walter,
   accent: "#0066ff",
-  about: "Quién sos y qué construís.",
+  brief: {
+    goal: "Qué va a poder entender o hacer el público.",
+    topics: ["El problema cotidiano", "El recorrido", "Cómo revisar el resultado"],
+    demo: "Qué ejemplo vas a mostrar de principio a fin.",
+    takeaway: "Una acción que la audiencia puede probar después.",
+    preparation: ["Preparar los archivos de ejemplo y un resultado de respaldo."],
+  },
   outline: [
     { slug: "contexto", title: "El contexto", kicker: "Contexto · 2:00", guide: { intro: "…" } },
   ],

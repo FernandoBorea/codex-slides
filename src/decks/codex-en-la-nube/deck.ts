@@ -2,78 +2,100 @@ import { speakers } from "../../devday/speakers";
 import { defineTalk } from "../kit/talk";
 
 export const codexCloudDeck = defineTalk({
-  slug: "codex-en-la-nube",
-  title: "Codex en la nube: el backlog avanza sin tu laptop",
-  description:
-    "Codex ahora corre en la nube: tareas en paralelo con /agents, code review en cada pull request y Codex Security.",
-  topic: "Codex cloud · Codex Security",
-  speaker: speakers.rodrigo,
-  accent: "#8a8d82",
-  about: "Pendiente: una frase de Rodrigo sobre quién es y qué construye.",
-  openingQuestion: {
-    id: "codex-cloud-donde",
-    prompt: "¿Dónde corre hoy tu agente de código?",
-    type: "single",
-    options: [
-      { id: "local", label: "En mi laptop" },
-      { id: "nube", label: "En la nube" },
-      { id: "ambos", label: "En los dos" },
-      { id: "ninguno", label: "Todavía no uso uno" },
+  "slug": "codex-en-la-nube",
+  "title": "De una idea a algo que funciona con Codex",
+  "description": "Cómo pedirle ayuda a Codex para crear algo útil, repartir el trabajo y revisar el resultado. No necesitás saber programar para seguir la charla.",
+  "topic": "Crear con Codex",
+  "speaker": speakers.walter,
+  "accent": "#272725",
+  "brief": {
+    "goal": "Convertí una idea en algo que podés probar.",
+    "topics": [
+      "Qué hace Codex y qué necesita saber de tu idea.",
+      "Cómo repartir investigación, creación y revisión.",
+      "Cómo probar el resultado y pedir una mejora."
     ],
+    "demo": "Crear una página sencilla para un evento: partir de un encargo, repartir tareas y corregir un detalle frente al público.",
+    "takeaway": "Una forma de pedir trabajo: objetivo, contexto y cómo saber si quedó bien.",
+    "preparation": [
+      "Preparar un proyecto pequeño y una versión terminada de respaldo.",
+      "Mostrar el encargo y el resultado antes de explicar las herramientas.",
+      "Explicar agente como un asistente que puede usar herramientas; repositorio como la carpeta del proyecto; PR como una propuesta de cambio para revisar.",
+      "Relacionar el ejemplo con Codex en la nube y revisión de cambios anunciados en DevDay. Distinguir ejecución local de cloud; no prometer que cerrar la laptop mantiene una tarea local activa.",
+      "Mostrar la revisión humana y una corrección real. El objetivo es comprender el recorrido, no aprender comandos."
+    ]
   },
-  outline: [
-    {
-      slug: "de-la-terminal-a-la-nube",
-      title: "De la terminal a la nube",
-      kicker: "Contexto · 1:30",
-      guide: {
-        intro:
-          "Codex ya no depende de que tu computadora esté encendida: las tareas corren en entornos cloud y las podés seguir desde otro dispositivo.",
+  "openingQuestion": {
+    "id": "codex-cloud-donde",
+    "prompt": "¿Qué te gustaría crear con ayuda de IA?",
+    "type": "single",
+    "options": [
+      {
+        "id": "local",
+        "label": "Una página para mi proyecto"
       },
+      {
+        "id": "nube",
+        "label": "Una herramienta para mi trabajo"
+      },
+      {
+        "id": "ambos",
+        "label": "Mejorar algo que ya existe"
+      },
+      {
+        "id": "ninguno",
+        "label": "Todavía estoy explorando"
+      }
+    ]
+  },
+  "outline": [
+    {
+      "slug": "de-la-terminal-a-la-nube",
+      "title": "¿Qué podés crear con Codex?",
+      "kicker": "Contexto · 1:00",
+      "guide": {
+        "intro": "Una página, una herramienta sencilla o una mejora a un proyecto. Codex trabaja con archivos y herramientas para producir algo que podés abrir y probar."
+      }
     },
     {
-      slug: "entornos",
-      title: "Un entorno donde Codex pueda trabajar solo",
-      kicker: "Concepto · 2:00",
-      guide: {
-        intro:
-          "Qué necesita el repositorio para que una tarea remota termine bien: dependencias, scripts de verificación y secretos bien acotados.",
-      },
+      "slug": "entornos",
+      "title": "Una idea necesita contexto",
+      "kicker": "Práctica · 1:00",
+      "guide": {
+        "intro": "Contá para quién es, qué problema resuelve y cómo se vería un buen resultado. Compartí ejemplos y archivos útiles."
+      }
     },
     {
-      slug: "agents",
-      title: "/agents: varias tareas en paralelo",
-      kicker: "Práctica · 1:30",
-      guide: {
-        intro:
-          "Delegar y monitorear varios encargos a la vez desde la CLI, y cómo decidir qué vale la pena paralelizar.",
-      },
+      "slug": "agents",
+      "title": "Repartí el trabajo",
+      "kicker": "Concepto · 1:30",
+      "guide": {
+        "intro": "Podés encargar investigación, creación y revisión por separado. Las tareas independientes pueden avanzar en paralelo; alguien tiene que reunir y comprobar el resultado."
+      }
     },
     {
-      slug: "code-review",
-      title: "Code review en cada pull request",
-      kicker: "Práctica · 1:30",
-      guide: {
-        intro:
-          "Codex revisa diffs y señala problemas en pull requests de GitHub y merge requests de GitLab antes de que llegue una persona.",
-      },
+      "slug": "mi-semana",
+      "title": "Demo: una página para un evento",
+      "kicker": "Demo · 3:00",
+      "guide": {
+        "intro": "Seguimos el mismo encargo desde la idea hasta una página que podemos abrir. Miramos lo que hizo cada agente y pedimos una corrección."
+      }
     },
     {
-      slug: "codex-security",
-      title: "Codex Security: encontrar el problema antes que otro",
-      kicker: "Concepto · 1:30",
-      guide: {
-        intro: "Escaneo de repositorios en busca de vulnerabilidades, con correcciones propuestas para revisar.",
-      },
+      "slug": "code-review",
+      "title": "Probalo antes de darlo por terminado",
+      "kicker": "Práctica · 1:30",
+      "guide": {
+        "intro": "Abrí la página, probá los botones y compará el resultado con el encargo. Revisar lo que cambió ayuda a encontrar errores antes de compartirlo."
+      }
     },
     {
-      slug: "mi-semana",
-      title: "Mi flujo de una semana",
-      kicker: "Cierre · 2:00",
-      guide: {
-        intro:
-          "Cómo se reparte el trabajo entre lo que delego a la nube, lo que reviso y lo que sigo haciendo a mano.",
-      },
-    },
-  ],
+      "slug": "codex-security",
+      "title": "Elegí tu primer proyecto",
+      "kicker": "Cierre · 2:00",
+      "guide": {
+        "intro": "Elegí algo pequeño y fácil de comprobar. DevDay amplió las opciones de Codex en la nube y de revisión; empezá por el entorno que puedas supervisar."
+      }
+    }
+  ]
 });
