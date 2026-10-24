@@ -9,10 +9,11 @@ import {
   MondaySlide,
   NewHireSlide,
   NotReadySlide,
-  PeopleAndAgentsSlide,
   ProductsSlide,
   QuestionsSlide,
   ReviewerSlide,
+  RouteSlide,
+  TeamSlide,
   TestsSlide,
 } from "./Slides";
 
@@ -58,15 +59,16 @@ const talk = defineTalk({
   },
   outline: [
     {
-      slug: "pocas-personas",
-      title: "Pocas personas. Muchos agentes.",
+      slug: "equipo-amplificado",
+      title: "Un equipo chico y especializado, amplificado por agentes.",
       kicker: "Borea Labs · 0:45",
-      component: PeopleAndAgentsSlide,
+      component: TeamSlide,
+      ambientMotion: true,
       guide: {
-        intro: "Borea Labs es una empresa chica: un fundador, algunos colaboradores y un equipo de agentes de IA que hacen buena parte del trabajo.",
+        intro: "Borea Labs es un equipo humano chico y especializado, amplificado por un equipo de agentes de IA. Las personas deciden y revisan; los agentes ejecutan.",
       },
       speakerNotes: {
-        script: "Presentá Borea en una frase: pocas personas y muchos agentes. La charla no es sobre una herramienta, es sobre cómo se organiza el trabajo para que eso funcione.",
+        script: "Presentá Borea: un equipo humano chico y especializado, amplificado por agentes. Las personas ponen el criterio: deciden qué se hace y revisan lo que sale. La charla es sobre cómo se organiza eso para que funcione.",
         timing: "0:45",
       },
     },
@@ -94,6 +96,7 @@ const talk = defineTalk({
       title: "Sin contexto, un agente empieza como un empleado nuevo.",
       kicker: "Contexto · 0:45",
       component: NewHireSlide,
+      ambientMotion: true,
       guide: {
         intro: "No des por hecho que el agente tiene el contexto de ayer. Sin él, cada tarea arranca sin saber quiénes son tus clientes, cómo trabajás ni qué ya salió mal.",
       },
@@ -136,11 +139,11 @@ const talk = defineTalk({
       kicker: "Brief · 1:30",
       component: BriefSlide,
       guide: {
-        intro: "Un buen brief dice qué hay que lograr, qué no se toca, cuándo está listo, cómo se deshace y qué se entrega.",
+        intro: "Resumen de un brief real: la pantalla de órdenes de reparación de Autoshop. Dice qué lograr, qué leer primero, qué no tocar, cuándo está listo y qué entregar.",
         takeaway: "Delegá el problema, no la solución.",
       },
       speakerNotes: {
-        script: "Este brief está adaptado de uno real. Lo importante es «listo cuando» y «cómo se deshace»: sin eso, el agente decide solo cuándo terminó. Aparte breve: cuando un brief trae la respuesta adentro, cuatro agentes distintos te devuelven la misma idea.",
+        script: "Este es el resumen de un brief real, el de la pantalla de órdenes de reparación de Autoshop. Fijate en «leé primero» (contexto), «límites» (los cálculos ya estaban auditados, no se reescriben) y «listo cuando»: sin eso, el agente decide solo cuándo terminó. Aparte breve: cuando un brief trae la respuesta adentro, cuatro agentes distintos te devuelven la misma idea.",
         timing: "1:30",
       },
     },
@@ -149,6 +152,7 @@ const talk = defineTalk({
       title: "Cuatro rondas de revisión lo aprobaron. Deshacerlo lo rompía.",
       kicker: "Revisión · 1:30",
       component: NotReadySlide,
+      ambientMotion: true,
       guide: {
         intro: "Un cambio tenía que poder deshacerse. Cuatro rondas de revisión lo aprobaron. Al deshacerlo, el programa dejaba de funcionar. Lo encontró un revisor que no había participado.",
       },
@@ -162,8 +166,9 @@ const talk = defineTalk({
       title: "Quien escribe no aprueba.",
       kicker: "Revisión · 1:00",
       component: ReviewerSlide,
+      ambientMotion: true,
       guide: {
-        intro: "El agente que hace el trabajo no es el que lo aprueba. El revisor es otro modelo, en otra sesión, y solo puede leer: no puede cambiar lo que revisa.",
+        intro: "El agente que hace el trabajo no es el que lo aprueba. El QA es otro modelo, en otra sesión, y solo puede leer: no puede cambiar lo que revisa.",
       },
       speakerNotes: {
         script: "La regla: el autor nunca ocupa el asiento del revisor. Usamos modelos independientes, en sesiones separadas y en modo solo lectura. Y cada hallazgo se verifica antes de corregirlo: los revisores también se equivocan.",
@@ -175,6 +180,7 @@ const talk = defineTalk({
       title: "Pasaba las 210 pruebas. Igual se podía saltar la verificación en dos pasos.",
       kicker: "Revisión · 0:45",
       component: TestsSlide,
+      ambientMotion: true,
       guide: {
         intro: "Una corrección de seguridad pasaba las 210 pruebas automáticas. Una revisión con Codex encontró que todavía se podía saltar la verificación en dos pasos, una variante que las pruebas todavía no cubrían.",
         takeaway: "Pruebas en verde no significan listo.",
@@ -198,8 +204,8 @@ const talk = defineTalk({
       },
     },
     {
-      slug: "construido-asi",
-      title: "Construido así.",
+      slug: "tres-productos",
+      title: "Tres productos, el mismo ciclo.",
       kicker: "Resultado · 1:15",
       component: ProductsSlide,
       guide: {
@@ -215,6 +221,7 @@ const talk = defineTalk({
       title: "El lunes: elegí una tarea y delegala.",
       kicker: "Para empezar · 1:15",
       component: MondaySlide,
+      ambientMotion: true,
       guide: {
         intro: "Elegí una tarea que repetís. Escribí el contexto, escribí el brief con cuándo está listo, delegala, revisá el resultado y anotá lo aprendido.",
         takeaway: "Ese es el ciclo.",
@@ -225,20 +232,41 @@ const talk = defineTalk({
       },
     },
   ],
+  speakerComponent: RouteSlide,
   closingComponent: QuestionsSlide,
 });
 
-/** defineTalk fixes questions at 3:00; this talk has 5. */
+/**
+ * defineTalk's fixed slides, adjusted without touching the kit: the cover and the closing float
+ * like the event cover, the summary's phone guide drops the internal "Demo o enfoque" label, and
+ * questions run 5:00 instead of 3:00.
+ */
 export const agentsApiDeck = {
   ...talk,
-  slides: talk.slides.map((slide) =>
-    slide.slug === "preguntas"
-      ? {
-          ...slide,
-          kicker: "Preguntas · 5:00",
-          guide: { ...slide.guide, takeaway: "Escaneá el código para escribirle a Fernando." },
-          speakerNotes: { script: "Abrí preguntas. El QR lleva a borealabs.com. Cerrá agradeciendo y presentando a quien sigue.", timing: "5:00" },
-        }
-      : slide,
-  ),
+  slides: talk.slides.map((slide) => {
+    if (slide.slug === "portada") return { ...slide, ambientMotion: true };
+    if (slide.slug === speakers.fernando.id) {
+      return {
+        ...slide,
+        ambientMotion: true,
+        guide: {
+          ...slide.guide,
+          sections: [
+            { title: "El recorrido", body: "Contexto, brief, revisión y memoria: las cuatro capas de una operación con agentes." },
+            { title: "Lo que vas a ver", body: "Artefactos reales y productos construidos así." },
+          ],
+        },
+      };
+    }
+    if (slide.slug === "preguntas") {
+      return {
+        ...slide,
+        ambientMotion: true,
+        kicker: "Preguntas · 5:00",
+        guide: { ...slide.guide, takeaway: "Escaneá el código para escribirle a Fernando." },
+        speakerNotes: { script: "Abrí preguntas. El QR lleva a borealabs.com. Cerrá agradeciendo y presentando a quien sigue.", timing: "5:00" },
+      };
+    }
+    return slide;
+  }),
 };
