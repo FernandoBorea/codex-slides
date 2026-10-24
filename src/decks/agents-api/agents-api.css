@@ -379,19 +379,19 @@
 }
 .an-doc section {
   display: grid;
-  grid-template-columns: 11cqw 1fr;
+  grid-template-columns: 13.5cqw 1fr;
   gap: 1.2cqw;
   padding: 0.85cqw 0;
   border-top: 0.1cqw solid var(--slide-border);
 }
 .an-doc h4 {
   color: var(--slide-green);
-  font-size: 1.2cqw;
+  font-size: 1.6cqw;
   font-weight: 650;
 }
 .an-doc p {
-  font-size: 1.2cqw;
-  line-height: 1.45;
+  font-size: 1.6cqw;
+  line-height: 1.35;
 }
 
 /* ---------- 09 · Not ready ---------- */
@@ -517,7 +517,7 @@
   gap: 0.6cqw;
 }
 .an-pills .dd-pill {
-  font-size: 1.2cqw;
+  font-size: 1.6cqw;
 }
 
 /* ---------- 11 · 210 tests ---------- */
@@ -630,6 +630,8 @@
   opacity: 0.45;
 }
 .an-paper-added {
+  font-size: 1.8cqw !important;
+  line-height: 1.3 !important;
   margin: 0.2cqw -0.8cqw 0;
   padding: 0.7cqw 0.8cqw;
   border-radius: 0.4cqw;
@@ -664,6 +666,7 @@
 }
 .an-shots li {
   display: grid;
+  align-content: start;
   gap: 0.5cqw;
 }
 .an-shot {
@@ -689,7 +692,7 @@
 }
 .an-shots li > span:last-child {
   color: var(--slide-muted);
-  font-size: 1.4cqw;
+  font-size: 1.6cqw;
 }
 
 /* ---------- 14 · Monday ---------- */

@@ -91,11 +91,11 @@ const talk = defineTalk({
     },
     {
       slug: "empleado-nuevo",
-      title: "Un agente empieza cada tarea como un empleado nuevo.",
+      title: "Sin contexto, un agente empieza como un empleado nuevo.",
       kicker: "Contexto · 0:45",
       component: NewHireSlide,
       guide: {
-        intro: "Un agente no recuerda la conversación de ayer. Cada tarea arranca sin saber quiénes son tus clientes, cómo trabajás ni qué ya salió mal.",
+        intro: "No des por hecho que el agente tiene el contexto de ayer. Sin él, cada tarea arranca sin saber quiénes son tus clientes, cómo trabajás ni qué ya salió mal.",
       },
       speakerNotes: {
         script: "Imaginá contratar a alguien nuevo cada mañana. Si todo lo importante está en tu cabeza, lo vas a repetir todos los días.",
@@ -126,7 +126,7 @@ const talk = defineTalk({
         intro: "Estrategia, clientes, procedimientos y decisiones viven en un mismo repositorio de texto, con historial. Las tareas, el código y las contraseñas viven en otro lado.",
       },
       speakerNotes: {
-        script: "Un repositorio es una carpeta con historial: se sabe quién cambió qué y cuándo. Ahí está el mapa de la empresa. Lo que no va ahí también está decidido: las tareas en su herramienta, el código en sus propios repositorios y las contraseñas nunca.",
+        script: "Un repositorio es una carpeta con historial: se sabe quién cambió qué y cuándo. Ahí está el mapa de la empresa. Lo que no va ahí también está decidido: las tareas en su herramienta, el código en proyectos separados y las contraseñas nunca.",
         timing: "1:00",
       },
     },
@@ -146,14 +146,14 @@ const talk = defineTalk({
     },
     {
       slug: "terminado-no-es-listo",
-      title: "Cuatro revisiones lo aprobaron. Igual estaba roto.",
+      title: "Cuatro rondas de revisión lo aprobaron. Deshacerlo lo rompía.",
       kicker: "Revisión · 1:30",
       component: NotReadySlide,
       guide: {
-        intro: "Un cambio tenía que poder deshacerse. Cuatro revisiones lo aprobaron. Al deshacerlo, el programa dejaba de funcionar. Lo encontró un revisor que no había participado.",
+        intro: "Un cambio tenía que poder deshacerse. Cuatro rondas de revisión lo aprobaron. Al deshacerlo, el programa dejaba de funcionar. Lo encontró un revisor que no había participado.",
       },
       speakerNotes: {
-        script: "Contá la historia en tres pasos. Las cuatro revisiones compartían el contexto de quien hizo el cambio. Una revisión desde afuera, que no había participado, lo encontró. «Terminado» lo dice el autor; «listo» lo dice alguien más.",
+        script: "Contá la historia en tres pasos. Las revisiones anteriores compartían el enfoque del autor y no comprobaron la vuelta atrás. Una revisión desde afuera, que no había participado, lo encontró. «Terminado» lo dice el autor; «listo» lo dice alguien más.",
         timing: "1:30",
       },
     },
@@ -176,7 +176,7 @@ const talk = defineTalk({
       kicker: "Revisión · 0:45",
       component: TestsSlide,
       guide: {
-        intro: "Una corrección de seguridad pasaba las 210 pruebas automáticas. Una revisión con Codex encontró que todavía se podía saltar la verificación en dos pasos, algo que ninguna prueba cubría.",
+        intro: "Una corrección de seguridad pasaba las 210 pruebas automáticas. Una revisión con Codex encontró que todavía se podía saltar la verificación en dos pasos, una variante que las pruebas todavía no cubrían.",
         takeaway: "Pruebas en verde no significan listo.",
       },
       speakerNotes: {
@@ -186,14 +186,14 @@ const talk = defineTalk({
     },
     {
       slug: "la-regla-queda-escrita",
-      title: "Un error se corrige una vez. La regla queda escrita.",
+      title: "Un error se corrige. La regla queda escrita.",
       kicker: "Memoria · 1:00",
       component: MemorySlide,
       guide: {
         intro: "Cuando un error puede repetirse, la corrección y su motivo quedan escritos donde el próximo agente los va a leer: en el manual.",
       },
       speakerNotes: {
-        script: "Contalo en primera persona: un día se publicó un cambio sin preparar la base de datos y todas las páginas con sesión fallaron. Fue un error del proceso que yo coordinaba. Desde ese día es una línea del manual que todo agente lee antes de publicar.",
+        script: "Contalo en primera persona: un día se publicó un cambio sin preparar la base de datos y todas las páginas con sesión fallaron. Fue un error del proceso que yo coordinaba. Desde ese día es una línea del manual: primero se aplica el cambio en la base de datos, después se publica el código.",
         timing: "1:00",
       },
     },
@@ -203,10 +203,10 @@ const talk = defineTalk({
       kicker: "Resultado · 1:15",
       component: ProductsSlide,
       guide: {
-        intro: "Tres productos construidos con este ciclo: Autoshop, un sistema para talleres que llegó a demo guiada en un día; Lima, una plataforma de licencias en producción; y RoKa IS, un ERP de importaciones.",
+        intro: "Tres productos construidos con este ciclo: Autoshop, un sistema para talleres que llegó a demo guiada en un día; Lima, una plataforma de licencias en producción; y RoKa IS, un sistema de gestión de importaciones.",
       },
       speakerNotes: {
-        script: "Mostrá los tres en una frase cada uno. Las capturas usan datos de prueba. El punto no es la velocidad: es que la velocidad no rompió la calidad porque había revisión y memoria.",
+        script: "Mostrá los tres en una frase cada uno. Las capturas usan datos de prueba. La revisión encontró fallos importantes en cada uno; las correcciones y las reglas quedaron incorporadas al proceso.",
         timing: "1:15",
       },
     },

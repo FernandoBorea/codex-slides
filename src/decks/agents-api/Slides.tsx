@@ -20,7 +20,7 @@ export const LAYERS = [
   { name: "Contexto", body: "Qué sabe el agente", color: blue },
   { name: "Brief", body: "Qué tiene que hacer", color: green },
   { name: "Revisión", body: "Cómo sabés que está bien", color: orange },
-  { name: "Memoria", body: "Qué aprendimos", color: purple },
+  { name: "Memoria", body: "Lo aprendido", color: purple },
 ];
 
 /** The same four lines on slide 06 (the manual) and slide 12 (the manual, one rule later). */
@@ -107,12 +107,12 @@ export function InfrastructureSlide() {
   );
 }
 
-/* 05 · Un agente empieza cada tarea como un empleado nuevo. */
+/* 05 · Sin contexto, un agente empieza como un empleado nuevo. */
 export function NewHireSlide() {
   return (
     <SlideFrame className="an-newhire">
       <Eyebrow>Contexto · 0:45</Eyebrow>
-      <h2 className="dd-heading an-narrow">Un agente empieza cada tarea como un empleado nuevo.</h2>
+      <h2 className="dd-heading an-narrow">Sin contexto, un agente empieza como un empleado nuevo.</h2>
       <p className="dd-lead an-narrow an-bottom">No sabe quiénes son tus clientes, cómo trabajás ni qué ya salió mal.</p>
       <div className="an-desk" aria-hidden="true">
         <SlideFace face={{ ...FACE_PRESETS.curious, color: purple, gaze: { x: -0.15, y: -0.1 } }} size={15} className="an-desk-face" />
@@ -174,7 +174,7 @@ export function MapSlide() {
         <dl className="an-outside">
           <dt>Fuera del mapa</dt>
           <dd><strong>Tareas</strong> su propia herramienta</dd>
-          <dd><strong>Código</strong> repositorios aparte</dd>
+          <dd><strong>Código</strong> proyectos separados</dd>
           <dd><strong>Contraseñas</strong> nunca aquí</dd>
         </dl>
       </div>
@@ -184,11 +184,11 @@ export function MapSlide() {
 
 /* 08 · El trabajo ya no es hacer la tarea. Es escribir el brief. */
 const briefSections = [
-  { title: "Objetivo", body: "Usar una sola versión del cálculo en todos los productos." },
-  { title: "Límites", body: "Trabajar en una rama aparte. No tocar nada fuera del cálculo." },
-  { title: "Listo cuando…", body: "Todo compila y el resultado coincide con la versión original." },
+  { title: "Objetivo", body: "Una sola versión del cálculo en todos los productos." },
+  { title: "Límites", body: "Trabajar en una versión separada. No tocar nada más." },
+  { title: "Listo cuando…", body: "El programa funciona y el resultado coincide con el original." },
   { title: "Cómo se deshace", body: "Un solo paso para volver atrás, probado." },
-  { title: "Entregable", body: "Los cambios, las pruebas y los riesgos pendientes." },
+  { title: "Entregable", body: "Cambios, pruebas y riesgos pendientes." },
 ];
 
 export function BriefSlide() {
@@ -216,12 +216,12 @@ export function BriefSlide() {
   );
 }
 
-/* 09 · Cuatro revisiones lo aprobaron. Igual estaba roto. */
+/* 09 · Cuatro rondas de revisión lo aprobaron. Deshacerlo lo rompía. */
 export function NotReadySlide() {
   return (
     <SlideFrame className="an-timeline-slide">
       <Eyebrow>Revisión · 1:30</Eyebrow>
-      <h2 className="dd-heading">Cuatro revisiones lo aprobaron. Igual estaba roto.</h2>
+      <h2 className="dd-heading">Cuatro rondas de revisión lo aprobaron. Deshacerlo lo rompía.</h2>
       <ol className="an-timeline">
         <li>
           <span className="an-timeline-icon an-timeline-icon--undo" aria-hidden="true">↺</span>
@@ -229,7 +229,7 @@ export function NotReadySlide() {
         </li>
         <li>
           <span className="an-checks" aria-hidden="true">{[0, 1, 2, 3].map((n) => <i key={n}>✓</i>)}</span>
-          <p>4 revisiones: aprobado</p>
+          <p>4 rondas de revisión: aprobado</p>
         </li>
         <li className="an-timeline-fail">
           <span className="an-timeline-icon an-timeline-icon--fail" aria-hidden="true">✕</span>
@@ -304,12 +304,15 @@ export function TestsSlide() {
   );
 }
 
-/* 12 · Un error se corrige una vez. La regla queda escrita. */
+/* 12 · Un error se corrige. La regla queda escrita. */
 export function MemorySlide() {
   return (
     <SlideFrame className="an-memory">
       <Eyebrow>Memoria · 1:00</Eyebrow>
-      <h2 className="dd-heading">Un error se corrige una vez. La regla queda escrita.</h2>
+      <h2 className="dd-heading">Un error se corrige.
+        <br />
+        La regla queda escrita.
+      </h2>
       <div className="an-memory-row">
         <article className="an-incident">
           <span className="an-incident-tag">Incidente · 19 sep 2026</span>
@@ -317,7 +320,7 @@ export function MemorySlide() {
         </article>
         <span className="an-arrow" aria-hidden="true">→</span>
         <div className="an-memory-paper">
-          <Paper added="Código que necesita una migración nunca se publica antes de aplicarla." />
+          <Paper added="Primero se aplica el cambio en la base de datos; después se publica el código." />
           <span className="an-added-tag">Regla nueva · 19 sep 2026</span>
         </div>
       </div>
@@ -329,7 +332,7 @@ export function MemorySlide() {
 const products = [
   { name: "Autoshop", body: "De cero a demo guiada en un día", src: autoshopShot, focus: "right top" },
   { name: "Lima", body: "Plataforma de licencias en producción", src: limaShot, focus: "left top" },
-  { name: "RoKa IS", body: "ERP de importaciones", src: rokaShot, focus: "left top" },
+  { name: "RoKa IS", body: "Sistema de gestión de importaciones", src: rokaShot, focus: "left top" },
 ];
 
 export function ProductsSlide() {
@@ -384,7 +387,7 @@ export function QuestionsSlide() {
         <SlideFace face={face} size={9} className="dd-closing-face" />
       </h1>
       <p className="dd-lead">
-        Gracias. Seguimos la conversación con <strong>{DEVDAY_EVENT.hashtag}</strong>.
+        Gracias. La conversación sigue con <strong>{DEVDAY_EVENT.hashtag}</strong>.
       </p>
       <aside className="an-qr">
         <span className="an-qr-code">
