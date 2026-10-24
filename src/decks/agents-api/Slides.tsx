@@ -407,11 +407,11 @@ export function MemorySlide() {
   );
 }
 
-/* 13 · Tres productos, el mismo ciclo. Whole screens in browser windows (demo data): make-assets.js
+/* 13 · Tres productos, el mismo ciclo. Whole screens in browser windows (demo data; RoKa in its dark theme): make-assets.js
    prepares every capture at the window's aspect, cut only where the page itself continues. */
 const products = [
-  { name: "Autoshop", body: "De cero a demo guiada en un día", src: autoshopShot, bar: "Autoshop · Órdenes de reparación", dark: true },
-  { name: "RoKa IS", body: "Sistema de gestión de importaciones", src: rokaShot, bar: "RoKa IS · Pedidos" },
+  { name: "Autoshop", body: "De cero a demo guiada en un día", src: autoshopShot, bar: "Autoshop · Órdenes de reparación" },
+  { name: "RoKa IS", body: "Sistema de gestión de importaciones", src: rokaShot, bar: "RoKa IS · Pedidos", dark: true },
   { name: "Lima", body: "Plataforma de licencias en producción", src: limaShot, bar: "Lima · Consola de licencias" },
 ];
 

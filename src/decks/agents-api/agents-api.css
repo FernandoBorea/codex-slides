@@ -1006,7 +1006,7 @@
   z-index: 3;
   width: 40cqw;
   translate: -50% 0;
-  box-shadow: 0 0 0 0.1cqw rgb(0 0 0 / 0.14), 0 2.4cqw 4.8cqw rgb(0 0 0 / 0.2);
+  box-shadow: 0 2.4cqw 4.8cqw rgb(0 0 0 / 0.22);
 }
 .an-fan .an-window:nth-child(3) { right: 0; z-index: 1; }
 /* Its left edge sits under the front window: show the title on the visible side. */
@@ -1034,17 +1034,14 @@
   color: var(--slide-muted);
   font-size: 1.45cqw;
 }
-/* A translucent outline instead of a border: a light line against an app's dark sidebar read as
-   a device bezel. */
+/* The bezel: a real border around each window (Fernando preferred it to a bare outline). */
 .an-window {
   overflow: hidden;
   margin: 0;
+  border: 0.1cqw solid var(--slide-border);
   border-radius: 1cqw;
   background: var(--slide-bg);
-  box-shadow: 0 0 0 0.1cqw rgb(0 0 0 / 0.14), 0 1.6cqw 3.2cqw rgb(0 0 0 / 0.12);
-}
-[data-slide-theme="dark"] .an-window {
-  box-shadow: 0 0 0 0.1cqw rgb(255 255 255 / 0.12), 0 1.6cqw 3.2cqw rgb(0 0 0 / 0.4);
+  box-shadow: 0 1.6cqw 3.2cqw rgb(0 0 0 / 0.12);
 }
 .an-window-bar {
   display: flex;
@@ -1059,6 +1056,7 @@
   font-weight: 550;
 }
 .an-window--dark {
+  border-color: #3a3b34;
   background: #161613;
 }
 .an-window--dark .an-window-bar {
