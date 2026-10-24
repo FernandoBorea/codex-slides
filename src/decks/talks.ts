@@ -5,5 +5,5 @@ import { dotsDeck } from "./dots/deck";
 import { agentsApiDeck } from "./agents-api/deck";
 import { decisionsApiDeck } from "./decisions-api/deck";
 
-/** The event agenda and library share this order. Frank's topic is pending. */
+/** The event agenda and library share this order. */
 export const talkDecks = [codexCloudDeck, notionCodexDeck, videoCodexDeck, dotsDeck, agentsApiDeck, decisionsApiDeck];
