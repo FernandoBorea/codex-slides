@@ -407,12 +407,12 @@ export function MemorySlide() {
   );
 }
 
-/* 13 · Tres productos, el mismo ciclo. Lima in front; whole screens in browser windows (demo data; RoKa in its dark theme): make-assets.js
+/* 13 · Tres productos, el mismo ciclo. Lima in front, in its dark theme; whole screens in browser windows (demo data): make-assets.js
    prepares every capture at the window's aspect, cut only where the page itself continues. */
-const products = [
+const products: { name: string; body: string; src: string; bar: string; dark?: boolean }[] = [
   { name: "Autoshop", body: "De cero a demo guiada en un día", src: autoshopShot, bar: "Autoshop · Órdenes de reparación" },
-  { name: "Lima", body: "Plataforma de licencias en producción", src: limaShot, bar: "Lima · Consola de licencias" },
-  { name: "RoKa IS", body: "Sistema de gestión de importaciones", src: rokaShot, bar: "RoKa IS · Pedidos", dark: true },
+  { name: "Lima", body: "Plataforma de licencias en producción", src: limaShot, bar: "Lima · Consola de licencias", dark: true },
+  { name: "RoKa IS", body: "Sistema de gestión de importaciones", src: rokaShot, bar: "RoKa IS · Pedidos" },
 ];
 
 export function ProductsSlide() {
@@ -446,11 +446,13 @@ export function ProductsSlide() {
 }
 
 /* 14 · El lunes: elegí una tarea y delegala. */
+/* Deeper shades of the event palette so white numbers read at about 4.7–5.5:1 (the light green and
+   orange only reach about 2.7:1 with white). */
 const steps = [
   { title: "Escribí el contexto", color: blue },
-  { title: "Escribí el brief: cuándo está listo", color: green },
-  { title: "Delegá", color: orange },
-  { title: "Revisá y anotá lo aprendido", color: purple },
+  { title: "Escribí el brief: cuándo está listo", color: "#008a3e" },
+  { title: "Delegá", color: "#c24400" },
+  { title: "Revisá y anotá lo aprendido", color: "#7a3ff0" },
 ];
 
 export function MondaySlide() {
