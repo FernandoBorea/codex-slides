@@ -2,6 +2,7 @@ import { speakers } from "../../devday/speakers";
 import { defineTalk } from "../kit/talk";
 import {
   BriefSlide,
+  CoverSlide,
   InfrastructureSlide,
   ManualSlide,
   MapSlide,
@@ -14,6 +15,7 @@ import {
   ReviewerSlide,
   RouteSlide,
   TeamSlide,
+  TALK_TOPIC,
   TestsSlide,
 } from "./Slides";
 
@@ -26,7 +28,7 @@ const talk = defineTalk({
   slug: "agents-api",
   title: "¿Qué hace AI-native a una empresa?",
   description: "Usar IA no alcanza. Cómo opera una empresa con agentes: el contexto que leen, el brief que reciben, quién revisa su trabajo y cómo se guarda lo aprendido.",
-  topic: "Codex · AGENTS.md",
+  topic: TALK_TOPIC,
   speaker: speakers.fernando,
   accent: "#0066ff",
   duration: "20 min",
@@ -232,6 +234,7 @@ const talk = defineTalk({
       },
     },
   ],
+  coverComponent: CoverSlide,
   speakerComponent: RouteSlide,
   closingComponent: QuestionsSlide,
 });

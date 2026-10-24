@@ -4,8 +4,8 @@ import { CodexWordmark } from "../../devday/Brand";
 import { DEVDAY_EVENT } from "../../devday/event";
 import { FACE_PALETTE, FACE_PRESETS, createFace, type FaceConfig } from "../../devday/faces";
 import { Crowd } from "../kit/Crowd";
-import { closingCrowd, lookAt, type CrowdFace } from "../kit/crowd-layout";
-import { Cards, Eyebrow, Pill, SlideFace, SlideFrame } from "../kit/layouts";
+import { closingCrowd, type CrowdFace } from "../kit/crowd-layout";
+import { Eyebrow, Pill, SlideFace, SlideFrame, TalkCover } from "../kit/layouts";
 import { useSlideInfo } from "../kit/SlideInfo";
 import autoshopShot from "./assets/autoshop.webp";
 import limaShot from "./assets/lima.webp";
@@ -15,10 +15,14 @@ import "./agents-api.css";
 
 const { blue, green, orange, purple, charcoal } = FACE_PALETTE;
 
+/** The DevDay announcement(s) the talk builds on: the cover pill and the library category. */
+export const TALK_TOPIC = "Codex · AGENTS.md";
+
 /**
- * Motion: faces in a <Crowd> bob with the kit's animation. Anything else that should float gets
- * `an-float` (and `--i` to offset its phase). Both only run on slides with `ambientMotion` while
- * the stage is running; reduced motion and print get the still pose (agents-api.css).
+ * Motion (agents-api.css), all on the kit's ambientMotion switch and paused unless the stage runs:
+ * - `an-life` on a slide scopes the face gestures: open eyes blink, the rest glance aside.
+ * - `an-float` makes an element bob; `--i` offsets its phase.
+ * Reduced motion and print get the resting pose.
  */
 const float = (index: number) => ({ "--i": index }) as CSSProperties;
 
@@ -64,11 +68,22 @@ function Paper({ added }: { added?: string }) {
   );
 }
 
+/* 01 · The kit's cover, inside the face-gesture scope. */
+export function CoverSlide() {
+  const info = useSlideInfo();
+  if (!info?.speaker) return null;
+  return (
+    <div className="an-life" style={{ display: "contents" }}>
+      <TalkCover title={info.deckTitle} topic={TALK_TOPIC} speaker={info.speaker} accent={blue} />
+    </div>
+  );
+}
+
 /* 02 · El recorrido (replaces the kit's text summary). */
 export function RouteSlide() {
   const info = useSlideInfo();
   return (
-    <SlideFrame className="an-route-slide">
+    <SlideFrame className="an-life an-route-slide">
       <Eyebrow>El recorrido · 1:30</Eyebrow>
       <h2 className="dd-heading">Cuatro capas para operar con agentes.</h2>
       <ol className="an-route">
@@ -97,29 +112,34 @@ export function RouteSlide() {
   );
 }
 
-/* 03 · A small specialised human team, augmented by agents. */
+/* 03 · A small specialised human team, augmented by agents in two counter-rotating orbits. */
 const ORBIT = { x: 73, y: 29 };
 const humans: CrowdFace[] = [
   { x: ORBIT.x - 4.6, y: ORBIT.y + 0.6, size: 6.4, face: { ...FACE_PRESETS.happy, color: charcoal, rotation: 6 } },
   { x: ORBIT.x + 0.4, y: ORBIT.y - 2.4, size: 7.6, face: { ...FACE_PRESETS.squeeze, color: blue, rotation: -8 } },
   { x: ORBIT.x + 5, y: ORBIT.y + 1.6, size: 6.4, face: { ...FACE_PRESETS.wink, color: orange } },
 ];
-function ring(count: number, radius: number, size: number, offset: number, seed: number): CrowdFace[] {
-  return Array.from({ length: count }, (_, index) => {
-    const angle = offset + (index / count) * Math.PI * 2;
-    const spot = { x: ORBIT.x + Math.cos(angle) * radius, y: ORBIT.y + Math.sin(angle) * radius * 0.92 };
-    return { ...spot, size, face: lookAt(createFace(seed + index * 11), spot, ORBIT, 0.6) };
-  });
-}
-const agents = [...ring(8, 13.5, 3.6, -Math.PI / 2 + 0.3, 5), ...ring(13, 21, 3, -Math.PI / 2, 101)];
+const orbits = [
+  { radius: 13, size: 3.6, spin: "an-orbit--cw", faces: Array.from({ length: 8 }, (_, i) => ({ angle: 20 + i * 45, face: createFace(5 + i * 11) })) },
+  { radius: 20, size: 3, spin: "an-orbit--ccw", faces: Array.from({ length: 13 }, (_, i) => ({ angle: i * (360 / 13), face: createFace(101 + i * 11) })) },
+];
 
 export function TeamSlide() {
   return (
-    <SlideFrame className="an-team">
-      <span className="an-orbit-ring an-orbit-ring--outer" aria-hidden="true" />
-      <span className="an-orbit-ring an-orbit-ring--inner" aria-hidden="true" />
+    <SlideFrame className="an-life an-team">
+      {orbits.map((orbit) => (
+        <div key={orbit.radius} className={`an-orbit ${orbit.spin}`} style={{ "--r": `${orbit.radius}cqw` } as CSSProperties} aria-hidden="true">
+          {orbit.faces.map(({ angle, face }, index) => (
+            <span key={index} className="an-orbiter" style={{ "--a": `${angle}deg` } as CSSProperties}>
+              <span className="an-orbiter-face">
+                <SlideFace face={face} size={orbit.size} style={float(index)} />
+              </span>
+            </span>
+          ))}
+        </div>
+      ))}
       <span className="an-orbit-core" aria-hidden="true" />
-      <Crowd faces={[...agents, ...humans]} />
+      <Crowd faces={humans} />
       <span className="an-orbit-label an-orbit-label--core">Equipo humano</span>
       <span className="an-orbit-label an-orbit-label--ring">Agentes</span>
       <div className="an-team-text">
@@ -151,10 +171,10 @@ export function InfrastructureSlide() {
   );
 }
 
-/* 05 · Sin contexto, un agente empieza como un empleado nuevo. */
+/* 05 · Sin contexto, un agente empieza como un empleado nuevo. The laptop faces the agent; it types. */
 export function NewHireSlide() {
   return (
-    <SlideFrame className="an-newhire">
+    <SlideFrame className="an-life an-newhire">
       <div className="an-newhire-text">
         <Eyebrow>Contexto · 0:45</Eyebrow>
         <h2 className="dd-heading">Sin contexto, un agente empieza como un empleado nuevo.</h2>
@@ -164,13 +184,12 @@ export function NewHireSlide() {
         <span className="an-desk-q an-desk-q--a an-float" style={float(0)}><Mark kind="question" color={orange} /></span>
         <span className="an-desk-q an-desk-q--b an-float" style={float(2)}><Mark kind="question" color={blue} /></span>
         <span className="an-desk-q an-desk-q--c an-float" style={float(4)}><Mark kind="question" color={green} /></span>
-        <SlideFace face={{ ...FACE_PRESETS.curious, color: purple, gaze: { x: 0.05, y: 0.25 } }} size={13} className="an-desk-face" />
+        <span className="an-typist">
+          <SlideFace face={{ ...FACE_PRESETS.curious, color: purple, gaze: { x: 0.05, y: 0.45 } }} size={13} />
+        </span>
+        <span className="an-typing"><i /><i /><i /></span>
         <span className="an-laptop">
-          <span className="an-laptop-screen">
-            <i />
-            <i />
-            <i />
-          </span>
+          <span className="an-laptop-lid"><i /></span>
           <span className="an-laptop-base" />
         </span>
         <span className="an-desk-top" />
@@ -203,39 +222,36 @@ export function ManualSlide() {
   );
 }
 
-/* 07 · Todo el contexto vive en un solo lugar. Label positions match MAP_REGIONS in HQ's make-assets.js. */
+/* 07 · Todo el contexto vive en un solo lugar. The map fills the slide; pins sit on the peaks
+   placed by MAP_REGIONS in HQ's make-assets.js (same slide coordinates, in cqw). */
 const regions = [
-  { name: "Estrategia", x: 0.2, y: 0.38, color: blue },
-  { name: "Clientes", x: 0.52, y: 0.24, color: green },
-  { name: "Procedimientos", x: 0.8, y: 0.46, color: orange },
-  { name: "Decisiones", x: 0.44, y: 0.76, color: purple },
+  { name: "Estrategia", x: 15, y: 31, color: blue },
+  { name: "Clientes", x: 36, y: 22.5, color: green },
+  { name: "Procedimientos", x: 53, y: 35, color: orange },
+  { name: "Decisiones", x: 30, y: 44, color: purple },
 ];
 
 export function MapSlide() {
   return (
     <SlideFrame className="an-map-slide">
+      <Topo className="an-topo--map" />
       <Eyebrow>Contexto · 1:00</Eyebrow>
       <h2 className="dd-heading">Todo el contexto vive en un solo lugar.</h2>
-      <div className="an-map-row">
-        <div className="an-map">
-          <Topo className="an-topo--map" />
-          {regions.map((region) => (
-            <span
-              key={region.name}
-              className="an-map-pin"
-              style={{ "--x": `${region.x * 100}%`, "--y": `${region.y * 100}%`, "--pin": region.color } as CSSProperties}
-            >
-              {region.name}
-            </span>
-          ))}
-        </div>
-        <dl className="an-outside">
-          <dt>Fuera del mapa</dt>
-          <dd><strong>Tareas</strong> su propia herramienta</dd>
-          <dd><strong>Código</strong> proyectos separados</dd>
-          <dd><strong>Contraseñas</strong> nunca aquí</dd>
-        </dl>
-      </div>
+      {regions.map((region) => (
+        <span
+          key={region.name}
+          className="an-map-pin"
+          style={{ "--x": `${region.x}cqw`, "--y": `${region.y}cqw`, "--pin": region.color } as CSSProperties}
+        >
+          {region.name}
+        </span>
+      ))}
+      <dl className="an-outside">
+        <dt>Fuera del mapa</dt>
+        <dd><strong>Tareas</strong> su propia herramienta</dd>
+        <dd><strong>Código</strong> proyectos separados</dd>
+        <dd><strong>Contraseñas</strong> nunca aquí</dd>
+      </dl>
     </SlideFrame>
   );
 }
@@ -277,10 +293,10 @@ export function BriefSlide() {
   );
 }
 
-/* 09 · Cuatro rondas de revisión lo aprobaron. Deshacerlo lo rompía. */
+/* 09 · Cuatro rondas de revisión lo aprobaron. Deshacerlo lo rompía. The finder hops in surprise. */
 export function NotReadySlide() {
   return (
-    <SlideFrame className="an-timeline-slide">
+    <SlideFrame className="an-life an-timeline-slide">
       <Eyebrow>Revisión · 1:30</Eyebrow>
       <h2 className="dd-heading">Cuatro rondas de revisión lo aprobaron. Deshacerlo lo rompía.</h2>
       <ol className="an-timeline">
@@ -295,7 +311,7 @@ export function NotReadySlide() {
         <li className="an-timeline-fail">
           <span className="an-timeline-icon" aria-hidden="true">✕</span>
           <p>Al deshacerlo, dejaba de funcionar</p>
-          <span className="an-timeline-finder an-float" style={float(1)}>
+          <span className="an-timeline-finder an-surprise">
             <SlideFace face={{ ...FACE_PRESETS.curious, color: purple, gaze: { x: -0.4, y: 0.35 } }} size={7} />
             <span className="an-timeline-mark"><Mark kind="exclaim" color={green} /></span>
           </span>
@@ -309,12 +325,12 @@ export function NotReadySlide() {
 /* 10 · Quien escribe no aprueba. */
 export function ReviewerSlide() {
   return (
-    <SlideFrame className="an-split">
+    <SlideFrame className="an-life an-split">
       <Eyebrow>Revisión · 1:00</Eyebrow>
       <h2 className="dd-heading">Quien escribe no aprueba.</h2>
       <div className="an-split-row">
         <figure className="an-split-panel" style={{ "--panel": orange } as CSSProperties}>
-          <SlideFace face={{ ...FACE_PRESETS.sleepy, color: orange, gaze: { x: 0.35, y: 0.6 } }} size={13} className="an-float" style={float(0)} />
+          <SlideFace face={{ ...FACE_PRESETS.plus, color: orange, gaze: { x: 0.3, y: 0.25 } }} size={13} className="an-float" style={float(0)} />
           <figcaption>
             <strong>Autor</strong>
             <span>Hace el trabajo</span>
@@ -391,11 +407,12 @@ export function MemorySlide() {
   );
 }
 
-/* 13 · Tres productos, el mismo ciclo. Captures use demo data; Autoshop is its dark theme. */
+/* 13 · Tres productos, el mismo ciclo. Whole screens in browser windows (demo data): make-assets.js
+   prepares every capture at the window's aspect, cut only where the page itself continues. */
 const products = [
-  { name: "Autoshop", body: "De cero a demo guiada en un día", src: autoshopShot, focus: "left top" },
-  { name: "Lima", body: "Plataforma de licencias en producción", src: limaShot, focus: "left top" },
-  { name: "RoKa IS", body: "Sistema de gestión de importaciones", src: rokaShot, focus: "left top" },
+  { name: "Autoshop", body: "De cero a demo guiada en un día", src: autoshopShot, bar: "Autoshop · Órdenes de reparación", dark: true },
+  { name: "RoKa IS", body: "Sistema de gestión de importaciones", src: rokaShot, bar: "RoKa IS · Pedidos" },
+  { name: "Lima", body: "Plataforma de licencias en producción", src: limaShot, bar: "Lima · Consola de licencias" },
 ];
 
 export function ProductsSlide() {
@@ -403,56 +420,77 @@ export function ProductsSlide() {
     <SlideFrame className="an-products">
       <Eyebrow>Resultado · 1:15</Eyebrow>
       <h2 className="dd-heading">Tres productos, el mismo ciclo.</h2>
-      <ul className="an-shots">
-        {products.map((product) => (
-          <li key={product.name}>
-            <span className="an-shot" style={{ "--focus": product.focus } as CSSProperties}>
+      <div className="an-showcase">
+        <div className="an-fan">
+          {products.map((product) => (
+            <figure key={product.name} className={`an-window ${product.dark ? "an-window--dark" : ""}`}>
+              <figcaption className="an-window-bar">
+                <span className="an-window-dots" aria-hidden="true"><i /><i /><i /></span>
+                <span>{product.bar}</span>
+              </figcaption>
               <img src={product.src} alt={`Captura de ${product.name} con datos de prueba`} draggable={false} />
-            </span>
-            <strong>{product.name}</strong>
-            <span>{product.body}</span>
-          </li>
-        ))}
-      </ul>
+            </figure>
+          ))}
+        </div>
+        <ul className="an-fan-captions">
+          {products.map((product) => (
+            <li key={product.name}>
+              <strong>{product.name}</strong>
+              <span>{product.body}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </SlideFrame>
   );
 }
 
 /* 14 · El lunes: elegí una tarea y delegala. */
+const steps = [
+  { title: "Escribí el contexto", color: blue },
+  { title: "Escribí el brief: cuándo está listo", color: green },
+  { title: "Delegá", color: orange },
+  { title: "Revisá y anotá lo aprendido", color: purple },
+];
+
 export function MondaySlide() {
   return (
-    <SlideFrame className="an-monday">
+    <SlideFrame className="an-life an-monday">
       <Topo className="an-topo--corner" />
       <Eyebrow>Para empezar · 1:15</Eyebrow>
       <h2 className="dd-heading">El lunes: elegí una tarea y delegala.</h2>
-      <Cards
-        columns={4}
-        items={[
-          { tag: "01", title: "Escribí el contexto", color: blue },
-          { tag: "02", title: "Escribí el brief: cuándo está listo", color: green },
-          { tag: "03", title: "Delegá", color: orange },
-          { tag: "04", title: "Revisá y anotá lo aprendido", color: purple, face: { ...FACE_PRESETS.happy, color: charcoal, rotation: -10 } },
-        ]}
-      />
+      <ol className="an-steps">
+        {steps.map((step, index) => (
+          <li key={step.title} style={{ "--step": step.color } as CSSProperties}>
+            <span className="an-step-number">{String(index + 1).padStart(2, "0")}</span>
+            <strong>{step.title}</strong>
+            {index === steps.length - 1 && (
+              <SlideFace face={{ ...FACE_PRESETS.happy, color: charcoal, rotation: -10 }} size={7} className="an-steps-face an-float" style={float(1)} />
+            )}
+          </li>
+        ))}
+      </ol>
     </SlideFrame>
   );
 }
 
-/* 15 · Preguntas + QR. Same crowd and type as the kit's ClosingSlide, plus the contact QR. */
+/* 15 · Preguntas + QR. The kit's closing crowd and type, plus the contact QR. */
 export function QuestionsSlide() {
   const info = useSlideInfo();
   const face: FaceConfig = info?.speaker ? { ...info.speaker.face, gaze: { x: -0.3, y: 0.35 } } : FACE_PRESETS.squeeze;
   return (
-    <SlideFrame className="dd-closing an-closing" footer={false}>
-      <Crowd faces={closingCrowd({ x: 32, y: 18 })} className="dd-closing-crowd" />
-      <Eyebrow>{info?.deckTitle}</Eyebrow>
-      <h1 className="dd-display">
-        ¿Preguntas?
-        <SlideFace face={face} size={9} className="dd-closing-face an-float" style={float(2)} />
-      </h1>
-      <p className="dd-lead">
-        Gracias. La conversación sigue con <strong>{DEVDAY_EVENT.hashtag}</strong>.
-      </p>
+    <SlideFrame className="an-life dd-closing an-closing" footer={false}>
+      <Crowd faces={closingCrowd({ x: 30, y: 22 })} className="dd-closing-crowd" />
+      <div className="an-closing-text">
+        <Eyebrow>{info?.deckTitle}</Eyebrow>
+        <h1 className="dd-display">
+          ¿Preguntas?
+          <SlideFace face={face} size={9} className="dd-closing-face an-float" style={float(2)} />
+        </h1>
+        <p className="dd-lead">
+          Gracias. La conversación sigue con <strong>{DEVDAY_EVENT.hashtag}</strong>.
+        </p>
+      </div>
       <aside className="an-qr">
         <span className="an-qr-code">
           <img src={qrBorea} alt="Código QR a borealabs.com" draggable={false} />
