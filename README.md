@@ -29,17 +29,17 @@ Sin `VITE_CONVEX_URL` aparece **«No ha sido configurado Convex»**: el modo loc
 | De un video largo a un clip con Codex | `video-con-codex` | Rodrigo Garciaguirre | 10 |
 | Dots: ayuda que le da seguimiento a tus pendientes | `dots` | Saul Calderon | 10 |
 | Un asistente que trabaja entre tus herramientas | `agents-api` | Fernando Borea | 10 |
-| Tema por definir | `decisions-api` | Frank Calderon | 4 |
+| AI Coding | `decisions-api` | Frank Calderon | 15 |
 
 Todos los decks empiezan con la misma portada de espera **00** (la multitud de caras del holding screen de DevDay, OpenAI DevDay Exchange, Codex y Ai Labs), sin encuesta y fuera del tiempo de charla.
 
 La **apertura** está completa y sirve de ejemplo del sistema visual: bienvenida, los seis anuncios de DevDay en tarjetas, la agenda (leída de las charlas), cómo participar desde el teléfono y el cierre con `#DevDayCommunity`.
 
-Las cinco charlas con tema definido están pensadas para público variado, sin experiencia técnica previa. Cada una dura 15 minutos: **01 portada** (0:30), **02 resumen del recorrido** (1:30), seis slides de contenido (10:00) y preguntas (3:00). La portada de espera 00 queda fuera del tiempo.
+Las seis charlas están pensadas para público variado, sin experiencia técnica previa. Cada una dura 15 minutos: **01 portada** (0:30), **02 resumen del recorrido** (1:30), slides de contenido (10:00) y preguntas (3:00). La portada de espera 00 queda fuera del tiempo.
 
 La **slide 02** explica el objetivo, los puntos a cubrir, la demo propuesta y lo que se lleva el público. Se genera desde `brief` en cada `deck.ts`; su guía móvil usa el mismo contenido. `brief.preparation` agrega instrucciones para preparar y ensayar la demo en las notas del presentador. Es el punto de partida para quien complete el deck.
 
-Las slides de contenido siguen como borradores hasta que el speaker agregue su componente. **Frank queda pendiente**, sin tema ni demo asignados: su ruta `decisions-api` se conserva por compatibilidad, pero no confirma una charla sobre esa API. El antiguo deck `sol-o-astra` fue reemplazado por `video-con-codex`.
+Las slides de contenido siguen como borradores hasta que el speaker agregue su componente. La charla de Frank, **AI Coding** (generar código es fácil; construir software es otra historia), ya está completa: su ruta `decisions-api` se conserva por compatibilidad, aunque la charla no trata sobre esa API. El antiguo deck `sol-o-astra` fue reemplazado por `video-con-codex`.
 
 El [brief de las charlas](docs/charlas.md) reúne el orden, los enlaces a los resúmenes y las fuentes oficiales.
 

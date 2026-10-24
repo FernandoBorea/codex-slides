@@ -60,7 +60,7 @@ Los **títulos ya están definidos** en cada `outline`. Una entrada sin `compone
 4. Actualizá `guide.intro` (y `sections`/`takeaway` si suman) para que la guía del teléfono diga lo mismo que la slide.
 5. Si agregás o quitás slides, redistribuí los tiempos de los kickers para que sigan sumando la duración de la charla (15 min: 0:30 de portada + 1:30 de resumen + 10:00 de outline + 3:00 de preguntas).
 
-La slide 02 usa `brief.goal`, `topics`, `demo` y `takeaway`; `preparation` se reserva para notas del speaker. Consultá `docs/charlas.md` para el orden y los enfoques aprobados. Frank sigue pendiente.
+La slide 02 usa `brief.goal`, `topics`, `demo` y `takeaway`; `preparation` se reserva para notas del speaker. Consultá `docs/charlas.md` para el orden y los enfoques aprobados.
 
 Para reemplazar la portada, el resumen o el cierre, usá `coverComponent`, `speakerComponent` o `closingComponent` en `defineTalk`. No edites `layouts.tsx` para una sola charla.
 
