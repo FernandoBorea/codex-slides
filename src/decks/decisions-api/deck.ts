@@ -61,21 +61,9 @@ export const decisionsApiDeck: Deck = {
         intro: "La pregunta con la que abre la charla. Un trabajo está compuesto por muchas tareas: la pregunta no es si la IA nos reemplaza, sino cómo cambia la manera en que trabajamos.",
         takeaway: "La conversación es sobre transformación, no sobre reemplazo.",
       },
-      question: {
-        id: "ai-coding-reemplazar",
-        prompt: "¿La IA nos va a reemplazar?",
-        type: "single",
-        options: [
-          { id: "reemplaza", label: "Sí, nos va a reemplazar" },
-          { id: "transforma", label: "Va a transformar cómo trabajamos" },
-          { id: "complementa", label: "Va a ser una herramienta más" },
-          { id: "indeciso", label: "Todavía no lo tengo claro" },
-        ],
-      },
       speakerNotes: {
         script: "Preguntá cuántos han escuchado que la IA reemplazará a los programadores. Compartí brevemente cómo cambió el desarrollo en más de 15 años de experiencia e introducí la idea de que un trabajo está compuesto por muchas tareas.",
         timing: "0:45",
-        interaction: "Abrí la encuesta para leer la sala.",
       },
     },
     {
