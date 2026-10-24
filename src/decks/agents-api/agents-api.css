@@ -372,6 +372,9 @@
   display: grid;
   justify-items: center;
 }
+.an-laptop + .an-desk-top {
+  z-index: 1;
+}
 /* The back of the lid: the agent sits behind it, looking at the screen. */
 .an-laptop-lid {
   position: relative;
@@ -395,11 +398,25 @@
 [data-slide-theme="dark"] .an-laptop-lid i {
   background: rgb(255 255 255 / 0.25);
 }
+/* Seen from behind, the keyboard sits past the lid, out of sight: only the hinge shows, plus
+   the laptop's shadow on the desk. */
 .an-laptop-base {
-  width: 23cqw;
-  height: 0.9cqw;
-  border-radius: 0 0 0.8cqw 0.8cqw;
+  position: relative;
+  width: 17cqw;
+  height: 0.55cqw;
+  border-radius: 0 0 0.3cqw 0.3cqw;
   background: #8f9188;
+}
+.an-laptop-base::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 24cqw;
+  height: 0.9cqw;
+  translate: -50% -40%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(0 0 0 / 0.14), transparent);
 }
 .an-desk-q {
   position: absolute;
@@ -408,7 +425,7 @@
 }
 .an-desk-q--a { left: 8%; top: 2cqw; width: 6.4cqw; height: 6.4cqw; transform: rotate(-14deg); }
 .an-desk-q--b { right: 6%; top: 0; width: 8.4cqw; height: 8.4cqw; transform: rotate(10deg); }
-.an-desk-q--c { left: 20%; top: 11cqw; width: 4.4cqw; height: 4.4cqw; transform: rotate(-20deg); }
+.an-desk-q--c { left: 3%; top: 13.5cqw; width: 4.4cqw; height: 4.4cqw; transform: rotate(-20deg); }
 
 /* ---------- 06 and 12 · The manual ---------- */
 .an-manual-pair {
@@ -954,11 +971,17 @@
   right: 1.4cqw;
   top: -1.4cqw;
   padding: 0.35cqw 1cqw;
+  border: 0.1cqw solid #8fdcae;
   border-radius: 999px;
-  background: #00b449;
-  color: #0b0b0a;
+  background: #dcf5e6;
+  color: #005c26;
   font-size: 1cqw;
   font-weight: 650;
+}
+[data-slide-theme="dark"] .an-added-tag {
+  border-color: #1f7a45;
+  background: #123d26;
+  color: #b8f0cf;
 }
 
 /* ---------- 13 · Products in browser windows, fanned: the richest screen in front ---------- */
@@ -983,7 +1006,7 @@
   z-index: 3;
   width: 40cqw;
   translate: -50% 0;
-  box-shadow: 0 2.4cqw 4.8cqw rgb(0 0 0 / 0.2);
+  box-shadow: 0 0 0 0.1cqw rgb(0 0 0 / 0.14), 0 2.4cqw 4.8cqw rgb(0 0 0 / 0.2);
 }
 .an-fan .an-window:nth-child(3) { right: 0; z-index: 1; }
 /* Its left edge sits under the front window: show the title on the visible side. */
@@ -1011,13 +1034,17 @@
   color: var(--slide-muted);
   font-size: 1.45cqw;
 }
+/* A translucent outline instead of a border: a light line against an app's dark sidebar read as
+   a device bezel. */
 .an-window {
   overflow: hidden;
   margin: 0;
-  border: 0.1cqw solid var(--slide-border);
   border-radius: 1cqw;
   background: var(--slide-bg);
-  box-shadow: 0 1.6cqw 3.2cqw rgb(0 0 0 / 0.12);
+  box-shadow: 0 0 0 0.1cqw rgb(0 0 0 / 0.14), 0 1.6cqw 3.2cqw rgb(0 0 0 / 0.12);
+}
+[data-slide-theme="dark"] .an-window {
+  box-shadow: 0 0 0 0.1cqw rgb(255 255 255 / 0.12), 0 1.6cqw 3.2cqw rgb(0 0 0 / 0.4);
 }
 .an-window-bar {
   display: flex;
@@ -1032,7 +1059,6 @@
   font-weight: 550;
 }
 .an-window--dark {
-  border-color: #3a3b34;
   background: #161613;
 }
 .an-window--dark .an-window-bar {
@@ -1071,14 +1097,19 @@
   padding: 2.2cqw 2.2cqw 2.6cqw;
   border-radius: var(--dd-radius);
   background: var(--slide-surface);
-  box-shadow: inset 0 0.6cqw 0 var(--step);
 }
+/* The number in a coloured dot, the same circle-and-ink grammar as the faces. */
 .an-step-number {
-  color: var(--step);
-  font-size: 4.4cqw;
+  display: grid;
+  place-items: center;
+  width: 5.4cqw;
+  height: 5.4cqw;
+  border-radius: 50%;
+  background: var(--step);
+  color: #0b0b0a;
+  font-size: 2.2cqw;
   font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
 .an-steps strong {
