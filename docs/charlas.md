@@ -11,7 +11,7 @@ Público variado: estudiantes, profesionales, personas creativas y emprendedores
 | 3 | Rodrigo Garciaguirre | De un video largo a un clip con Codex | [Ver resumen](http://127.0.0.1:5174/slides/video-con-codex?slide=rodrigo-garciaguirre) | `src/decks/video-con-codex/deck.ts` |
 | 4 | Saul Calderon | Dots: ayuda que le da seguimiento a tus pendientes | [Ver resumen](http://127.0.0.1:5174/slides/dots?slide=saul-calderon) | `src/decks/dots/deck.ts` |
 | 5 | Fernando Borea | ¿Qué hace AI-native a una empresa? | [Ver resumen](http://127.0.0.1:5174/slides/agents-api?slide=fernando-borea) | `src/decks/agents-api/deck.ts` |
-| 6 | Frank Calderon | Tema por definir | [Ver pendiente](http://127.0.0.1:5174/slides/decisions-api?slide=frank-calderon) | `src/decks/decisions-api/deck.ts` |
+| 6 | Frank Calderon | AI Coding: generar código es fácil. Construir software es otra historia | [Ver resumen](http://127.0.0.1:5174/slides/decisions-api?slide=frank-calderon) | `src/decks/decisions-api/deck.ts` |
 
 Los enlaces usan el servidor local de esta sesión (puerto 5174); adaptar el origen al entorno de cada persona. Las caras pertenecen a cada speaker y acompañan su nueva asignación.
 
@@ -19,8 +19,8 @@ Los enlaces usan el servidor local de esta sesión (puerto 5174); adaptar el ori
 
 1. Leer el objeto `brief` del archivo y abrir la slide 02. Ahí están objetivo, temas, demo y resultado esperado.
 2. Revisar `brief.preparation`, visible también en las notas del presentador: material previo, límites y respaldo para la demo.
-3. Completar los seis componentes de `outline`, manteniendo sus guías alineadas con la explicación. Explicar agente como un asistente con herramientas, API como una conexión entre programas y MCP como un puente entre herramientas.
-4. Respetar 0:30 de portada + 1:30 de resumen + 10:00 de recorrido + 3:00 de preguntas. Frank define su contenido y tiempos cuando confirme el tema.
+3. Completar los componentes de `outline`, manteniendo sus guías alineadas con la explicación. Explicar agente como un asistente con herramientas, API como una conexión entre programas y MCP como un puente entre herramientas.
+4. Respetar 0:30 de portada + 1:30 de resumen + 10:00 de recorrido + 3:00 de preguntas. La charla de Frank (AI Coding) usa once slides de contenido dentro del mismo tiempo.
 5. Ensayar el recorrido y guardar un resultado de respaldo. Las demos son propuestas: no se afirma que estén implementadas o probadas.
 
 La slide 00 es la espera; 01 es la portada; **02 es el resumen**, que reemplaza la antigua presentación personal. El speaker se presenta brevemente ahí. Las notas para preparar la demo quedan separadas de la guía pública.

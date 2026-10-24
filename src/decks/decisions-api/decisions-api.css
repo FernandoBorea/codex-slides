@@ -1,0 +1,76 @@
+/*
+ * AI Coding (Frank Calderon): réplica del PPTX con el branding del kit.
+ * Elementos posicionados en cqw; colores con tokens --slide-* para el tema.
+ */
+
+.fc-pptx {
+  padding: 0 !important;
+  letter-spacing: 0;
+}
+
+/* Franja superior de la portada: OpenAI + evento / Codex + Organiza Ai Labs */
+.fc-top {
+  position: absolute;
+  top: 3cqw;
+  left: 5.25cqw;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1.4cqw;
+  color: var(--slide-muted);
+  font-size: 1.1cqw;
+  font-weight: 550;
+}
+.fc-top--brands {
+  right: 5.25cqw;
+  left: auto;
+  gap: 1.3cqw;
+}
+.fc-openai {
+  width: 7.6cqw;
+}
+.fc-codex {
+  width: 5.4cqw;
+}
+.fc-ailabs {
+  width: 8.4cqw;
+}
+.fc-organiza {
+  font-size: 1.05cqw;
+  font-weight: 500;
+}
+.fc-rule {
+  width: 0.08cqw;
+  height: 1.6cqw;
+  background: var(--slide-border);
+}
+
+/* Texto posicionado */
+.fc-e {
+  position: absolute;
+  display: block;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  font-family: inherit;
+}
+
+/* Caras y marcas posicionadas */
+.fc-face {
+  position: absolute;
+  display: block;
+}
+
+/* Rectángulos: tarjetas, reglas y barras */
+.fc-box {
+  position: absolute;
+  display: flex;
+  align-items: center;
+}
+.fc-bar-text {
+  display: block;
+  padding-left: 0.8cqw;
+  color: var(--slide-fg);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}

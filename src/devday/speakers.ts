@@ -38,6 +38,7 @@ export const speakers = {
   frank: {
     id: "frank-calderon",
     name: "Frank Calderon",
+    role: "Software Developer",
     face: { ...FACE_PRESETS.curious, color: FACE_PALETTE.purple },
   },
   rodrigo: {
